@@ -1,0 +1,298 @@
+#
+#‚l‚b‚e‚VŠÈ—ª‰»
+#180106
+#•ây‘f’Ç‰Á
+//Reactions
+r1_SubsGlc	SubsGlc + ATP --> G6P	SubsGlc --> G6P	ABCDEF --> ABCDEF	use	0	1000
+r2_pgi	G6P --> F6P	G6P --> F6P	ABCDEF --> ABCDEF	use	0	1000
+r3_pgi	F6P --> G6P	F6P --> G6P	ABCDEF --> ABCDEF	use	0	1000
+r4_pfk	F6P + ATP --> FBP	F6P --> FBP	ABCDEF --> ABCDEF	use	0	1000
+r5_fba	FBP --> DHAP + GAP	FBP --> DHAP + GAP	ABCDEF --> CBA + DEF	use	0	1000
+r6_fba	DHAP + GAP --> FBP	DHAP + GAP --> FBP	CBA + DEF --> ABCDEF	use	0	1000
+r7_tpi	DHAP --> GAP	DHAP --> GAP	ABC --> ABC	use	0	1000
+r8_tpi	GAP --> DHAP	GAP --> DHAP	ABC --> ABC	use	0	1000
+r9_gapdh	GAP --> PGA + NADH + ATP	GAP --> PGA	ABC --> ABC	use	0	1000
+r10_gapdh	PGA + NADH + ATP --> GAP	PGA --> GAP	ABC --> ABC	use	0	1000
+r11_peph	PGA --> PEP	PGA --> PEP	ABC --> ABC	use	0	1000
+r12_peph	PEP --> PGA	PEP --> PGA	ABC --> ABC	use	0	1000
+r13_pk	PEP --> Pyr + ATP	PEP --> Pyr	ABC --> ABC	use	0	1000
+r16_pyrdh	Pyr --> AcCOAmit + CO2in + NADH	Pyr --> AcCOAmit + CO2in	ABC --> BC + A	use	0	1000
+r17_cs	AcCOAmit + Oxa --> Cit	AcCOAmit + Oxa --> Cit	AB + CDEF --> FEDBAC	use	0	1000
+r18_idh	Cit --> aKG + CO2in + NADH	Cit --> aKG + CO2in	ABCDEF --> ABCDE + F	use	0	1000
+r19_idh	aKG + CO2in + NADH --> Cit	aKG + CO2in --> Cit	ABCDE + F --> ABCDEF	use	0	1000
+r20_akgdh	aKG --> Suc + CO2in + ATP + NADH	aKG --> Suc + CO2in	ABCDE --> BCDE + A	use	0	1000
+r21_sdh	Suc-->Fum+{0.6}NADH	Suc-->Fum	ABCD --> ABCD	use	0	1000
+r22_sdh	Fum+{0.6}NADH-->Suc	Fum-->Suc	ABCD --> ABCD	use	0	1000
+r23_fh	Fum-->Mal	Fum-->Mal	ABCD --> ABCD	use	0	1000
+r24_fh	Mal-->Fum	Mal-->Fum	ABCD --> ABCD	use	0	1000
+r25_mdh	Mal --> Oxa+NADH	Mal --> Oxa	ABCD --> ABCD	use	0	1000
+r26_mdh	Oxa+NADH --> Mal	Oxa --> Mal	ABCD --> ABCD	use	0	1000
+r27_pc	Pyr + CO2in + ATP --> Oxa	Pyr + CO2in --> Oxa	ABC + D --> ABCD	use	0	1000
+r28_mae	Mal --> Pyr + CO2in + NADPH	Mal --> Pyr + CO2in	ABCD --> ABC + D	use	0	1000
+r29_g6pdh	G6P --> m6PG + NADPH	G6P --> m6PG	ABCDEF --> ABCDEF	use	0	1000
+r30_pgd	m6PG --> Ru5P + CO2in + NADPH	m6PG --> Ru5P + CO2in	ABCDEF --> BCDEF + A	use	0	1000
+r31_ri	Ru5P --> R5P	Ru5P --> R5P	ABCDE --> ABCDE	use	0	1000
+r32_ri	R5P --> Ru5P	R5P --> Ru5P	ABCDE --> ABCDE	use	0	1000
+r33_rbe	Ru5P --> Xu5P	Ru5P --> Xu5P	ABCDE --> ABCDE	use	0	1000
+r34_rbe	Xu5P --> Ru5P	Xu5P --> Ru5P	ABCDE --> ABCDE	use	0	1000
+r35_tkt	R5P + Xu5P --> S7P + GAP	R5P + Xu5P --> S7P + GAP	ABCDE + FGHIJ --> FGABCDE + HIJ	use	0	1000
+r36_tkt	GAP + S7P --> Xu5P + R5P	GAP + S7P --> Xu5P + R5P	HIJ + FGABCDE --> FGHIJ + ABCDE	use	0	1000
+r37_tal	GAP + S7P --> F6P + E4P	GAP + S7P --> F6P + E4P	ABC + DEFGHIJ --> DEFABC + GHIJ	use	0	1000
+r38_tal	E4P + F6P --> S7P + GAP	E4P + F6P --> S7P + GAP	GHIJ + DEFABC --> DEFGHIJ + ABC	use	0	1000
+r39_tkt	E4P + Xu5P --> F6P + GAP	E4P + Xu5P --> F6P + GAP	ABCD + EFGHI --> EFABCD + GHI	use	0	1000
+r40_tkt	GAP + F6P --> Xu5P + E4P	GAP + F6P --> Xu5P + E4P	GHI + EFABCD --> EFGHI + ABCD	use	0	1000
+r41_ldh	Pyr + NADH --> Lac	Pyr --> Lac	ABC --> ABC	use	0	1000
+r42_Lac_ex	Lac --> LacEx	nd	nd	use	0	1000
+r46_SubsGln	SubsGln --> Gln	SubsGln --> Gln	ABCDE --> ABCDE	use	0	1000
+r47_gls	Gln --> Glu	Gln --> Glu	ABCDE --> ABCDE	use	0	1000
+r49_gludh	Glu --> aKG	Glu --> aKG	ABCDE --> ABCDE	use	0	1000
+r50_gludh	aKG --> Glu	aKG --> Glu	ABCDE --> ABCDE	use	0	1000
+r51_Glu_ex	Glu --> GluEx	nd	nd	use	0	1000
+r52_pro	Glu --> Pro	Glu --> Pro	ABCDE --> ABCDE	use	0	1000
+r53_Pro_ex	Pro --> ProEx	nd	nd	use	0	1000
+r54_asp	Oxacyt --> Asp	Oxacyt --> Asp	ABCD --> ABCD	use	0	1000
+r55_Asp_ex	Asp --> AspEx	nd	nd	use	0	1000
+r56_asns	Asp --> Asn	Asp --> Asn	ABCD --> ABCD	use	0	1000
+r57_Asn_ex	Asn --> AsnEx	nd	nd	use	0	1000
+r58_gpt_m	Pyr --> Ala	Pyr --> Ala	ABC --> ABC	use	0	1000
+r59_Ala_ex	Ala --> AlaEx	nd	nd	use	0	1000
+r71_SubsLeu	SubsLeu --> Leu	SubsLeu --> Leu	ABCDEF --> ABCDEF	use	0	1000
+r72_SubsIle	SubsIle --> Ile	SubsIle --> Ile	ABCDEF --> ABCDEF	use	0	1000
+r75_SubsVal	SubsVal --> Val	SubsVal --> Val	ABCDE --> ABCDE	use	0	1000
+r77_SubsArg	SubsArg --> Arg	SubsArg --> Arg	ABCDEF --> ABCDEF	use	0	1000
+r78_arg_deg	Arg --> Glu 	Arg --> Glu 	ABCDEF --> ABCDE	use	0	1000
+r82_acl	Cit --> AcCOAcyt + Oxacyt	Cit --> AcCOAcyt + Oxacyt	FEDBAC --> AB + CDEF	use	0	1000
+r83_AcCOA_BIO	AcCOAcyt --> AcCOABiomass	nd	nd	use	0	1000
+r84_G6P_BIO	G6P --> G6PBiomass	nd	nd	use	0	1000
+r85_R5P_BIO	R5P --> R5PBiomass	nd	nd	use	0	1000
+r86_DHAP_BIO	DHAP --> DHAPBiomass	nd	nd	use	0	1000
+r87_Ser_BIO	PGA --> SerBiomass	nd	nd	use	0	1000
+r89_Ala_BIO	Ala --> AlaBiomass	nd	nd	use	0	1000
+r90_Asp_BIO	Asp --> AspBiomass	nd	nd	use	0	1000
+r91_Asn_BIO	Asn --> AsnBiomass	nd	nd	use	0	1000
+r92_Glu_BIO	Glu --> GluBiomass	nd	nd	use	0	1000
+r93_Gln_BIO	Gln --> GlnBiomass	nd	nd	use	0	1000
+r94_Pro_BIO	Pro --> ProBiomass	nd	nd	use	0	1000
+r95_Arg_BIO	Arg --> ArgBiomass	nd	nd	use	0	1000
+r96_Leu_BIO	Leu --> LeuBiomass	nd	nd	use	0	1000
+r97_Ile_BIO	Ile --> IleBiomass	nd	nd	use	0	1000
+r98_Val_BIO	Val --> ValBiomass	nd	nd	use	0	1000
+r100_CO2_in	CO2in --> CO2Ex	CO2in --> CO2Ex	A --> A	use	0	1000
+r101_CO2_ex	SubsCO2 --> CO2in	SubsCO2 --> CO2in	A --> A	use	0	1000
+r102_PGA_ex	PGA --> PGAEx + NADH + {4}NADPH	nd	nd	use	0	1000
+r103_FA_ex	AcCOAcyt + {2}NADPH --> FAEx	nd	nd	use	0	1000
+r104_MAL_ex	Mal --> Malcyt	Mal --> Malcyt	ABCD --> ABCD	use	0	1000
+r105_MAL_ex	Malcyt --> Mal	Malcyt --> Mal	ABCD --> ABCD	use	0	1000
+r106_mdh_cyt	Malcyt --> Oxacyt + NADH	Malcyt --> Oxacyt	ABCD --> ABCD	use	0	1000
+r107_mdh_cyt	Oxacyt + NADH --> Malcyt	Oxacyt --> Malcyt	ABCD --> ABCD	use	0	1000
+r108_ATPx	ATP --> ATPex	nd	nd	use	0	1000
+r109_OXPHOS	NADH -->{2.3}ATP	nd	nd	use	0	1000
+r110_NADPHx	NADPH --> NADPHex	nd	nd	use	0	1000
+#
+#Name_of_intermediate{\t}carbon_number
+#
+//Metabolites
+NADH	0	no	no	no
+NADPHex	0	no	no	excreted
+NADPH	0	no	no	no
+ATPex	0	no	no	excreted
+ATP	0	no	no	no
+AcCOABiomass	2	no	no	excreted
+AcCOAcyt	2	no	no	no
+AcCOAmit	2	no	no	no
+aKG	5	no	no	no
+Ala	3	no	no	no
+AlaBiomass	3	no	no	excreted
+AlaEx	3	no	no	excreted
+Arg	6	no	no	no
+ArgBiomass	6	no	no	excreted
+Asn	4	no	no	no
+AsnBiomass	4	no	no	excreted
+AsnEx	4	no	no	excreted
+Asp	4	no	no	no
+AspBiomass	4	no	no	excreted
+AspEx	4	no	no	excreted
+Cit	6	no	no	no
+CO2Ex	1	no	no	excreted
+CO2in	1	no	no	no
+DHAP	3	no	no	no
+DHAPBiomass	3	no	no	excreted
+E4P	4	no	no	no
+F6P	6	no	no	no
+FAEx	2	no	no	excreted
+FBP	6	no	no	no
+Fum	4	symmetry	no	no
+G6P	6	no	no	no
+G6PBiomass	6	no	no	excreted
+GAP	3	no	no	no
+Gln	5	no	no	no
+GlnBiomass	5	no	no	excreted
+Glu	5	no	no	no
+GluBiomass	5	no	no	excreted
+GluEx	5	no	no	excreted
+Gly	2	no	no	no
+GlyBiomass	2	no	no	excreted
+GlyDeg	2	no	no	excreted
+GlyEx	2	no	no	excreted
+Ile	6	no	no	no
+IleBiomass	6	no	no	excreted
+Lac	3	no	no	no
+LacEx	3	no	no	excreted
+Leu	6	no	no	no
+LeuBiomass	6	no	no	excreted
+m6PG	6	no	no	no
+Mal	4	no	no	no
+Malcyt	4	no	no	no
+Oxa	4	no	no	no
+Oxacyt	4	no	no	no
+PEP	3	no	no	no
+PGA	3	no	no	no
+Pro	5	no	no	no
+ProBiomass	5	no	no	excreted
+ProEx	5	no	no	excreted
+Pyr	3	no	no	no
+PGAEx	3	no	no	excreted
+R5P	5	no	no	no
+R5PBiomass	5	no	no	excreted
+Ru5P	5	no	no	no
+S7P	7	no	no	no
+Ser	3	no	no	no
+SerBiomass	3	no	no	excreted
+SerEx	3	no	no	excreted
+SubsArg	6	no	carbonsource	no
+SubsCO2	1	no	carbonsource	no
+SubsCys	3	no	carbonsource	no
+SubsGlc	6	no	carbonsource	no
+SubsGln	5	no	carbonsource	no
+SubsGly	2	no	carbonsource	no
+SubsIle	6	no	carbonsource	no
+SubsLeu	6	no	carbonsource	no
+SubsSer	3	no	carbonsource	no
+SubsVal	5	no	carbonsource	no
+Suc	4	symmetry	no	no
+Val	5	no	no	no
+ValBiomass	5	no	no	excreted
+Xu5P	5	no	no	no
+#
+"#List of reversible ractions, ID, forward,reverse"""
+#
+//Reversible_reactions
+PGI	r2_pgi	r3_pgi	free
+FBA	r5_fba	r6_fba	free
+TPI	r7_tpi	r8_tpi	free
+GAPDH	r9_gapdh	r10_gapdh	free
+PEPH	r11_peph	r12_peph	free
+IDH	r18_idh	r19_idh	free
+SDH	r21_sdh	r22_sdh	free
+MDH	r25_mdh	r26_mdh	free
+RPI	r31_ri	r32_ri	free
+RBE	r33_rbe	r34_rbe	free
+TKT1	r35_tkt	r36_tkt	free
+TAL	r37_tal	r38_tal	free
+TKT2	r39_tkt	r40_tkt	free
+FH	r23_fh	r24_fh	free
+MDHcyt	r106_mdh_cyt	r107_mdh_cyt	free
+GLUDH	r49_gludh	r50_gludh	free
+#
+#List of Target compound whose MDV are generarted by the calmdv function.
+#
+//Target_fragments
+GC_Ala_260	gcms	Pyr_123	use
+GC_Ala_232	gcms	Pyr_23	use
+GC_Asp_418	gcms	Asp_1234	use
+GC_Asp_390	gcms	Asp_234	use
+GC_Asp_302	gcms	Asp_12	use
+GC_Glu_85	gcms	Glu_2345	no
+GC_Glu_330	gcms	Glu_2345	use
+GC_Glu_302	gcms	Glu_12	no
+GC_Gln_431	gcms	Gln_12345	use
+GC_Pro_258	gcms	Pro_2345	use
+GC_Ser_390	gcms	Ser_123	no
+GC_Gly_246	gcms	Gly_12	no
+GC_Pyr_174	gcms	Pyr_123	use
+GC_Suc_289	gcms	Suc_1234	use
+GC_Fum_287	gcms	Fum_1234	no
+GC_Mal_419	gcms	Mal_1234	use
+GC_Cit_459	gcms	Cit_123456	use
+GC_AKG_346	gcms	aKG_12345	use
+GC_PEP_453	gcms	PEP_123	no
+GC_3PG_585	gcms	PGA_123	use
+GC_F6P357a	gcms	F6P_56	no
+GC_F6P459a	gcms	F6P_456	no
+GC_F6P706a	gcms	F6P_123456	no
+GC_G6P357a	gcms	G6P_56	no
+GC_G6P471a	gcms	G6P_3456	no
+GC_G6P706a	gcms	G6P_123456	no
+GC_S7P357a	gcms	S7P_67	no
+GC_S7P471a	gcms	S7P_4567	no
+GC_FBP357a	gcms	FBP_56	no
+GC_FBP414a	gcms	FBP_123	no
+GC_FBP459a	gcms	FBP_456	no
+GC_Acetate	gcms	Acetate_12	no
+LC_G6P_259_79_Ma	gcms	G6P_123456	no
+LC_G6P_259_97_Ma	gcms	G6P_123456	no
+LC_G6P_259_169_Ma	gcms	G6P_123456	no
+LC_G6P_259_169_Fa	gcms	G6P_456	no
+LC_G6P_259_139_Ma	gcms	G6P_123456	no
+LC_G6P_259_139_Fa	gcms	G6P_56	no
+LC_G6P_259_199_Ma	gcms	G6P_123456	no
+LC_G6P_259_199_Fa	gcms	G6P_3456	no
+LC_G6P_259_259_Ma	gcms	F6P_123456	no
+LC_F6P_259_79_Ma	gcms	F6P_123456	no
+LC_F6P_259_97_Ma	gcms	F6P_123456	no
+LC_F6P_259_169_Ma	gcms	F6P_123456	no
+LC_F6P_259_169_Fa	gcms	F6P_456	no
+LC_F6P_259_139_Ma	gcms	F6P_123456	no
+LC_F6P_259_139_Fa	gcms	F6P_56	no
+LC_F6P_259_199_Ma	gcms	F6P_123456	no
+LC_F6P_259_199_Fa	gcms	F6P_3456	no
+LC_F6P_259_259_Ma	gcms	F6P_123456	no
+LC_FBP_339_97_Ma	gcms	FBP_123456	no
+LC_FBP_339_339_Ma	gcms	FBP_123456	no
+LC_DHAP_169_97_Ma	gcms	DHAP_123	no
+LC_DHAP_169_169_Ma	gcms	DHAP_123	no
+LC_PGA_185_79_Ma	gcms	PGA_123	no
+LC_PGA_185_185_Ma	gcms	PGA_123	no
+LC_PEP_167_79_Ma	gcms	PEP_123	no
+LC_PEP_167_167_Ma	gcms	PEP_123	no
+LC_Pyr_87_87_Ma	gcms	Pyr_123	no
+LC_Pyr_87_43_Ma	gcms	Pyr_123	no
+LC_Pyr_87_43_Fa	gcms	Pyr_23	no
+LC_aKG_145_101_Ma	gcms	aKG_12345	no
+LC_aKG_145_101_Fa	gcms	aKG_2345	no
+LC_aKG_145_145_Ma	gcms	aKG_12345	no
+LC_aKG_145_73_Ma	gcms	aKG_12345	no
+LC_aKG_145_73_Fa	gcms	aKG_234	no
+LC_aKG_145_57_Ma	gcms	aKG_12345	no
+LC_aKG_145_57_Fa	gcms	aKG_12	no
+LC_R5P_229_97_Ma	gcms	R5P_12345	no
+LC_R5P_229_229_Ma	gcms	R5P_12345	no
+LC_R5P_229_139_Ma	gcms	R5P_12345	no
+LC_R5P_229_139_Fa	gcms	R5P_45	no
+LC_R5P_229_169_Ma	gcms	R5P_12345	no
+LC_R5P_229_169_Fa	gcms	R5P_345	no
+LC_Ru5P_229_97_Ma	gcms	Ru5P_12345	no
+LC_Ru5P_229_229_Ma	gcms	Ru5P_12345	no
+LC_Ru5P_229_139_Ma	gcms	Ru5P_12345	no
+LC_Ru5P_229_139_Fa	gcms	Ru5P_45	no
+LC_Ru5P_229_169_Ma	gcms	Ru5P_12345	no
+LC_Ru5P_229_169_Fa	gcms	Ru5P_345	no
+LC_Xu5P_229_97_Ma	gcms	Xu5P_12345	no
+LC_Xu5P_229_229_Ma	gcms	Xu5P_12345	no
+LC_Xu5P_229_139_Ma	gcms	Xu5P_12345	no
+LC_Xu5P_229_139_Fa	gcms	Xu5P_45	no
+LC_Xu5P_229_169_Ma	gcms	Xu5P_12345	no
+LC_Xu5P_229_169_Fa	gcms	Xu5P_345	no
+LC_S7P_289_97_Ma	gcms	S7P_1234567	no
+LC_S7P_289_289_Ma	gcms	S7P_123456	no
+LC_S7P_289_199_Ma	gcms	S7P_1234567	no
+LC_S7P_289_199_Fa	gcms	S7P_4567	no
+LC_S7P_289_169_Ma	gcms	S7P_1234567	no
+LC_S7P_289_169_Fa	gcms	S7P_567	no
+LC_S7P_289_139_Ma	gcms	S7P_1234567	no
+LC_S7P_289_139_Fa	gcms	S7P_67	no
+LC_m6PG_275_79_Ma	gcms	m6PG_123456	no
+LC_m6PG_275_275_Ma	gcms	m6PG_123456	no
+LC_E4P_199_79_Ma	gcms	E4P_1234	no
+LC_E4P_199_199_Ma	gcms	E4P_1234	no
+//End

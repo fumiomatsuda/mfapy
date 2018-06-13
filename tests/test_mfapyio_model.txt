@@ -1,0 +1,72 @@
+#						
+#toy model						
+#toymodel140331.txt						
+#						
+#						
+//Reactions						
+v1	AcCoA + OAC --> Cit	AcCoA + OAC --> Cit	AB + CDEF --> FEDBAC	use	0.1	300
+v2	Cit --> AKG + CO2ex	Cit --> AKG + CO2ex	ABCDEF --> ABCDE + F	use	0.1	300
+v3	AKG --> Glu	AKG --> Glu	ABCDE --> ABCDE 	use	0.1	300
+v4	AKG --> Suc + CO2ex	AKG --> Suc + CO2ex	ABCDE --> BCDE + A	use	0.1	300
+v5	Suc --> Fum	Suc --> Fum	ABCD --> ABCD	use	0.1	300
+v6	Fum --> OAC	Fum --> OAC	ABCD --> ABCD	use	0.1	300
+v7	OAC --> Fum	OAC --> Fum	ABCD --> ABCD	use	0.1	300
+v8	Asp --> OAC	Asp --> OAC	ABCD --> ABCD	use	0.1	300
+v9	Suc --> Sucex	nd	nd	use	0.1	300
+e1	Glu --> Gluex	nd	nd 	use	0.1	300
+v10	OAC --> OACx	OAC --> OACx	ABCD --> ABCD	use	0.1	300
+v11	OACs --> OACx	OACs --> OACx	ABCD --> ABCD	use	0.001	300
+v12	OACx --> OACe	nd	nd	use	0.1	300
+v13	OAC+OAC --> Fumx	OAC+OAC --> Fumx	ABCD+EFGH --> EFAB	use	0.1	300
+v14	OA --> Fume	nd	nd	use	0.1	300
+v15	OAC+Fum+Suc --> Tx	OAC+Fum+Suc --> Tx	ABCD+EFGH+IJKL --> CDHL	use	0.1	300
+v16	Tx --> Te	nd	nd	use	0.1	300
+v17	Fumx --> {2}OA	Fumx --> OA+OA	ABCD --> AB+CD	use	0.1	300
+#						
+#Definition of carbon numbers of intermediates						
+#						
+#Name_of_intermediate{\t}carbon_number						
+#						
+//Metabolites						
+CO2ex	1	no	no	excreted		
+AcCoA	2	no	carbonsource	no		
+OAC	4	no	no	no		
+OACs	4	no	carbonsource	no		
+OACx	4	no	no	no		
+OACe	4	no	no	excreted		
+Fumx	4	no	no	no		
+OA	2	no	no	no		
+Fume	4	no	no	excreted		
+Tx	4	no	no	no		
+Te	4	no	no	excreted		
+Cit	6	no	no	no		
+AKG	5	no	no	no		
+Suc	4	symmetry	no	no		
+Fum	4	symmetry	no	no		
+Glu	5	no	no	no		
+Gluex	5	no	no	excreted		
+Sucex	4	no	no	excreted		
+Asp	4	no	carbonsource	no		
+#						
+#List of reversible ractions, ID, forward,reverse						
+#						
+//Reversible_reactions						
+FUM	v6	v7
+Input	v9+e1	nothing					
+#						
+#List of Target compound whose MDV are generarted by the calmdv function.						
+#						
+//Target_fragments						
+Glue	gcms	Glu_12345	use			
+AKGe	gcms	AKG_12345	use			
+OACo	gcms	OACx_1234	use			
+OACi	gcms	OAC_1234	use			
+OACt	gcms	Fumx_1234	use			
+OACc	gcms	OAC_12+OAC_12	use			
+Txt	gcms	Tx_1234	use			
+Txc	gcms	OAC_34+Fum_4+Suc_4	use			
+Gluf	gcms	Glu_12+Glu_345	no			
+AKGmsms	msms	AKG_12345+AKG_1+AKG_2345	no			
+AKGms	gcms	AKG_12345	no			
+AKGc	gcms	AKG_12+AKG_345	no			
+//End						

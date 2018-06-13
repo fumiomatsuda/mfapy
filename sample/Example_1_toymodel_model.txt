@@ -1,0 +1,129 @@
+#
+# Toy model
+#
+#
+#  Any texts after "#" are ignored as comment
+#
+# Definition of metabolic reactions
+# 1. id, text
+#	Please use alphabet (+ number) as ids. Please do not use space and special characters to avoid unexpected errors.
+# 2. Stoichiometry for the construicton of stoichiometry matrix., text
+#	All id of metabolites must be defined in //Metabolites
+#	Only "+" and "-->" are accpectable separators.
+#	Here, expression of reaction using coefficient such as  "Fumx --> {2}OA" is allowed.
+#	"nd" means this reaction is an "pseudo" reaction and ignored in the flux calculation by stoichiometry matrix.
+# 3. Stoichiometry for the construicton of atom mapping., text
+#	Only "+" and "-->" are accpectable separators.
+#	Here, expression of reaction without using coefficient is needed such as  "Fumx --> OA+OA" is allowed.
+#	"nd" means this reaction is an excretion reaction and ignored in the MDV calculation
+# 4. Atom mapping, text
+#	Only "+" and "-->" are accpectable separators. Please use A-Z to express carbon atom.
+#	"nd" means this reaction is an excretion reaction and ignored in the MDV calculation
+# 5. Use or ignore., text
+#	Rows insteaed of "use" are ignored in the model construction.
+# 6. Lower boundary of metabolic flux level, float
+#	Value must be more than zero
+# 7. Upper boundary of metabolic flux level, float
+#	Value must be more than zero
+//Reactions
+v1	AcCoA + OAC --> Cit	AcCoA + OAC --> Cit	AB + CDEF --> FEDBAC	use	0.1	300
+v2	Cit --> AKG + CO2ex	Cit --> AKG + CO2ex	ABCDEF --> ABCDE + F	use	0.1	300
+v3	AKG --> Glu	AKG --> Glu	ABCDE --> ABCDE 	use	0.1	300
+v4	AKG --> Suc + CO2ex	AKG --> Suc + CO2ex	ABCDE --> BCDE + A	use	0.1	300
+v5	Suc --> Fum	Suc --> Fum	ABCD --> ABCD	use	0.1	300
+v6	Fum --> OAC	Fum --> OAC	ABCD --> ABCD	use	0.1	300
+v7	OAC --> Fum	OAC --> Fum	ABCD --> ABCD	use	0.1	300
+v8	Asp --> OAC	Asp --> OAC	ABCD --> ABCD	use	0.1	300
+v9	Suc --> Sucex	nd	nd	use	0.1	300
+e1	Glu --> Gluex	nd	nd 	use	0.1	300
+v10	OAC --> OACx	OAC --> OACx	ABCD --> ABCD	use	0.1	300
+v11	OACs --> OACx	OACs --> OACx	ABCD --> ABCD	use	0.001	300
+v12	OACx --> OACe	nd	nd	use	0.1	300
+v13	OAC+OAC --> Fumx	OAC+OAC --> Fumx	ABCD+EFGH --> EFAB	use	0.1	300
+v14	OA --> Fume	nd	nd	use	0.1	300
+v15	OAC+Fum+Suc --> Tx	OAC+Fum+Suc --> Tx	ABCD+EFGH+IJKL --> CDHL	use	0.1	300
+v16	Tx --> Te	nd	nd	use	0.1	300
+v17	Fumx --> {2}OA	Fumx --> OA+OA	ABCD --> AB+CD	use	0.1	300
+#
+# Definition of metabolites
+# 1. id, text
+#	Please use alphabet and numbers. Please do not use space, "_", and other special characters to avoid unexpected errors.
+# 2. Carbon number, int
+#   Max number of carbon in "carbonsource" metabolites are 8.
+# 3. symmetry, text
+#	Set "symmetry" metabolites such as fumarete and succinate
+# 4. corbon source, text
+#	Set "carbonsource" metabolites
+# 5. excretion, text
+#	Set "excreted" metabolites
+# 6. Lower boundary of metabolite pool size, float
+#	Value must be more than zero
+#	Required for INST-MFA mode
+# 7. Upper boundary of metabolite pool size, float
+#	Value must be more than zero
+#	Required for INST-MFA mode
+#
+//Metabolites
+CO2ex	1	no	no	excreted
+AcCoA	2	no	carbonsource	no
+OAC	4	no	no	no
+OACs	4	no	carbonsource	no
+OACx	4	no	no	no
+OACe	4	no	no	excreted
+Fumx	4	no	no	no
+OA	2	no	no	no
+Fume	4	no	no	excreted
+Tx	4	no	no	no
+Te	4	no	no	excreted
+Cit	6	no	no	no
+AKG	5	no	no	no
+Suc	4	symmetry	no	no
+Fum	4	symmetry	no	no
+Glu	5	no	no	no
+Gluex	5	no	no	excreted
+Sucex	4	no	no	excreted
+Asp	4	no	carbonsource	no
+#
+# Definition of reversible reactions
+# Reversible reaction is used for
+#	(i) output of metabolic flux distribution data
+#	(ii) constrain metabolic flux
+# 	(iii) investigate confidence intervals
+# 	(iii) Composition of two or more reactions such as for the calculation of total ATP producton is supported.
+# 1. id, text
+#	Please use alphabet and numbers. Please do not use space and special characters to avoid unexpected errors.
+# 2. forward reaction, text
+#	Reacton id
+#	Composition of reacton ids such as "v9+e1" is also supported.
+#	Only "+" is accpectable separator.
+# 3 . reverse reaction, text
+#	Reacton id
+#	Set "nothing" if there is no data
+//Reversible_reactions
+FUM	v6	v7
+Input	v9+e1	nothing
+#
+# Definition of Target compound
+# Target compounds are metabolite out side of the metabolic model whose MDV are generarted by the calmdv function.
+# 1. id, text
+#	Please use alphabet and numbers. Please do not use space, "_" and other special characters to avoid unexpected errors.
+# 2. type, text
+#	"gcms" and "msms" are supported. "msms" mode is designed for the direct MS analysis of intermediates.
+# 3. Carbon composition, text
+#	"Glu_12345" indicated that the target compound has five carbons derived from 1-5th carbons of metabolite id "Glu".
+#	In the "gcms"mode, "OAC_12+OAC_12" indicated that the target compound has for carbons derived from 1-2th carbons of metabolite id "OAC".
+#	In the "msms"mode, "AKG_12345+AKG_1+AKG_2345" indicated carbon origins of "precursor ion" + "neutral loss2 + "product ion".
+//Target_fragments
+Glue	gcms	Glu_12345	use
+AKGe	gcms	AKG_12345	use
+OACo	gcms	OACx_1234	use
+OACi	gcms	OAC_1234	use
+OACt	gcms	Fumx_1234	use
+OACc	gcms	OAC_12+OAC_12	use
+Txt	gcms	Tx_1234	use
+Txc	gcms	OAC_34+Fum_4+Suc_4	use
+Gluf	gcms	Glu_12+Glu_345	no
+AKGmsms	msms	AKG_12345+AKG_1+AKG_2345	no
+AKGms	gcms	AKG_12345	no
+AKGc	gcms	AKG_12+AKG_345	no
+//End

@@ -1,0 +1,5 @@
+include LICENSE
+recursive-include tests *.py *.txt *.csv
+recursive-include sample *.py *.txt *.csv
+include requirements.txt
+include README.txt
