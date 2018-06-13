@@ -1,7 +1,7 @@
-pyfma: A Python toolbox for 13C-metabolic flux analysis
+mfapy: A Python toolbox for 13C-metabolic flux analysis
 ================================================
 
-pyfma is a Python toolbox for 13C-metabolic flux analysis developed by Matsuda and Shimizu lab group in Osaka university, Japan.
+mfapy is a Python toolbox for 13C-metabolic flux analysis developed by Matsuda and Shimizu lab group in Osaka university, Japan.
 mfapy supports:
 
 1. The elementary metabolite unit (EMU) framework developed by Antoniewicz et al 2007.
@@ -58,12 +58,12 @@ Test
 
 How to use
 ----------------------------------------
-Sample scripts in 'sample' explain how to used mfapy.
+Sample scripts in 'sample' explain how to used mfapy. 
 Detailed explanations are available from docstrings
 
 Example_1_toymodel.py  
-Example_1_toymodel_INST.py
-Example_2_MCF7_taxol.py
+Example_1_toymodel_INST.py 
+Example_2_MCF7_taxol.py 
 
 Learn more <https://github.com/fumiomatsuda/mfapy>
 
