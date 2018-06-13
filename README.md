@@ -46,13 +46,15 @@ Unzip and set as current folder
 ~~~
 3. Install pymfa
 Unzip and set as current folder
-
+~~~
     > python setup.py install
-
+~~~
 
 Test
 ----------------------------------------
+~~~
     > python setup.py test
+~~~
 
 How to use
 ----------------------------------------
