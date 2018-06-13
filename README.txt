@@ -2,7 +2,7 @@ pyfma: A Python toolbox for 13C-metabolic flux analysis
 ================================================
 
 pyfma is a Python toolbox for 13C-metabolic flux analysis developed by Matsuda and Shimizu lab group in Osaka university, Japan.
-pymfa supports:
+mfapy supports:
 
 1. The elementary metabolite unit (EMU) framework developed by Antoniewicz et al 2007.
 2. Isotopically nonstationary 13C metabolic flux analysis (INST-MFA)
@@ -20,13 +20,13 @@ This software is released under the MIT License, see LICENSE.txt.
 Requirement
 ----------------------------------------
 Python 3.6
-pymfa required the packages:
+mfapy required the packages:
 NumPy and SciPy (van der Walt, Colbert & Varoquaux, 2011)
 nlopt https://nlopt.readthedocs.io/en/latest/
 parallel python (pp-1.6.4.4) https://www.parallelpython.com/ developed by Vitalii Vanovschi.
 mkl-service
 
-pymfa was developed and tested using the PyScripter IDE, and was tested in 64 bit version of Anaconda3 distribution in Windows 10.
+mfapy was developed and tested using the PyScripter IDE, and was tested in 64 bit version of Anaconda3 distribution in Windows 10.
 
 
 Install
@@ -40,7 +40,7 @@ Install
 3. Download pp-1.6.4.4.zip from https://www.parallelpython.com/content/view/18/32/
 Unzip and set as current folder
     > python setup.py install
-3. Install pymfa
+3. Install mfapy
 Unzip and set as current folder
    > python setup.py install
 
@@ -51,18 +51,18 @@ Test
 
 How to use
 ----------------------------------------
-Sample scripts in 'sample' explain how to used pymfa.
+Sample scripts in 'sample' explain how to used mfapy.
 Detailed explanations are available from docstrings
 
 Example_1_toymodel.py  
 Example_1_toymodel_INST.py
 Example_2_MCF7_taxol.py
 
-Learn more <https://github.com/fumiomatsuda/pymfa>
+Learn more <https://github.com/fumiomatsuda/mfapy>
 
 ---------------
 
-If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/pymfa>
+If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>
 
 
 
