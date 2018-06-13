@@ -44,7 +44,7 @@ Unzip and set as current folder
 ~~~
     > python setup.py install
 ~~~
-3. Install pymfa
+3. Install mfapy
 Unzip and set as current folder
 ~~~
     > python setup.py install
