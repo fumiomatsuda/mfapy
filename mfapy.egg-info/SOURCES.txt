@@ -1,7 +1,8 @@
 LICENSE
 MANIFEST.in
-README.txt
+README.md
 requirements.txt
+setup.cfg
 setup.py
 mfapy/__init__.py
 mfapy/carbonsource.py
@@ -14,8 +15,11 @@ mfapy.egg-info/SOURCES.txt
 mfapy.egg-info/dependency_links.txt
 mfapy.egg-info/requires.txt
 mfapy.egg-info/top_level.txt
-sample/Example_1_toymodel.py
+sample/Example_0_toymodel.py
+sample/Example_0_toymodel_model.txt
+sample/Example_0_toymodel_status.csv
 sample/Example_1_toymodel_INST.py
+sample/Example_1_toymodel_expanded.py
 sample/Example_1_toymodel_mdv.txt
 sample/Example_1_toymodel_model.txt
 sample/Example_1_toymodel_status.csv

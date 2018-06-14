@@ -34,16 +34,6 @@ v5	Suc --> Fum	Suc --> Fum	ABCD --> ABCD	use	0.1	300
 v6	Fum --> OAC	Fum --> OAC	ABCD --> ABCD	use	0.1	300
 v7	OAC --> Fum	OAC --> Fum	ABCD --> ABCD	use	0.1	300
 v8	Asp --> OAC	Asp --> OAC	ABCD --> ABCD	use	0.1	300
-v9	Suc --> Sucex	nd	nd	use	0.1	300
-e1	Glu --> Gluex	nd	nd 	use	0.1	300
-v10	OAC --> OACx	OAC --> OACx	ABCD --> ABCD	use	0.1	300
-v11	OACs --> OACx	OACs --> OACx	ABCD --> ABCD	use	0.001	300
-v12	OACx --> OACe	nd	nd	use	0.1	300
-v13	OAC+OAC --> Fumx	OAC+OAC --> Fumx	ABCD+EFGH --> EFAB	use	0.1	300
-v14	OA --> Fume	nd	nd	use	0.1	300
-v15	OAC+Fum+Suc --> Tx	OAC+Fum+Suc --> Tx	ABCD+EFGH+IJKL --> CDHL	use	0.1	300
-v16	Tx --> Te	nd	nd	use	0.1	300
-v17	Fumx --> {2}OA	Fumx --> OA+OA	ABCD --> AB+CD	use	0.1	300
 #
 # Definition of metabolites
 # 1. id, text
@@ -67,21 +57,11 @@ v17	Fumx --> {2}OA	Fumx --> OA+OA	ABCD --> AB+CD	use	0.1	300
 CO2ex	1	no	no	excreted
 AcCoA	2	no	carbonsource	no
 OAC	4	no	no	no
-OACs	4	no	carbonsource	no
-OACx	4	no	no	no
-OACe	4	no	no	excreted
-Fumx	4	no	no	no
-OA	2	no	no	no
-Fume	4	no	no	excreted
-Tx	4	no	no	no
-Te	4	no	no	excreted
 Cit	6	no	no	no
 AKG	5	no	no	no
 Suc	4	symmetry	no	no
 Fum	4	symmetry	no	no
 Glu	5	no	no	no
-Gluex	5	no	no	excreted
-Sucex	4	no	no	excreted
 Asp	4	no	carbonsource	no
 #
 # Definition of reversible reactions
@@ -101,7 +81,6 @@ Asp	4	no	carbonsource	no
 #	Set "nothing" if there is no data
 //Reversible_reactions
 FUM	v6	v7
-Input	v9+e1	nothing
 #
 # Definition of Target compound
 # Target compounds are metabolite out side of the metabolic model whose MDV are generarted by the calmdv function.
@@ -115,15 +94,4 @@ Input	v9+e1	nothing
 #	In the "msms"mode, "AKG_12345+AKG_1+AKG_2345" indicated carbon origins of "precursor ion" + "neutral loss2 + "product ion".
 //Target_fragments
 Glue	gcms	Glu_1:2:3:4:5	use
-AKGe	gcms	AKG_1:2:3:4:5	use
-OACo	gcms	OACx_1:2:3:4	use
-OACi	gcms	OAC_1:2:3:4	use
-OACt	gcms	Fumx_1:2:3:4	use
-OACc	gcms	OAC_1:2+OAC_1:2	use
-Txt	gcms	Tx_1:2:3:4	use
-Txc	gcms	OAC_3:4+Fum_4+Suc_4	use
-Gluf	gcms	Glu_1:2+Glu_3:4:5	no
-AKGmsms	msms	AKG_1:2:3:4:5+AKG_1+AKG_2:3:4:5	no
-AKGms	gcms	AKG_1:2:3:4:5	no
-AKGc	gcms	AKG_1:2+AKG_3:4:5	no
 //End

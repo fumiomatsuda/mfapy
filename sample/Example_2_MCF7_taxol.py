@@ -9,7 +9,7 @@
 #-------------------------------------------------------------------------------
 import os, sys, time
 import numpy as numpy
-import mfapy
+import mfapy.mfapy as mfapy
 
 if __name__ == '__main__':
 
@@ -103,6 +103,7 @@ if __name__ == '__main__':
     #
     # Fitting by global optimizer
     #
+
     method = "GN_CRS2_LM"
     start = time.time()
     state, RSS_bestfit, flux_opt1 = model.fitting_flux(method = method, flux = flux_opt1)
@@ -121,5 +122,6 @@ if __name__ == '__main__':
         print(method, ": State", "RSS:{0:>8.2f} Time:{1:>8.2f} Threshold:{2:>8.2f} pvalue:{3:>8.7f}".format(RSS_bestfit, time.time()-start, rss_thres, pvalue))
         results.append((method, flux_opt_slsqp))
     model.show_results(results, pool_size = "off")
+
 
 

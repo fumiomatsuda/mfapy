@@ -54,13 +54,13 @@ class Testmfapy(unittest.TestCase):
         actual = self.cs.mdv_carbon_sources['Asp_1'][0]
         expected = 0.9893000129677051
         self.assertEqual(expected, actual)
-        actual = self.cs.mdv_carbon_sources['Asp_12'][0]
+        actual = self.cs.mdv_carbon_sources['Asp_1:2'][0]
         expected = 0.9787145028289506
         self.assertEqual(expected, actual)
-        actual = self.cs.mdv_carbon_sources['Asp_123'][0]
+        actual = self.cs.mdv_carbon_sources['Asp_1:2:3'][0]
         expected = 0.9682422576486809
         self.assertEqual(expected, actual)
-        actual = self.cs.mdv_carbon_sources['Asp_1234'][0]
+        actual = self.cs.mdv_carbon_sources['Asp_1:2:3:4'][0]
         expected = 0.95788206549184
         self.assertEqual(expected, actual)
 if __name__ == '__main__':

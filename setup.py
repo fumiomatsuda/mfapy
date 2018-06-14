@@ -12,7 +12,7 @@ def load_requires_from_file(fname):
         raise IOError(fname)
     return [pkg.strip() for pkg in open(fname, 'r')]
 
-with open('README.txt') as f:
+with open('README.md') as f:
     readme = f.read()
 
 with open('LICENSE') as f:
@@ -20,7 +20,7 @@ with open('LICENSE') as f:
 
 setup(
     name='mfapy',
-    version='0.5.0',
+    version='0.5.1',
     #package_dir = {'': pkgdir},
     py_modules =  ["mfapy", "metabolicmodel", "carbonsource", "mfapyio", "mdv", "optimize"],
     description = "Parallel and distributed programming for Python",

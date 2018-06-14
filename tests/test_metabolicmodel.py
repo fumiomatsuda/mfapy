@@ -240,27 +240,27 @@ class Testmfapy(unittest.TestCase):
             'excreted': 'no',
             'order': 9,
             'symmetry': 'no'}}
-        target_fragments = {'AKGc': {'atommap': 'AKG_12+AKG_345',
+        target_fragments = {'AKGc': {'atommap': 'AKG_1:2+AKG_3:4:5',
                   'order': 11,
                   'type': 'gcms',
                   'use': 'no'},
-         'AKGe': {'atommap': 'AKG_12345', 'order': 1, 'type': 'gcms', 'use': 'use'},
-         'AKGms': {'atommap': 'AKG_12345', 'order': 10, 'type': 'gcms', 'use': 'no'},
-         'AKGmsms': {'atommap': 'AKG_12345+AKG_1+AKG_2345',
+         'AKGe': {'atommap': 'AKG_1:2:3:4:5', 'order': 1, 'type': 'gcms', 'use': 'use'},
+         'AKGms': {'atommap': 'AKG_1:2:3:4:5', 'order': 10, 'type': 'gcms', 'use': 'no'},
+         'AKGmsms': {'atommap': 'AKG_1:2:3:4:5+AKG_1+AKG_2:3:4:5',
                      'order': 9,
                      'type': 'msms',
                      'use': 'no'},
-         'Glue': {'atommap': 'Glu_12345', 'order': 0, 'type': 'gcms', 'use': 'use'},
-         'Gluf': {'atommap': 'Glu_12+Glu_345', 'order': 8, 'type': 'gcms', 'use': 'no'},
-         'OACc': {'atommap': 'OAC_12+OAC_12', 'order': 5, 'type': 'gcms', 'use': 'use'},
-         'OACi': {'atommap': 'OAC_1234', 'order': 3, 'type': 'gcms', 'use': 'use'},
-         'OACo': {'atommap': 'OACx_1234', 'order': 2, 'type': 'gcms', 'use': 'use'},
-         'OACt': {'atommap': 'Fumx_1234', 'order': 4, 'type': 'gcms', 'use': 'use'},
-         'Txc': {'atommap': 'OAC_34+Fum_4+Suc_4',
+         'Glue': {'atommap': 'Glu_1:2:3:4:5', 'order': 0, 'type': 'gcms', 'use': 'use'},
+         'Gluf': {'atommap': 'Glu_1:2+Glu_3:4:5', 'order': 8, 'type': 'gcms', 'use': 'no'},
+         'OACc': {'atommap': 'OAC_1:2+OAC_1:2', 'order': 5, 'type': 'gcms', 'use': 'use'},
+         'OACi': {'atommap': 'OAC_1:2:3:4', 'order': 3, 'type': 'gcms', 'use': 'use'},
+         'OACo': {'atommap': 'OACx_1:2:3:4', 'order': 2, 'type': 'gcms', 'use': 'use'},
+         'OACt': {'atommap': 'Fumx_1:2:3:4', 'order': 4, 'type': 'gcms', 'use': 'use'},
+         'Txc': {'atommap': 'OAC_3:4+Fum_4+Suc_4',
                  'order': 7,
                  'type': 'gcms',
                  'use': 'use'},
-         'Txt': {'atommap': 'Tx_1234', 'order': 6, 'type': 'gcms', 'use': 'use'}}
+         'Txt': {'atommap': 'Tx_1:2:3:4', 'order': 6, 'type': 'gcms', 'use': 'use'}}
 
         self.model = mfapy.metabolicmodel.MetabolicModel(reactions, reversible, metabolites, target_fragments)
         # procedures before every tests are started. This code block is executed every time
@@ -356,10 +356,10 @@ class Testmfapy(unittest.TestCase):
 
         cs = self.model.generate_carbon_source_templete()
         cs.set_all_isotopomers('AcCoA', [0.5, 0.0, 0.25, 0.25])
-        cs.set_each_isotopomer('Asp', {'#0000':1.0}, correction = 'yes')
+        cs.set_each_isotopomer('Asp', {'#0000':1.0}, correction = 'no')
         flux_list = [state_dic["reaction"][id]['value'] for id in self.model.reaction_ids]
         glu, glut = self.model.func["calmdv"](flux_list, ['Glue'], cs.generate_dict())
-        expected =  [0.3371922683009762, 0.272912365497687, 0.2710949951944661, 0.08547924334023502, 0.029245750175912417, 0.004075377490723151]
+        expected =  [0.34635416666666663, 0.26953124999999994, 0.27083333333333326, 0.08072916666666664, 0.028645833333333325, 0.0039062499999999987]
         actual = list(glu)
         self.assertAlmostEqual(expected[0], actual[0])
         expected = 1.0

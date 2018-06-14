@@ -16,8 +16,8 @@ class Testmfapy(unittest.TestCase):
     def setUp(self):
         # procedures before every tests are started. This code block is executed every time
         target_fragment =  {
-        'AKGe': {'atommap': 'AKG_12345','number': 6,'order': 0,'type': 'gcms','use': 'use'},
-        'AKGmsms': {'atommap': 'AKG_12345+AKG_1+AKG_2345', 'number': 10,'order': 1, 'type': 'msms', 'use': 'use'}}
+        'AKGe': {'atommap': 'AKG_1:2:3:4:5','number': 6,'order': 0,'type': 'gcms','use': 'use'},
+        'AKGmsms': {'atommap': 'AKG_1:2:3:4:5+AKG_1+AKG_2:3:4:5', 'number': 10,'order': 1, 'type': 'msms', 'use': 'use'}}
         self.mdv = mfapy.mdv.MdvData(target_fragment)
         #print(self.mdv.mdv)
         self.mdv.mdv['AKGe'][0]["ratio"] = 0.5
@@ -123,9 +123,6 @@ class Testmfapy(unittest.TestCase):
         list = self.mdv.get_fragments_for_mdv_calculation()
         expected = ['AKGe']
         actual = self.mdv.observed_fragments
-        self.assertEqual(expected, actual)
-        expected = 'no'
-        actual = self.mdv.mdv['AKGmsms'][4]["use"]
         self.assertEqual(expected, actual)
     def test_add_gaussian_noise(self):
         self.mdv.add_gaussian_noise(0.01, 1, method = 'absolute')

@@ -12,6 +12,7 @@ mfapy supports:
 6. Goodness-of-fit analysis
 7. Parallel performing non-linear optimization jobs using parallel python.
 8. Automated model construction from model description file
+9. MS/MS spectra data
 
 License
 ----------------------------------------
