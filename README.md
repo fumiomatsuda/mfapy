@@ -71,18 +71,21 @@ Learn more <https://github.com/fumiomatsuda/mfapy>
 
 Version 054
 ----------------------------------------
-19/06/28
-class MdvData: add_gaussian_noise
-"normalize" option is newly added.
-19/07/01
-optimize: def fit_r_mdv_deep
-add global optimization by "GN_CRS2_LM" before iteration
-19/07/01
-class MetabolicModel: add new methods
-pp_pretreatment(self):
-pitch_fitting_flux_job(self, job_server, method = 'SLSQP', flux = [], jobs = [], label = ""):
-pp_posttreatment(self, job_server, jobs):
-for flexible parallel exection of fitting flux
+19/06/28  
+class MetabolicModel: search_ci  
+Grid search procedure is updated.  
+19/06/28  
+class MdvData: add_gaussian_noise  
+"normalize" option is newly added.  
+19/07/01  
+optimize: def fit_r_mdv_deep  
+add global optimization by "GN_CRS2_LM" before iteration  
+19/07/01  
+class MetabolicModel: add new methods  
+pp_pretreatment(self):  
+pitch_fitting_flux_job(self, job_server, method = 'SLSQP', flux = [], jobs = [], label = ""):  
+pp_posttreatment(self, job_server, jobs):  
+for flexible parallel exection of fitting flux  
 
 ---------------
 
