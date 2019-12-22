@@ -40,6 +40,7 @@ class MdvData:
 
         """
         self.mdv = {}
+        self.formula = {}
         self.mode = "single"
         #
         # List of fragments now considered
@@ -62,9 +63,11 @@ class MdvData:
             self.fragments_for_mdv_calculation_set.update([fragment])
             self.number_of_replicate = 1
             self.mdv[fragment] = {}
+            self.formula[fragment] = target_fragments[fragment]["formula"]
             for i in range(target_fragments[fragment]['number']):
                 id = fragment+"_"+str(i)
                 self.mdv[fragment][i] = {"id":id, "ratio":float(0.0), "std":float(0.0), "use": "use", "data":[]}
+
         self.fragments_for_mdv_calculation = sorted(list(self.fragments_for_mdv_calculation_set))
         self.observed_fragments = sorted(list(self.observed_fragments_set))
 
@@ -179,6 +182,78 @@ class MdvData:
             for number in idvlist:
                 mdv_pattern.append(self.mdv[fragment][number]['ratio'])
         return mdv_pattern
+
+    def correct_natural_isotope(self, mode = "normal"):
+        """
+        Correction of natural isotope effedt from fragments
+        Molecular formula information in "target fragment" of model file is used.
+
+        Examples
+        --------
+        >>> mdv.correct_natural_isotope()
+
+        Parameters
+        ----------
+        mode: "normal"(defalut) and "correction" (force remove negatives and normalization)
+
+        Reterns
+        ----------
+
+
+        See Also
+        --------
+
+        """
+
+        for fragment in self.mdv:
+            if not self.formula[fragment] == "":
+                pattern = self.get_fragment_mdv(fragment)
+                num = len(pattern)
+                matrix = INV_correcting(self.formula[fragment])[0:num,0:num]
+                transformed = numpy.dot(matrix, pattern)
+                if mode == "correction":
+                    total = sum([x for x in transformed if x > 0])
+                    transformed_temp = []
+                    for x in transformed:
+                        if x < 0:
+                            transformed_temp.append(0)
+                        else:
+                            transformed_temp.append(x/total)
+                    transformed = transformed_temp
+                for i, ratio in enumerate(transformed):
+                    self.mdv[fragment][i]["ratio"] =  ratio
+        return
+
+
+    def add_natural_isotope(self):
+        """
+        Addition of natural isotope effect to fragments
+        Molecular formula information in "target fragment" of model file is used.
+
+        Examples
+        --------
+        >>> mdv.add_natural_isotope()
+
+        Parameters
+        ----------
+
+        Reterns
+        ----------
+
+
+        See Also
+        --------
+        """
+
+        for fragment in self.mdv:
+            if not self.formula[fragment] == "":
+                pattern = self.get_fragment_mdv(fragment)
+                num = len(pattern)
+                matrix = transition_matrix(self.formula[fragment])[0:num,0:num]
+                transformed = numpy.dot(matrix, pattern)
+                for i, ratio in enumerate(transformed):
+                    self.mdv[fragment][i]["ratio"] =  ratio
+        return
 
     def set_observed_fragments(self, fragments):
         """
@@ -374,7 +449,7 @@ class MdvData:
                     if (ratio > threshold_ratio) and (std < threshold_std):
                         self.set_mdv_for_comparison(fragment, number)
 
-    def add_gaussian_noise(self, stdev, iteration, method = 'absolute'):
+    def add_gaussian_noise(self, stdev, iteration, method = 'absolute', normalize = "on"):
         """
         Add gausian noise to MDV data
 
@@ -385,6 +460,8 @@ class MdvData:
         method:
             relative: intentsity = (randn() * stdev + 1) * original_intensity
             absolute: intentsity = randn() * stdev) + original_intensity
+        normalize
+            on: sum of fragment intensity is set to 1.0
 
         Returns
         --------
@@ -411,12 +488,12 @@ class MdvData:
                     if noise[number, i] < 0.0:
                         noise[number, i] = 0.0
                 #各フラグメント毎に総和を１にする。
-                sumvalue = sum(noise[:,i])
-                noise[:,i] = noise[:,i] / sumvalue
+                if normalize == "on":
+                    sumvalue = sum(noise[:,i])
+                    noise[:,i] = noise[:,i] / sumvalue
             for number in range(number_of_mass_data):
-                #各フラグメント毎に総和を１にする。
                 self.mdv[fragment][number]['ratio']= sum(noise[number,:])/iteration
-                self.mdv[fragment][number]['std'] = numpy.std(noise[number,:])
+                #self.mdv[fragment][number]['std'] = numpy.std(noise[number,:])
                 self.mdv[fragment][number]['data'] = numpy.array(noise[number,:])
 
     def generate_observed_mdv(self):
@@ -479,10 +556,16 @@ class MdvData:
         used_fragments = set()
         counter = 0
         for fragment in self.observed_fragments:
+            num_of_isotope = 0
+            used_counter = 0
             for i in self.mdv[fragment]:
+                num_of_isotope = num_of_isotope + 1
                 if self.mdv[fragment][i]['use'] == 'use':
-                    used_fragments.add(fragment)
+
                     counter = counter + 1
+                    used_counter = used_counter + 1
+            if num_of_isotope == used_counter:
+                used_fragments.add(fragment)
         return counter-len(used_fragments)
 
     def compare_mdv(self, mdv):
@@ -827,7 +910,7 @@ class MdvTimeCourseData:
         self.mdvtc[time] = mdv_instance
 
 
-    def add_gaussian_noise(self, stdev, iteration, method = 'absolute'):
+    def add_gaussian_noise(self, stdev, iteration, method = 'absolute', normalize = "on"):
         """
         Add gausian noise to MdvTimeCourseData
 
@@ -838,6 +921,8 @@ class MdvTimeCourseData:
         method:
             relative: intentsity = (randn() * stdev + 1) * original_intensity
             absolute: intentsity = randn() * stdev) + original_intensity
+        normalize
+            on: sum of fragment intensity is set to 1.0
 
         Returns
         --------
@@ -851,7 +936,7 @@ class MdvTimeCourseData:
         --------
         """
         for time in self.mdvtc.keys():
-            self.mdvtc[time].add_gaussian_noise(stdev, iteration, method)
+            self.mdvtc[time].add_gaussian_noise(stdev, iteration, method, normalize)
 
     def set_std(self, value, method = 'absolute'):
         """
@@ -1004,10 +1089,20 @@ def binomial(n,k):
     a=math.factorial(n)/(math.factorial(k)*math.factorial(n-k))
     return a
 
-def INV_correcting(num_N,num_Si,num_O,num_H,num_C,num_S):
+def INV_correcting(formula):
+    atomdic = count_atom_number(formula)
+    num_C = atomdic["C"]
+    num_H = atomdic["H"]
+    num_N = atomdic["N"]
+    num_O = atomdic["O"]
+    num_P = atomdic["P"]
+    num_S = atomdic["S"]
+    num_Si = atomdic["Si"]
 
-    row = num_C + num_H + 2*num_O + num_N + num_S + 2*num_Si + 1
-    column =num_C + num_H + 2*num_O + num_N +num_S + 2*num_Si + 1
+
+
+    row = num_C + num_H + 2*num_O + num_N + num_S + num_P + 2*num_Si + 1
+    column =num_C + num_H + 2*num_O + num_N +num_S + num_P + 2*num_Si + 1
 
     DerivC=numpy.zeros((row,column))
     DerivH=numpy.zeros((row,column))
@@ -1015,6 +1110,7 @@ def INV_correcting(num_N,num_Si,num_O,num_H,num_C,num_S):
     DerivN=numpy.zeros((row,column))
     DerivS=numpy.zeros((row,column))
     DerivSi=numpy.zeros((row,column))
+    DerivP=numpy.zeros((row,column))
     #
     #   Cの補正
     #
@@ -1066,6 +1162,15 @@ def INV_correcting(num_N,num_Si,num_O,num_H,num_C,num_S):
                 for k in range(tmp - s +1):
                     if s + 2*k == j:
                         DerivO[j+i,i] = DerivO[j+i,i] +binomial(num_O,s)*binomial((num_O-s),k)*0.99757**(num_O-(s+k))*0.00038**s*0.00205**k
+    #
+    #
+    #   P
+    #
+    for i in range(row):
+        for j in range(num_P+1):
+            if j+i >= row :
+                break
+            DerivP[j+i,i] = binomial(num_P,j)*1.000**(num_P - j)*0.0000**j
     #
     #
     #   Si
@@ -1120,15 +1225,25 @@ def INV_correcting(num_N,num_Si,num_O,num_H,num_C,num_S):
     H=numpy.linalg.inv(DerivH)
     C=numpy.linalg.inv(DerivC)
     S=numpy.linalg.inv(DerivS)
+    P=numpy.linalg.inv(DerivP)
 
     tmp_INV = C.dot(H).dot(O).dot(Si).dot(N).dot(S)
 
     return tmp_INV
 
-def transition_matrix(num_N,num_Si,num_O,num_H,num_C,num_S):
+def transition_matrix(formula):
+    atomdic = count_atom_number(formula)
+    num_C = atomdic["C"]
+    num_H = atomdic["H"]
+    num_N = atomdic["N"]
+    num_O = atomdic["O"]
+    num_P = atomdic["P"]
+    num_S = atomdic["S"]
+    num_Si = atomdic["Si"]
 
-    row = num_C + num_H + 2*num_O + num_N + num_S + 2*num_Si + 1
-    column =num_C + num_H + 2*num_O + num_N +num_S + 2*num_Si + 1
+
+    row = num_C + num_H + 2*num_O + num_N + num_S + num_P + 2*num_Si + 1
+    column =num_C + num_H + 2*num_O + num_N +num_S + num_P + 2*num_Si + 1
 
     DerivC=numpy.zeros((row,column))
     DerivH=numpy.zeros((row,column))
@@ -1136,6 +1251,7 @@ def transition_matrix(num_N,num_Si,num_O,num_H,num_C,num_S):
     DerivN=numpy.zeros((row,column))
     DerivS=numpy.zeros((row,column))
     DerivSi=numpy.zeros((row,column))
+    DerivP=numpy.zeros((row,column))
     #
     #   Cの補正
     #
@@ -1161,7 +1277,16 @@ def transition_matrix(num_N,num_Si,num_O,num_H,num_C,num_S):
         for j in range(num_N+1):
             if j+i >= row :
                 break
-            DerivN[j+i,i] = binomial(num_N,j)*0.99632**(num_N - j)*0.00368**j
+            DerivN[j+i,i] = binomial(num_N,j)*0.99632**(num_N - j) * 0.00368**j
+    #
+    #
+    #   P
+    #
+    for i in range(row):
+        for j in range(num_P+1):
+            if j+i >= row :
+                break
+            DerivP[j+i,i] = binomial(num_P,j)*1.000**(num_P - j)*0.0000**j
     #
     #
     #   O
@@ -1233,9 +1358,23 @@ def transition_matrix(num_N,num_Si,num_O,num_H,num_C,num_S):
                     if s+2*k == j:
                         DerivS[j+i,i] = DerivS[j+i,i] + binomial(num_S,s)*binomial((num_S-s),k)*0.9493**(num_S-(s+k))*0.0076**s*0.0429**k
 
-    tmp_r = DerivC.dot(DerivH).dot(DerivO).dot(DerivSi).dot(DerivN).dot(DerivS)
+    tmp_r = DerivC.dot(DerivH).dot(DerivO).dot(DerivSi).dot(DerivN).dot(DerivS).dot(DerivP)
 
     return tmp_r
+
+def count_atom_number(formula):
+    import re
+    atoms = {}
+    for atom in ["C", "H", "N", "O", "P", "S", "Si"]:
+        arrey = re.findall(atom+'([0-9]*)', formula)
+        cnum = 0
+        for i in arrey:
+            if  i == "":
+                cnum = cnum+1
+            else:
+                cnum = cnum + int(i)
+        atoms[atom] = cnum
+    return atoms
 
 
 

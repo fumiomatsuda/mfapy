@@ -8,7 +8,7 @@
 # Licence:     MIT license
 #-------------------------------------------------------------------------------
 import numpy as numpy
-import mfapy
+import mfapy as mfapy
 from matplotlib.pyplot import figure, show
 import os, sys, time
 
@@ -94,7 +94,7 @@ if __name__ == '__main__':
     print("Initial state generation.")
     start = time.time()
     results = [('start', flux_opt)]
-    state, flux_start = model.generate_initial_states(2, 1)
+    state, flux_start = model.generate_initial_states(50, 1)
     rss = model.calc_rss(flux_start)
     print("RSS of initial metabolic state seems to be:", rss)
 
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     # Fitting in parallel mode
     #
     print("Fitting is started in parallel mode.")
-    state, flux_opt = model.generate_initial_states(2, 2)
+    state, flux_opt = model.generate_initial_states(50, 2)
     state, RSS_bestfit, flux_opt_parallel = model.fitting_flux(method = 'SLSQP', flux = flux_opt)
     results.extend([('deep_para', flux) for (i,flux) in enumerate(flux_opt_parallel)])
     #

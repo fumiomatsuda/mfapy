@@ -12,6 +12,7 @@
 import numpy as numpy
 import scipy as scipy
 import nlopt as nlopt
+#from numba import jit
 
 def initializing_Rm_fitting(numbers, vectors, matrixinv, template, initial_search_iteration_max, method = "fitting"):
     """
@@ -47,7 +48,14 @@ def initializing_Rm_fitting(numbers, vectors, matrixinv, template, initial_searc
     # number of independent flux
     independent_number = numbers['independent_number']
     total_number = numbers['total_number']
-
+    #
+    # Mas=number of MKL thread control
+    #
+    try:
+        import mkl
+        mkl.set_num_threads(1)
+    except:
+        print("mkl-service is not installed this python!")
     # zero independent flux
     Rm_ind = list(numpy.zeros(independent_number))
     #boundaries
@@ -660,6 +668,9 @@ def fit_r_mdv_deep(configure, experiments, numbers, vectors, matrixinv, func, fl
         callbacklevel = configure['callbacklevel']
     else:
         callbacklevel = 0
+    if (callbacklevel >= 2):
+        print("##Start GN_CRS2_LM method#############################################################################")
+    state, kai, flux, Rm_ind_sol = fit_r_mdv_nlopt(configure, experiments, numbers, vectors, matrixinv, func, flux, method = "GN_CRS2_LM")
 
     for k in range (number_of_repeat):
         if (callbacklevel >= 2):
@@ -720,7 +731,7 @@ def calc_MDV_residue_scipy(x, *args):
     for i in g:
         if i > 0:
             sum = sum + i * 100000
-
+            #print(i)
     fail = 0
     #Determination of MDV
     mdv_original = list(tmp_r)
@@ -742,7 +753,8 @@ def calc_MDV_residue_scipy(x, *args):
     mdv = numpy.array([y for x, y in enumerate(mdv_original) if mdv_use[x] != 0])
     res = mdv_exp - mdv
     f = numpy.dot(res, numpy.dot(covinv, res))
-    #print(f)
+    if experiments[experiment]['mode'] == "INST":
+        print(f)
     return f+sum
 
 def calc_MDV_residue_nlopt(x, grad, kwargs):
@@ -787,6 +799,7 @@ def calc_MDV_residue_nlopt(x, grad, kwargs):
     for i in g:
         if i > 0:
             sum = sum + i * 100000
+            #print(i)
 
     fail = 0
     #Determination of MDV
@@ -808,7 +821,8 @@ def calc_MDV_residue_nlopt(x, grad, kwargs):
     mdv = numpy.array([y for x, y in enumerate(mdv_original) if mdv_use[x] != 0])
     res = mdv_exp - mdv
     f = numpy.dot(res, numpy.dot(covinv, res))
-    #print(f)
+    if experiments[experiment]['mode'] == "INST":
+        print(f)
 
     return f+sum
 
@@ -857,7 +871,7 @@ def calc_MDV_residue(x, *args, **kwargs):
     for i in g:
         if i > 0:
             sum = sum + i * 100000
-
+            #print(i)
     fail = 0
     #Determination of MDV
     mdv_original = list(tmp_r)
@@ -879,8 +893,8 @@ def calc_MDV_residue(x, *args, **kwargs):
     mdv = numpy.array([y for x, y in enumerate(mdv_original) if mdv_use[x] != 0])
     res = mdv_exp - mdv
     f = numpy.dot(res, numpy.dot(covinv, res))
-    #print(f)
-
+    if experiments[experiment]['mode'] == "INST":
+        print(f)
     return f + sum
 
 

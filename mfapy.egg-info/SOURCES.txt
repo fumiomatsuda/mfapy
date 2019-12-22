@@ -2,7 +2,6 @@ LICENSE
 MANIFEST.in
 README.md
 requirements.txt
-setup.cfg
 setup.py
 mfapy/__init__.py
 mfapy/carbonsource.py

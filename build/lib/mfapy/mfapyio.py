@@ -392,16 +392,20 @@ def load_metabolic_model_fragments(filename, format = "text", output = "normal")
                     print(row)
                 if len(row) < 4:
                     continue
+                formula = ""
                 name = row[0].replace(" ", "")
                 mtype = row[1].replace(" ", "")
                 atommap = row[2].replace(" ", "")
                 use = row[3].replace(" ", "")
+                if len(row) == 5:
+                    formula = row[4].replace(" ", "")
                 if name=="": continue
                 dic[name] = {
                 'type':mtype,
                 'atommap':atommap,
                 'use':use,
-                'order' :int(counter)
+                'order' :int(counter),
+                'formula':formula
                 }
                 counter = counter + 1
 

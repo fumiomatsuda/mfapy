@@ -65,6 +65,7 @@ Detailed explanations are available from docstrings
 Example_1_toymodel.py  
 Example_1_toymodel_INST.py 
 Example_2_MCF7_taxol.py 
+Example_3_Coryne.py
 
 Learn more <https://github.com/fumiomatsuda/mfapy>
 

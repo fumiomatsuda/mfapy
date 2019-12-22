@@ -8,7 +8,7 @@
 # Licence:     MIT license
 #-------------------------------------------------------------------------------
 import numpy as numpy
-import mfapy
+import mfapy as mfapy
 from matplotlib.pyplot import figure, show
 import os, sys, time
 

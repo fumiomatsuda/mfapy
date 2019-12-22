@@ -11,11 +11,12 @@
 
 import numpy as numpy
 import scipy as scipy
-import itertools, re
+import itertools, re, math
 from . import mdv
 from . import optimize
 from . import carbonsource
 import copy,time
+#from numba import jit
 
 #from assimulo.problem import Explicit_Problem
 #from assimulo.solvers import CVode
@@ -93,10 +94,11 @@ class MetabolicModel:
         'initial_search_repeats_in_grid_search': 50,
         'initial_search_iteration_max': 1000,
         'grid_search_iterations':1, #170623 for Grid Maeda
+        'add_naturalisotope_in_calmdv':"no", #180616
         'number_of_repeat':3,
         'ncpus':3,
-        'ppservers': ("",)
-
+        'ppservers': ("",),
+        'odesolver': "scipy" # or "sundials"
         }
         #
         # Class configuration data
@@ -167,9 +169,11 @@ class MetabolicModel:
         #
         for id in self.target_fragments:
             atommap = self.target_fragments[id]['atommap']
+
             #
             # In the case of direct analysis of intermeidates, vector length is carbon number + 1
             #
+
             if self.target_fragments[id]['type'] == 'intermediate':
                 metabolite, positions = atommap.split("_")
                 self.target_fragments[id]['number'] = len(positions.split(":")) + 1
@@ -185,13 +189,19 @@ class MetabolicModel:
             #
             # In the case of intermediate analysis using MS/MS, vector length is ([nl] + 1) * ([prod]+1)
             #
-            #msmsの場合 2**[nl] * 2**[prod]
             elif self.target_fragments[id]['type'] == 'msms':
                 precursor, nl, product = atommap.split("+")
                 nl_positions = nl.split("_")[1]
                 product_positions = product.split("_")[1]
                 self.target_fragments[id]['number'] = (len(positions.split(":"))+1) * (len(positions.split(":"))+1)
-
+            #
+            # Set matrixes on isotope effects
+            #
+            formula = self.target_fragments[id]['formula']
+            if not formula == "":
+                num = self.target_fragments[id]['number']
+                self.target_fragments[id]['natural_isotope_cancellation'] = mdv.INV_correcting(formula)[0:num,0:num]
+                self.target_fragments[id]['natural_isotope_addition'] = mdv.transition_matrix(formula)[0:num,0:num]
         if mode=="debug":
             self.configuration["callbacklevel"] = 7
 
@@ -1417,18 +1427,15 @@ class MetabolicModel:
         #
         string += "import numpy as numpy\n"
         string += "import scipy as scipy\n"
-
         string += "\n"
         string += "def "
         string += "calmdv"
         string += "(r, target_emu_list, mdv_carbon_sources):\n"
-        cython_string += "import numpy as numpy\n"
-        cython_string += "cimport numpy as numpy\n"
-        cython_string += "\n"
         for i in range(len(self.reaction_ids)):
             string += "\t" + self.reaction_ids[i] + " = r[" + str(i) + "]\n"
-            string += "\t" + self.reaction_ids[i] + " = r[" + str(i) + "]\n"
+            #string += "\t" + self.reaction_ids[i] + " = r[" + str(i) + "]\n"
         string += "\temu_list = {}\n"
+        string += "\temu_list_isotope_corrected = {}\n"
         string += "\tX_list = []\n"
         #
         #print matrix
@@ -1695,6 +1702,18 @@ class MetabolicModel:
                     size = size_of_EMU(emu);
                     row = ["X_"+str(size)+"["+ str(emu_intermediate[int(size)][emu] * (size + 1) + x) + "]"for x in range(size + 1)]
                     string += "\temu_list['" + target_fragment +"'] = [" + ','.join(row) + "]\n"
+                    if self.configuration['add_naturalisotope_in_calmdv'] == "yes":
+                        if not self.target_fragments[target_fragment]["formula"] == "":
+                            string += "\tmdvtemp = [" + ','.join(row) + "]\n"
+                            string += "\tmdvcorrected = mdvtemp[:]\n"
+                            for i in range(len(row)):
+                                textdatatemp = []
+                                for j in range(len(row)):
+                                    textdatatemp.append(str(self.target_fragments[target_fragment]['natural_isotope_addition'][i,j]) + "* mdvtemp["+str(j)+"]" )
+                                string += "\tmdvcorrected[" + str(i) +"] =" + '+'.join(textdatatemp) + "\n"
+
+                            string += "\temu_list['" + target_fragment +"'] = mdvcorrected\n"
+
                 # multiple EMUs
                 else:
                     # number of emu
@@ -1717,7 +1736,19 @@ class MetabolicModel:
                                 list_of_emuset.append(temp_one_emu)
                         row.append("+".join(list_of_emuset))
                     string += "\temu_list['" + target_fragment +"'] = [" + ','.join(row) + "]\n"
-                    string += "\temu_list['X_list'] = X_list\n"
+                    if self.configuration['add_naturalisotope_in_calmdv'] == "yes":
+                        if not self.target_fragments[target_fragment]["formula"] == "":
+                            string += "\tmdvtemp = [" + ','.join(row) + "]\n"
+                            string += "\tmdvcorrected = mdvtemp[:]\n"
+                            for i in range(len(row)):
+                                textdatatemp = []
+                                for j in range(len(row)):
+                                    textdatatemp.append(str(self.target_fragments[target_fragment]['natural_isotope_addition'][i,j]) + "* mdvtemp["+str(j)+"]" )
+                                string += "\tmdvcorrected[" + str(i) +"] =" + '+'.join(textdatatemp) + "\n"
+
+                            string += "\temu_list['" + target_fragment +"'] = mdvcorrected\n"
+
+                string += "\temu_list['X_list'] = X_list\n"
         #generate mdv
         string +=  "\tmdv = []\n"
         string +=  "\tfor emu in target_emu_list:\n"
@@ -2392,6 +2423,20 @@ class MetabolicModel:
                     row = ["y[i]["+ str(emu_intermediates_to_p[emu] + x) + "]"for x in range(size + 1)]
 
                     string += "\t\temu_list['" + target_fragment +"'].append([" + ','.join(row) + "])\n"
+                    if self.configuration['add_naturalisotope_in_calmdv'] == "yes":
+                        if not self.target_fragments[target_fragment]["formula"] == "":
+                            string += "\t\tmdvtemp = [" + ','.join(row) + "]\n"
+                            string += "\t\tmdvcorrected = mdvtemp[:]\n"
+                            for i in range(len(row)):
+                                textdatatemp = []
+                                for j in range(len(row)):
+                                    textdatatemp.append(str(self.target_fragments[target_fragment]['natural_isotope_addition'][i,j]) + "* mdvtemp["+str(j)+"]" )
+                                string += "\t\tmdvcorrected[" + str(i) +"] =" + '+'.join(textdatatemp) + "\n"
+
+                            string += "\t\temu_list['" + target_fragment +"'][-1] = mdvcorrected[:]\n"
+
+
+
                 # multiple EMU
                 else:
                     numberofemus = len(emus)
@@ -2413,6 +2458,17 @@ class MetabolicModel:
                                 list_of_emuset.append(temp_one_emu)
                         row.append("+".join(list_of_emuset))
                     string += "\t\temu_list['" + target_fragment +"'].append([" + ','.join(row) + "])\n"
+                    if self.configuration['add_naturalisotope_in_calmdv'] == "yes":
+                        if not self.target_fragments[target_fragment]["formula"] == "":
+                            string += "\t\tmdvtemp = [" + ','.join(row) + "]\n"
+                            string += "\t\tmdvcorrected = mdvtemp[:]\n"
+                            for i in range(len(row)):
+                                textdatatemp = []
+                                for j in range(len(row)):
+                                    textdatatemp.append(str(self.target_fragments[target_fragment]['natural_isotope_addition'][i,j]) + "* mdvtemp["+str(j)+"]" )
+                                string += "\t\tmdvcorrected[" + str(i) +"] =" + '+'.join(textdatatemp) + "\n"
+
+                            string += "\t\temu_list['" + target_fragment +"'][-1] = mdvcorrected[:]\n"
 
 
         string += "\tmdv = []\n"
@@ -2939,6 +2995,7 @@ class MetabolicModel:
         mdv_carbon_sources = carbon_sources.mdv_carbon_sources
 
         mdv_original_temp, mdv_hash = calmdv(list(tmp_r), target_emu_list, mdv_carbon_sources)
+
         X = mdv_hash['X_list']
         for i, x in enumerate(X):
             if x <= 0:
@@ -3291,7 +3348,7 @@ class MetabolicModel:
             elif method is "deep":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_deep(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux)
             else:
-                state, kai, opt_flux, Rm_ind_sol = "false", 1000000, flux, []
+                state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_scipy(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "SLSQP")
             return state, kai, self.generate_state_dict(opt_flux)
 
 
@@ -3379,6 +3436,199 @@ class MetabolicModel:
             kais = [kai_list[x] for x in order]
             fluxes = [flux_list[x] for x in order]
             return states, kais, fluxes
+    def pp_pretreatment(self):
+        """
+        Pitch a fitting_flux job to parallel python
+
+        Parameters
+        ----------
+
+        Examples
+        --------
+
+
+        See Also
+        --------
+
+
+
+        """
+
+        #Set callbacklevel
+        if 'ncpus' in self.configuration:
+            ncpus = self.configuration['ncpus']
+        else:
+            ncpus = 1
+
+        #Set callbacklevel
+        if 'ppservers' in self.configuration:
+            ppservers = self.configuration['ppservers']
+        else:
+            ppservers = ("",)
+        #
+        # tuple of all parallel python servers to connect with
+        #
+        try:
+            import pp
+            job_server = pp.Server(ncpus = ncpus, ppservers=ppservers)
+        except:
+            print("This function requires Parallel Python!")
+            return False
+
+        if (self.configuration['callbacklevel'] >= 4):
+            print("Number of active nodes by pp", job_server.get_active_nodes())
+
+        return job_server
+
+
+    def pitch_fitting_flux_job(self, job_server, method = 'SLSQP', flux = [], jobs = [], label = ""):
+        """
+        Pitch a fitting_flux job to parallel python
+
+        Parameters
+        ----------
+        method:
+            'SLSQP': A sequential least squares programming algorithm implemented by scipy
+            "LN_PRAXIS": Gradient-free local optimization via the "principal-axis method" implemented by nlopt
+            "GN_CRS2_LM": Controlled random searchimplemented for global optimizatoin by nlopt
+            'deep': Repeated execution of SLSQP & LN_PRAXIS
+        flux: Initial flux distribution generated by self.generate_initial_states().
+        When flux is a dict of one state, single fitting trial is exected.
+        When flux is a array of multiple dists of states, muptiple fitting trial is exected by using the parallel python.
+
+        output: Output method. (default, output = 'result')
+            'result': Fitting problem is solved inside of the function.
+            'for_parallel': Fitting problems is NOT solved inside of the function. In this mode, a tupple of
+            parameters for fit_r_mdv_pyopt() functions are generated for parallel computing.
+
+        Parameters in self.configuration:
+            iteration_max: Maximal number of interation in the optimizers. Example: self.set_configuration(iteration_max = 1000)
+            number_of_repeat: Number of repeated execution by 'deep' functions. model.set_configuration(number_of_repeat = 2)
+
+        Examples
+        --------
+        #
+        # Single fitting trial
+        #
+        >>> state, flux_initial = model.generate_initial_states(10, 1)
+        >>> state, RSS_bestfit, flux_opt = model.fitting_flux(method = 'deep', flux = flux_initial)
+        >>> results= [("deep", flux_opt)]
+        >>> model.show_results(results, pool_size = "off")
+        #
+        # Multipe fitting trials by using parallel python
+        #
+        >>> state, flux_initial = model.generate_initial_states(50, 4)
+        >>> state, RSS_bestfit, flux_opt_slsqp = model.fitting_flux(method = "SLSQP", flux = flux_initial)
+        >>> results= [("deep", flux_opt[0])]
+        >>> model.show_results(results, pool_size = "off")
+        #
+        # Generating parameters for parallel python
+        #
+        >>> parameters = model.fitting_flux(method = "SLSQP", flux = flux_initial, output = "for_parallel")
+
+        See Also
+        --------
+        generate_initial_states()
+
+
+        """
+        #
+        # Check experiment
+        #
+        if len(self.experiments.keys()) == 0:
+            if self.configuration['callbacklevel'] >= 0:
+                print('No experiment was set to the modelnames.')
+            return False
+        if flux == []:
+            if self.configuration['callbacklevel'] >= 0:
+                print('Metabolic state data is required.')
+            return False
+
+
+
+        if isinstance(flux, dict):
+            flux = [flux]
+
+        if method is "SLSQP":
+            for i, flux_temp in enumerate(flux):
+                parameters = self.fitting_flux(method = 'SLSQP', flux = flux_temp, output = 'for_parallel')
+                jobs.append([label, job_server.submit(optimize.fit_r_mdv_scipy, parameters,
+                 (optimize.calc_MDV_residue_scipy,),
+                 ("numpy","scipy","scipy.integrate"))])
+        elif method is "LN_PRAXIS":
+            for i, flux_temp in enumerate(flux):
+                parameters = self.fitting_flux(method = 'LN_PRAXIS', flux = flux_temp, output = 'for_parallel')
+                jobs.append([label, job_server.submit(optimize.fit_r_mdv_nlopt, parameters,
+                 (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
+                 ("numpy","nlopt","scipy","scipy.integrate"))])
+        elif method is "GN_CRS2_LM":
+            for i, flux_temp in enumerate(flux):
+                parameters = self.fitting_flux(method = 'GN_CRS2_LM', flux = flux_temp, output = 'for_parallel')
+                jobs.append([label, job_server.submit(optimize.fit_r_mdv_nlopt, parameters,
+                 (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
+                 ("numpy","nlopt","scipy","scipy.integrate"))])
+        elif method is "deep":
+            for i, flux_temp in enumerate(flux):
+                parameters = self.fitting_flux(method = 'deep', flux =flux_temp, output = 'for_parallel')
+                jobs.append([label, job_server.submit(optimize.fit_r_mdv_deep, parameters,
+                 (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
+                 ("numpy","nlopt","scipy","scipy.integrate"))])
+        else:
+            for i, flux_temp in enumerate(flux):
+                parameters = self.fitting_flux(method = 'deep', flux = flux_temp, output = 'for_parallel')
+                jobs.append([label, job_server.submit(optimize.fit_r_mdv_deep, parameters,
+                 (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
+                 ("numpy","nlopt","scipy","scipy.integrate"))])
+
+
+
+    def pp_posttreatment(self, job_server, jobs):
+        """
+        Pitch a fitting_flux job to parallel python
+
+        Parameters
+        ----------
+
+        Examples
+        --------
+
+
+        See Also
+        --------
+
+
+
+        """
+        label_list = []
+        state_list = []
+        kai_list = []
+        flux_list = []
+        Rm_ind_sol_list = []
+        for label, job in jobs:
+            results = job()
+            if results == None:
+                continue
+            state, rss, flux, Rm_ind_sol = results
+            if len(flux) == 0:
+                continue
+            label_list.append(label)
+            state_list.append(state)
+            kai_list.append(rss)
+            flux_list.append(self.generate_state_dict(flux))
+            Rm_ind_sol_list.append(Rm_ind_sol)
+            if (self.configuration['callbacklevel'] >= 3):
+                print('RSS', j,':', rss, state)
+        if (self.configuration['callbacklevel'] >= 4):
+            job_server.print_stats()
+        job_server.destroy()
+        order = list(range(len(state_list)))
+        order.sort(key = lambda x: kai_list[x])
+        states = [state_list[x] for x in order]
+        kais = [kai_list[x] for x in order]
+        fluxes = [flux_list[x] for x in order]
+        lables = [label_list[x] for x in order]
+        return lables, states, kais, fluxes
+
 
     def show_results(self, input, flux = "on", rss = "on", mdv = "on", pool_size = "on", filename = "", format = "csv"):
         """
@@ -3679,13 +3929,15 @@ class MetabolicModel:
                     text = text + "\n"
             print(text)
 
-    def calc_rss(self, flux):
+    def calc_rss(self, flux, mode = "flux"):
         """
         Determine a residual sum of square (RSS) between estimated MDVs of 'flux' and measured MDVs in 'experiment(s)'
 
         Parameters
         ----------
-        flux: Dictionary of metabolic flux distribution
+        flux: Dictionary of metabolic flux distribution or independent flux vector
+
+        mode: "independent" Calculation of RSS from independent flux vector
 
 
         Returns
@@ -3721,7 +3973,10 @@ class MetabolicModel:
             return False
 
         # zero independent flux
-        Rm_ind = [flux[group][id]["value"] for (group, id) in self.vector['independent_flux']]
+        if mode == "independent":
+            Rm_ind = flux
+        else:
+            Rm_ind = [flux[group][id]["value"] for (group, id) in self.vector['independent_flux']]
         #
         # MDV vector of all experiments
         #
@@ -3805,6 +4060,15 @@ class MetabolicModel:
         thres = chi2.ppf(1.0-alpha, number_of_measurement - degree_of_freedom)
         pvalue = chi2.sf(RSS, number_of_measurement - degree_of_freedom)
 
+        if self.configuration["callbacklevel"] >= 8:
+            print("number_of_measurement", number_of_measurement)
+            print("degree_of_freedom", degree_of_freedom)
+            print("RSS", RSS)
+            print("thres", thres)
+            print("pvalue", pvalue)
+        if self.configuration["callbacklevel"] >= 1:
+            if number_of_measurement <= degree_of_freedom:
+                print("number_of_measurement", number_of_measurement, "is smaller than degree_of_freedom", degree_of_freedom)
         return pvalue, thres
 
 
@@ -4011,6 +4275,7 @@ class MetabolicModel:
         return ci
 
 
+
     def search_ci(self, ci, flux, method = 'grid', alpha = 0.05, dist = 'F_dist'):
         """
         Confidence intervals were determined based on information in 'ci'
@@ -4091,7 +4356,7 @@ class MetabolicModel:
             return False
 
         if (callbacklevel >= 2):
-            print("Number of active nodes is " + job_server.get_active_nodes())
+            print("Number of active nodes is " + str(job_server.get_active_nodes()))
         ci['record']['flux'] = flux
         ci['record']['thres'] = thres
         ci['record']['rss'] = self.calc_rss(flux)
@@ -4129,9 +4394,10 @@ class MetabolicModel:
 
                 # Grid number is 20
                 if (flux_upper-flux_lower)>=100:
-                    n=20
+                    n=15
                 else:
                     n=10.0
+                n=15
 
                 if self.configuration['callbacklevel'] >= 1:
                     print("Setting:", rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower," ub ",flux_upper, "n=", n)
@@ -4139,10 +4405,17 @@ class MetabolicModel:
                 # Store original metabolic constrains
                 #
                 temp_type, temp_value, temp_stdev = self.get_constrain(group, rid)
-
+                #
+                # Set initial search to upward
+                #
+                temp_array_initial_fluxes = []
+                counter_of_missed_initial_state = 0
+                #
                 for i in range(int(n+1)):
-                    step = i*(flux_upper-flux_lower)/n
-                    fixed_flux = flux_lower + step+ 1
+                    if  counter_of_missed_initial_state > 5:
+                        break
+                    step = (flux_upper-flux_opt_rid) * (0.5**(n-i))
+                    fixed_flux = flux_opt_rid + step
                     if fixed_flux > flux_upper:
                         fixed_flux = flux_upper
                     if fixed_flux < flux_lower:
@@ -4151,12 +4424,14 @@ class MetabolicModel:
                     # Fix reaction
                     #
 
+
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
                     self.update()
-
+                    if self.configuration['callbacklevel'] >= 3:
+                        print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
 
                     for i in range(job_number):
-                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux)
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
                         #
                         # When initial flux could not be found
                         #
@@ -4168,13 +4443,69 @@ class MetabolicModel:
                             data_tmp[(group, rid)]["rss_data"].append(thres * 10.0)
                             data_tmp[(group, rid)]["raw_flux_data"].append([])
                             if self.configuration['callbacklevel'] >= 2:
-                                print("Passed:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                                print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                            counter_of_missed_initial_state = counter_of_missed_initial_state + 1
                             continue
-                        parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
-                        functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
-                        jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
-                        if self.configuration['callbacklevel'] >= 2:
-                            print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                        temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
+                        #parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
+                        #functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
+                        #jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
+                        #if self.configuration['callbacklevel'] >= 2:
+                        #    print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                #
+                # Set initial search to upward
+                #
+                counter_of_missed_initial_state = 0
+                #
+                for i in range(int(n+1)):
+                    if  counter_of_missed_initial_state > 5:
+                        break
+                    step = (flux_opt_rid - flux_lower) * (0.5**(n-i))
+                    fixed_flux = flux_opt_rid - step
+                    if fixed_flux > flux_upper:
+                        fixed_flux = flux_upper
+                    if fixed_flux < flux_lower:
+                        fixed_flux = flux_lower
+                    #
+                    # Fix reaction
+                    self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
+                    self.update()
+                    if self.configuration['callbacklevel'] >= 3:
+                        print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)                    #
+
+                    for i in range(job_number):
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
+                        #
+                        # When initial flux could not be found
+                        #
+                        if len(flux_opt) == 0:
+                            #
+                            # Set large data
+                            #
+                            data_tmp[(group, rid)]["flux_data"].append(fixed_flux)
+                            data_tmp[(group, rid)]["rss_data"].append(thres * 10.0)
+                            data_tmp[(group, rid)]["raw_flux_data"].append([])
+                            if self.configuration['callbacklevel'] >= 2:
+                                print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                            counter_of_missed_initial_state = counter_of_missed_initial_state + 1
+                            continue
+                        temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
+                        #parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
+                        #functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
+                        #jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
+                        #if self.configuration['callbacklevel'] >= 2:
+                        #    print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                for (group_temp, rid_temp, fixed_flux, flux_opt) in temp_array_initial_fluxes:
+                    self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
+                    self.update()
+                    if self.configuration['callbacklevel'] >= 3:
+                        print("Fixed for fitting:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                    parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
+                    functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
+                    jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
+                    if self.configuration['callbacklevel'] >= 2:
+                        print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+
                 #
                 # Return to original position
                 #
@@ -4303,7 +4634,8 @@ class MetabolicModel:
                 # Store original metabolic constrains
                 #
                 temp_type, temp_value, temp_stdev = self.get_constrain(group, rid)
-
+                #
+                temp_array_initial_fluxes = []
                 for e in range (1,n):
                     #
                     #
@@ -4321,7 +4653,7 @@ class MetabolicModel:
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
                     self.update()
                     for i in range(job_number):
-                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux)
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
                         #
                         # When initial flux could not be found
                         #
@@ -4336,12 +4668,15 @@ class MetabolicModel:
                             if self.configuration['callbacklevel'] >= 2:
                                 print("Passed:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
                             continue
-
-                        parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
-                        functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
-                        jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
-                        if self.configuration['callbacklevel'] >= 2:
-                            print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                        temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
+                        #
+                        #
+                        #
+                        #parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
+                        #functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
+                        #jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
+                        #if self.configuration['callbacklevel'] >= 2:
+                        #    print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
 
 
                     #
@@ -4359,7 +4694,7 @@ class MetabolicModel:
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
                     self.update()
                     for i in range(job_number):
-                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux)
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
                         # When initial flux could not be found
                         #
                         if len(flux_opt) == 0:
@@ -4372,13 +4707,25 @@ class MetabolicModel:
                             if self.configuration['callbacklevel'] >= 2:
                                 print("Passed:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
                             continue
-
-                        parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
-                        functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
-                        jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
-                        if self.configuration['callbacklevel'] >= 2:
-                            print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
-
+                        temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
+                        #
+                        #
+                        #
+                        #parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
+                        #functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
+                        #jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
+                        #if self.configuration['callbacklevel'] >= 2:
+                        #    print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                for (group_temp, rid_temp, fixed_flux, flux_opt) in temp_array_initial_fluxes:
+                    self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
+                    self.update()
+                    if self.configuration['callbacklevel'] >= 3:
+                        print("Fixed for fitting:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                    parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
+                    functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
+                    jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
+                    if self.configuration['callbacklevel'] >= 2:
+                        print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
                 #
                 # Return to original position [need modificaton]
                 #
@@ -4645,7 +4992,7 @@ class MetabolicModel:
                         str(dict_temp[rid]['lb']),
                         str(dict_temp[rid]['ub']),
                         ])
-        for rid in self.metabolite_ids:
+        for rid in dict["metabolite"]:
             dict_temp = dict["metabolite"]
             Data.append(['metabolite', rid, str(dict_temp[rid]['type']),
                         str(dict_temp[rid]['value']),
@@ -4714,7 +5061,4 @@ class MetabolicModel:
         #
         #
         return(mdvloaded)
-
-if __name__ == '__main__':
-    pass
 

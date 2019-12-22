@@ -16,8 +16,8 @@ class Testmfapy(unittest.TestCase):
     def setUp(self):
         # procedures before every tests are started. This code block is executed every time
         target_fragment =  {
-        'AKGe': {'atommap': 'AKG_1:2:3:4:5','number': 6,'order': 0,'type': 'gcms','use': 'use'},
-        'AKGmsms': {'atommap': 'AKG_1:2:3:4:5+AKG_1+AKG_2:3:4:5', 'number': 10,'order': 1, 'type': 'msms', 'use': 'use'}}
+        'AKGe': {'atommap': 'AKG_1:2:3:4:5','number': 6,'order': 0,'type': 'gcms','use': 'use', 'formula': 'no'},
+        'AKGmsms': {'atommap': 'AKG_1:2:3:4:5+AKG_1+AKG_2:3:4:5', 'number': 10,'order': 1, 'type': 'msms', 'use': 'use', 'formula': 'no'}}
         self.mdv = mfapy.mdv.MdvData(target_fragment)
         #print(self.mdv.mdv)
         self.mdv.mdv['AKGe'][0]["ratio"] = 0.5
@@ -140,7 +140,7 @@ class Testmfapy(unittest.TestCase):
         actual = self.mdv.get_number_of_measurement()
         self.assertEqual(expected, actual)
         self.mdv.set_mdv_for_ignore('AKGe', 5)
-        expected = 13
+        expected = 14
         actual = self.mdv.get_number_of_measurement()
         self.assertEqual(expected, actual)
 

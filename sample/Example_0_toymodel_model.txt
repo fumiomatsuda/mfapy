@@ -93,5 +93,6 @@ FUM	v6	v7
 #	In the "gcms"mode, "OAC_12+OAC_12" indicated that the target compound has for carbons derived from 1-2th carbons of metabolite id "OAC".
 #	In the "msms"mode, "AKG_12345+AKG_1+AKG_2345" indicated carbon origins of "precursor ion" + "neutral loss2 + "product ion".
 //Target_fragments
-Glue	gcms	Glu_1:2:3:4:5	use
+Glue	gcms	Glu_1:2:3:4:5	use	C5H10N2O3
+Gluee	gcms	Glu_1:2:3+Glu_4:5	use	C5H10N2O3
 //End

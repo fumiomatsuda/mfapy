@@ -8,8 +8,8 @@
 # Licence:     MIT license
 #-------------------------------------------------------------------------------
 import os, sys, time
-import numpy as numpy
-import mfapy.mfapy as mfapy
+import mfapy as mfapy
+
 
 if __name__ == '__main__':
 
@@ -93,7 +93,7 @@ if __name__ == '__main__':
     #
     # Fitting by various solvers
     #
-    model.set_configuration(callbacklevel = 0)
+    model.set_configuration(callbacklevel = 3)
     #
     # Generate initial metabolic state for fitting
     #

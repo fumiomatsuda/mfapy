@@ -1,0 +1,159 @@
+#						
+# C model						
+#						
+#						
+#	Value must be more than zero					
+//Reactions						
+R01	GLCEX --> GLC6P	GLCEX --> GLC6P	ABCDEF --> ABCDEF	use	0	1000
+R02	GLC6P --> TREM	GLC6P --> TREM	ABCDEF --> ABCDEF	use	0	1000
+R03	GLC6P --> F6P	GLC6P --> F6P	ABCDEF --> ABCDEF	use	0	1000
+R04	F6P --> GLC6P	F6P --> GLC6P	ABCDEF --> ABCDEF	use	0	1000
+R05	F6P --> F16BP	F6P --> F16BP	ABCDEF --> ABCDEF	use	0	1000
+R06	F16BP --> DHAP + G3P	F16BP --> DHAP + G3P	ABCDEF --> ABC + DEF	use	0	1000
+R07	DHAP --> G3P	DHAP --> G3P	ABC --> CBA	use	0	1000
+R08	GLC6P --> P5P + CO2	GLC6P --> P5P + CO2	ABCDEF --> BCDEF + A	use	0	1000
+R09	{2}P5P --> S7P + G3P	P5P + P5P --> S7P + G3P	ABCDE + FGHIJ --> FGABCDE + HIJ	use	0	1000
+R10	S7P + G3P --> {2}P5P	S7P + G3P --> P5P + P5P	FGABCDE + HIJ --> FGHIJ + ABCDE	use	0	1000
+R11	G3P + S7P --> F6P + E4P	G3P + S7P --> F6P + E4P	ABC + DEFGHIJ --> DEFABC + GHIJ	use	0	1000
+R12	E4P + F6P --> S7P + G3P	E4P + F6P --> S7P + G3P	GHIJ + DEFABC --> DEFGHIJ + ABC	use	0	1000
+R13	E4P + P5P --> F6P + G3P	E4P + P5P --> F6P + G3P	ABCD + EFGHI --> EFABCD + GHI	use	0	1000
+R14	G3P + F6P --> P5P + E4P	G3P + F6P --> P5P + E4P	GHI + EFABCD --> EFGHI + ABCD	use	0	1000
+R15	G3P --> m3PG	G3P --> m3PG	ABC --> ABC	use	0	1000
+R16	m3PG --> PYR	m3PG --> PYR	ABC --> ABC	use	0	1000
+R17	PYR --> ACCOA + CO2	PYR --> ACCOA + CO2	ABC --> BC + A	use	0	1000
+R18	ACCOA + OAA --> CIT	ACCOA + OAA --> CIT	AB + CDEF --> FEDBAC	use	0	1000
+R19	CIT --> AKG + CO2	CIT --> AKG + CO2	ABCDEF --> ABCDE + F	use	0	1000
+R20	AKG --> SUC + CO2	AKG --> SUC + CO2	ABCDE --> BCDE + A	use	0	1000
+R21	SUC --> OAA	SUC --> OAA	ABCD --> ABCD	use	0	1000
+R22	PYR + CO2 --> OAA	PYR + CO2 --> OAA	ABC + D --> ABCD	use	0	1000
+R23	OAA --> PYR + CO2	OAA --> PYR + CO2	ABCD --> ABC + D	use	0	1000
+R24	OAA + PYR --> LYS + CO2	OAA + PYR --> LYS + CO2	ABCD + EFG --> ABCDGF + E	use	0	1000
+R25	m3PG --> SER	m3PG --> SER	ABC --> ABC	use	0	1000
+R26	SER --> GLY + MTHF	SER --> GLY + MTHF	ABC --> AB+ C	use	0	1000
+R27	PYR --> LAC	PYR --> LAC	ABC --> ABC	use	0	1000
+R28	OAA --> THR	OAA --> THR	ABCD --> ABCD	use	0	1000
+R29	THR --> GLY + ACETAL	THR --> GLY + ACETAL	ABCD --> AB + CD	use	0	1000
+R30	CO2 --> CO2EX	nd	nd	use	0	1000
+R31	CO2CS --> CO2	CO2CS --> CO2	A --> A	use	0	1000
+R32	LYS --> LYSEX	nd	nd	use	0	1000
+R33	LYS --> LYSDAPB	nd	nd	use	0	1000
+R34	GLY --> GLYEX	nd	nd	use	0	1000
+R35	TREM + TREM --> TREEX	nd	nd	use	0	1000
+R36	AKG --> AKGEX	nd	nd	use	0	1000
+R37	AKG --> AKGB	nd	nd	use	0	1000
+R38	ACETAL --> ACETALEX	nd	nd	use	0	1000
+R39	LAC --> LACEX	nd	nd	use	0	1000
+R40	GLC6P --> GLC6PB	nd	nd	use	0	1000
+R41	F6P --> F6PB	nd	nd	use	0	1000
+R42	P5P --> P5PB	P5P --> P5PB	ABCDE --> ABCDE	use	0	1000
+R43	E4P --> E4PB	E4P --> E4PB	ABCD --> ABCD	use	0	1000
+R44	G3P --> G3PB	nd	nd	use	0	1000
+R45	m3PG --> m3PGB	m3PG --> m3PGB	ABC --> ABC	use	0	1000
+R46	PYR --> PYRB	PYR --> PYRB	ABC --> ABC	use	0	1000
+R47	OAA --> OAAB	OAA --> OAAB	ABCD --> ABCD	use	0	1000
+R48	ACCOA --> ACCOAB	ACCOA --> ACCOAB	AB --> AB	use	0	1000
+R49	PYRB + PYRB --> VALX + CO2	PYRB + PYRB --> VALX + CO2	ABC + DEF --> ABEFC + D	use	0	1000
+R50	E4PB + PYRB --> SHKM	E4PB + PYRB --> SHKM	ABCD + EFG --> EFGABCD	use	0	1000
+R51	SHKM + PYRB --> CHRM	SHKM + PYRB --> CHRM	ABCDEFG + HIJ --> ABCDEFGHIJ	use	0	1000
+R52	CHRM --> PHEX + CO2	CHRM --> PHEX + CO2	ABCDEFGHIJ --> HIJBCDEFG + A	use	0	1000
+R53	CHRM --> TYRX + CO2	CHRM --> TYRX + CO2	ABCDEFGHIJ --> HIJBCDEFG + A	use	0	1000
+R54	CHRM --> ANTHR + PYR	CHRM --> ANTHR + PYR	ABCDEFGHIJ --> ABCDEFG + HIJ	use	0	1000
+R55	ANTHR + P5PB --> CPADR5P	ANTHR + P5PB --> CPADR5P	ABCDEFG + HIJKL --> ABCDEFGHIJKL	use	0	1000
+R56	CPADR5P --> INDG + CO2	CPADR5P --> INDG + CO2	ABCDEFGHIJKL --> ABCDFGHIJKL + E	use	0	1000
+R57	INDG --> IND + G3P	INDG --> IND + G3P	ABCDEFGHIJK --> ABCDEFGH + IJK	use	0	1000
+R58	IND + m3PGB --> TRPX	IND + m3PGB --> TRPX	ABCDEFGH + IJK --> ABCDEFGHKJI	use	0	1000
+R59	PYRB + OAAB --> ILEX + CO2	PYRB + OAAB --> ILEX + CO2	ABC + DEFG --> DEBFGC + A	use	0	1000
+R60	PYRB + PYRB --> ISV + CO2	PYRB + PYRB --> ISV + CO2	ABC + DEF --> ABEFC + D	use	0	1000
+R61	ISV + ACCOAB --> LEUX + CO2	ISV + ACCOAB --> LEUX + CO2	ABCDE + FG --> FGBCDE + A	use	0	1000
+R62	P5PB --> P5PBT	nd	nd	use	0	1000
+R64	PYRB --> PYRBT	nd	nd	use	0	1000
+R65	OAAB --> OAABT	nd	nd	use	0	1000
+R66	ACCOAB --> ACCOABT	nd	nd	use	0	1000
+R67	m3PGB --> m3PGBT	nd	nd	use	0	1000
+R68	{0.202}ILEX + {0.44}LEUX + {0.13}PHEX + {0.054}TRPX + {0.081}TYRX + {0.284}VALX --> BIOMASS	nd	nd	use	0	1000
+"#List of reversible ractions, ID, forward,reverse"""						
+//Reversible_reactions						
+PGI	R03	R04	use			
+TKT1	R09	R10	use			
+TAL	R11	R12	use			
+TKT2	R13	R14	use			
+#						
+//Metabolites						
+m3PG	3	no	no	no		
+m3PGB	3	no	no	no		
+m3PGBT	3	no	no	excreted		
+ACCOA	2	no	no	no		
+ACCOAB	2	no	no	no		
+ACCOABT	2	no	no	excreted		
+ACETAL	2	no	no	no		
+ACETALEX	2	no	no	excreted		
+AKG	5	no	no	no		
+AKGB	5	no	no	excreted		
+AKGEX	5	no	no	excreted		
+ALAX	3	no	no	no		
+ANTHR	7	no	no	no		
+ASPX	4	no	no	no		
+BIOMASS	1	no	no	excreted		
+CHRM	10	no	no	no		
+CIT	6	no	no	no		
+CO2	1	no	no	no		
+CO2EX	1	no	no	excreted	
+CO2CS	1	no	carbonsource	no		
+CPADR5P	12	no	no	no		
+DHAP	3	no	no	no		
+E4P	4	no	no	no		
+E4PB	4	no	no	no		
+F16BP	6	no	no	no		
+F6P	6	no	no	no		
+F6PB	6	no	no	excreted		
+G3P	3	no	no	no		
+G3PB	3	no	no	excreted		
+GLCEX	6	no	carbonsource	no		
+GLC6P	6	no	no	no		
+GLC6PB	6	no	no	excreted		
+GLUX	5	no	no	no		
+GLY	2	no	no	no		
+GLYEX	2	no	no	excreted		
+ILEX	6	no	no	no		
+IND	8	no	no	no		
+INDG	11	no	no	no		
+ISV	5	no	no	no		
+LAC	3	no	no	no		
+LACEX	3	no	no	excreted		
+LEUX	6	no	no	no		
+LYS	6	no	no	no		
+LYSEX	6	no	no	excreted		
+LYSDAPB	6	no	no	excreted		
+MTHF	1	no	no	excreted		
+OAA	4	no	no	no		
+OAAB	4	no	no	no		
+OAABT	4	no	no	excreted		
+P5P	5	no	no	no		
+P5PB	5	no	no	no		
+P5PBT	5	no	no	excreted		
+PHEX	9	no	no	no		
+PYR	3	no	no	no		
+PYRB	3	no	no	no		
+PYRBT	3	no	no	excreted		
+SER	3	no	no	no		
+S7P	7	no	no	no		
+SHKM	7	no	no	no		
+SUC	4	symmetry	no	no		
+THR	4	no	no	no		
+TREEX	12	no	no	excreted		
+TREM	6	no	no	no		
+TRPX	11	no	no	no		
+TYRX	9	no	no	no		
+VALX	5	no	no	no		
+//Target_fragments						
+ALA260	gcms	PYR_1:2:3	use	C8H26N1O2Si2
+VAL288	gcms	VALX_1:2:3:4:5	use	C8H30N1O2Si2		
+THR404	gcms	THR_1:2:3:4	use	C14H42N1O3Si3		
+ASP418	gcms	OAA_1:2:3:4	use	C14H40N1O4Si3		
+GLU432	gcms	AKG_1:2:3:4:5	use	C14H42N1O4Si3		
+SER390	gcms	SER_1:2:3	use	C14H40N1O3Si3		
+PHE336	gcms	PHEX_1:2:3:4:5:6:7:8:9	use	C8H30N1O2Si2			
+GLY246	gcms	GLY_1:2	use	C8H24N1O2Si2			
+TYR466	gcms	TYRX_1:2:3:4:5:6:7:8:9	use	C14H44N1O3Si3			
+TRE361	gcms	TREM_1:2:3:4:5:6	use	C9H33O4Si3			
+//End						
