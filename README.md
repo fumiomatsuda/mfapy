@@ -62,10 +62,10 @@ How to use
 Sample scripts in 'sample' explain how to used mfapy. 
 Detailed explanations are available from docstrings
 
-Example_1_toymodel.py  
-Example_1_toymodel_INST.py 
-Example_2_MCF7_taxol.py 
-Example_3_Coryne.py
+1. Example_1_toymodel.py  
+2. Example_1_toymodel_INST.py 
+3. Example_2_MCF7_taxol.py 
+4. Example_3_Coryne.py 
 
 Learn more <https://github.com/fumiomatsuda/mfapy>
 
