@@ -3129,6 +3129,15 @@ class MetabolicModel:
                 print('No experiment was set to the modelnames.')
             return False
         #
+        # Mas=number of MKL thread control
+        #
+        try:
+            import mkl
+            mkl.set_num_threads(1)
+        except:
+            if self.configuration['callbacklevel'] > 2:
+                print("mkl-service is not installed this python!")
+        #
         # Set parameters
         #
         numbers = copy.deepcopy(self.numbers)
@@ -3183,7 +3192,7 @@ class MetabolicModel:
                 parameters = (numbers, vectors, matrixinv, template ,initial_search_iteration_max)
                 jobs.append([i, job_server.submit(optimize.initializing_Rm_fitting, parameters,
                  (optimize.calc_protrude_scipy,),
-                 ("numpy","scipy.optimize"))])
+                 ("numpy","scipy.optimize","mkl"))])
 
 
             for j, job in jobs:
@@ -3304,13 +3313,13 @@ class MetabolicModel:
         #
         #
         if output == "for_parallel":
-            if method is "SLSQP":
+            if method == "SLSQP":
                 parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux, "SLSQP")
-            elif method is "LN_PRAXIS":
+            elif method == "LN_PRAXIS":
                 parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux, "LN_PRAXIS")
-            elif method is "GN_CRS2_LM":
+            elif method == "GN_CRS2_LM":
                 parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux, "GN_CRS2_LM")
-            elif method is "deep":
+            elif method == "deep":
                 parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux)
             else:
                 parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux, "SLSQP")
@@ -3319,33 +3328,33 @@ class MetabolicModel:
 
 
         if isinstance(flux, dict):
-            if method is "SLSQP":
+            if method == "SLSQP":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_scipy(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "SLSQP")
-            elif method is "COBYLA":
+            elif method == "COBYLA":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_scipy(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "COBYLA")
-            elif method is "LN_COBYLA":
+            elif method == "LN_COBYLA":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "LN_COBYLA")
-            elif method is "LN_BOBYQA":
+            elif method == "LN_BOBYQA":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "LN_BOBYQA")
-            elif method is "LN_NEWUOA":
+            elif method == "LN_NEWUOA":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "LN_NEWUOA")
-            elif method is "LN_PRAXIS":
+            elif method == "LN_PRAXIS":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "LN_PRAXIS")
-            elif method is "LN_SBPLX":
+            elif method == "LN_SBPLX":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "LN_SBPLX")
-            elif method is "LN_NELDERMEAD":
+            elif method == "LN_NELDERMEAD":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "LN_NELDERMEAD")
-            elif method is "GN_DIRECT_L":
+            elif method == "GN_DIRECT_L":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "GN_DIRECT_L")
-            elif method is "GN_CRS2_LM":
+            elif method == "GN_CRS2_LM":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "GN_CRS2_LM")
-            elif method is "GN_ESCH":
+            elif method == "GN_ESCH":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "GN_ESCH")
-            elif method is "GN_IRES":
+            elif method == "GN_IRES":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "GN_IRES")
 
 
-            elif method is "deep":
+            elif method == "deep":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_deep(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux)
             else:
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_scipy(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "SLSQP")
@@ -3379,25 +3388,25 @@ class MetabolicModel:
 
             jobs = []
 
-            if method is "SLSQP":
+            if method == "SLSQP":
                 for i, flux_temp in enumerate(flux):
                     parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp, "SLSQP")
                     jobs.append([i, job_server.submit(optimize.fit_r_mdv_scipy, parameters,
                      (optimize.calc_MDV_residue_scipy,),
                      ("numpy","scipy","scipy.integrate"))])
-            elif method is "LN_PRAXIS":
+            elif method == "LN_PRAXIS":
                 for i, flux_temp in enumerate(flux):
                     parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp, "LN_PRAXIS")
                     jobs.append([i, job_server.submit(optimize.fit_r_mdv_nlopt, parameters,
                      (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
                      ("numpy","nlopt","scipy","scipy.integrate"))])
-            elif method is "GN_CRS2_LM":
+            elif method == "GN_CRS2_LM":
                 for i, flux_temp in enumerate(flux):
                     parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp, "GN_CRS2_LM")
                     jobs.append([i, job_server.submit(optimize.fit_r_mdv_nlopt, parameters,
                      (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
                      ("numpy","nlopt","scipy","scipy.integrate"))])
-            elif method is "deep":
+            elif method == "deep":
                 for i, flux_temp in enumerate(flux):
                     parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp)
                     jobs.append([i, job_server.submit(optimize.fit_r_mdv_deep, parameters,
@@ -3549,25 +3558,25 @@ class MetabolicModel:
         if isinstance(flux, dict):
             flux = [flux]
 
-        if method is "SLSQP":
+        if method == "SLSQP":
             for i, flux_temp in enumerate(flux):
                 parameters = self.fitting_flux(method = 'SLSQP', flux = flux_temp, output = 'for_parallel')
                 jobs.append([label, job_server.submit(optimize.fit_r_mdv_scipy, parameters,
                  (optimize.calc_MDV_residue_scipy,),
                  ("numpy","scipy","scipy.integrate"))])
-        elif method is "LN_PRAXIS":
+        elif method == "LN_PRAXIS":
             for i, flux_temp in enumerate(flux):
                 parameters = self.fitting_flux(method = 'LN_PRAXIS', flux = flux_temp, output = 'for_parallel')
                 jobs.append([label, job_server.submit(optimize.fit_r_mdv_nlopt, parameters,
                  (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
                  ("numpy","nlopt","scipy","scipy.integrate"))])
-        elif method is "GN_CRS2_LM":
+        elif method == "GN_CRS2_LM":
             for i, flux_temp in enumerate(flux):
                 parameters = self.fitting_flux(method = 'GN_CRS2_LM', flux = flux_temp, output = 'for_parallel')
                 jobs.append([label, job_server.submit(optimize.fit_r_mdv_nlopt, parameters,
                  (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
                  ("numpy","nlopt","scipy","scipy.integrate"))])
-        elif method is "deep":
+        elif method == "deep":
             for i, flux_temp in enumerate(flux):
                 parameters = self.fitting_flux(method = 'deep', flux =flux_temp, output = 'for_parallel')
                 jobs.append([label, job_server.submit(optimize.fit_r_mdv_deep, parameters,
@@ -4368,8 +4377,8 @@ class MetabolicModel:
         # Grid search
         #
         ########################################################
-        if method is "grid":
-            starttime=time.clock()
+        if method == "grid":
+            starttime=time.perf_counter()
             step = 0.0
             data_tmp={}
             job_number = self.configuration["grid_search_iterations"]
@@ -4431,7 +4440,8 @@ class MetabolicModel:
                         print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
 
                     for i in range(job_number):
-                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
+                        #state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux)
                         #
                         # When initial flux could not be found
                         #
@@ -4474,7 +4484,8 @@ class MetabolicModel:
                         print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)                    #
 
                     for i in range(job_number):
-                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
+                        #state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux)
                         #
                         # When initial flux could not be found
                         #
@@ -4653,7 +4664,8 @@ class MetabolicModel:
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
                     self.update()
                     for i in range(job_number):
-                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
+                        #state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux)
                         #
                         # When initial flux could not be found
                         #
@@ -4694,7 +4706,8 @@ class MetabolicModel:
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
                     self.update()
                     for i in range(job_number):
-                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
+                        #state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux)
                         # When initial flux could not be found
                         #
                         if len(flux_opt) == 0:
@@ -4841,7 +4854,7 @@ class MetabolicModel:
             # Show calc time
             #
             if self.configuration['callbacklevel'] >= 1:
-                endtime=time.clock()
+                endtime=time.perf_counter()
                 print("time elapsed ", endtime-starttime,"s")
 
             #return flux_lb

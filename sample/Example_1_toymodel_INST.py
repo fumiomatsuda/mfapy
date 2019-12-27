@@ -38,7 +38,7 @@ if __name__ == '__main__':
     #
     # Generate ramdom metabolic state (flux + metabolic conc)
     #
-    flux_opt, state = model.generate_flux_distribution()
+    flux_random, state = model.generate_flux_distribution()
     #
     # Set constraints and boundaries manusally
     # "fitting (variable and used for RSS calclation)", "fixed (fixed)", "free (variable and ignored for RSS calclation)", and "pseudo (fixed and used for MDV calc but ignored in the stoichiometry matrix)"
@@ -62,29 +62,62 @@ if __name__ == '__main__':
     cs.set_each_isotopomer('Asp', {'#1111':1.0}, correction = 'no')
     cs.set_each_isotopomer('OACs', {'#1111':1.0})
     #
-    # Generate starting IDV state ( IDV at time = 0)
+    # Generate initial IDV state (IDV at experimenta start (time = 0)
     #
     cs2 = model.generate_carbon_source_templete()
     cs2.set_all_isotopomers('AcCoA', [1.0, 0.0, 0.0, 0.0])
     cs2.set_each_isotopomer('Asp', {'#0000':1.0})
     cs2.set_each_isotopomer('OACs', {'#0000':1.0})
-    idv = model.calc_idv(flux_opt, cs2)
+    idv = model.calc_idv(flux_random, cs2)
     #
     #
-    # Generate time course MDV data
+    # Generate artificial time course MDV data
     #
     timepoints = [0.0,5.0,10.0,15.0,30.0,50.0]
-    mdv_timecourse = model.generate_mdv(flux_opt, cs, timepoints, startidv = idv)
+    mdv_timecourse = model.generate_mdv(flux_random, cs, timepoints, startidv = idv)
 
     mdv_timecourse.add_gaussian_noise(0.01, 3)
     mdv_timecourse.set_std(0.01, method = 'absolute')
     mdv_timecourse.set_mdvs_for_comparison(0.01, 1.0)
     #
+    # Save timecouse MDVs following files will be produces in sample folder
+    # Example_1_toymodel_mdvtimecourse0sec.txt
+    # Example_1_toymodel_mdvtimecourse5sec.txt
+    # Example_1_toymodel_mdvtimecourse10sec.txt
+    # Example_1_toymodel_mdvtimecourse15sec.txt
+    # Example_1_toymodel_mdvtimecourse30sec.txt
+    # Example_1_toymodel_mdvtimecourse50sec.txt
+    #
+    mdv_timecourse.save("Example_1_toymodel_mdvtimecourse")
+    #
+    # Load mdv data
+    #
+    mdv_00 = model.load_mdv_data('Example_1_toymodel_mdvtimecourse0sec.txt')
+    mdv_05 = model.load_mdv_data('Example_1_toymodel_mdvtimecourse5sec.txt')
+    mdv_10 = model.load_mdv_data('Example_1_toymodel_mdvtimecourse10sec.txt')
+    mdv_15 = model.load_mdv_data('Example_1_toymodel_mdvtimecourse15sec.txt')
+    mdv_30 = model.load_mdv_data('Example_1_toymodel_mdvtimecourse30sec.txt')
+    mdv_50 = model.load_mdv_data('Example_1_toymodel_mdvtimecourse50sec.txt')
+    #
+    # Construction of time course mdv data from loaded mdv data
+    #
+    mdv = mfapy.mdv.MdvTimeCourseData()
+    mdv.add_time_point(0, mdv_00)
+    mdv.add_time_point(5.0, mdv_05)
+    mdv.add_time_point(10, mdv_10)
+    mdv.add_time_point(15, mdv_15)
+    mdv.add_time_point(30, mdv_30)
+    mdv.add_time_point(50, mdv_50)
+    mdv.set_std(0.01, method = 'absolute')
+    #
+    #
     # Set experiment
     #
-    model.set_experiment('tc', mdv_timecourse, cs, startidv = idv)
-
-    rss = model.calc_rss(flux_opt)
+    model.set_experiment('tc', mdv, cs, startidv = idv)
+    #
+    # Calc residual sum of square for given metabolic flux
+    #
+    rss = model.calc_rss(flux_random)
     print("RSS of best fitted metabolic state seems to be:", rss)
 
     #
@@ -93,7 +126,7 @@ if __name__ == '__main__':
     model.set_configuration(callbacklevel = 7)
     print("Initial state generation.")
     start = time.time()
-    results = [('start', flux_opt)]
+    results = [('start', flux_random)]
     state, flux_start = model.generate_initial_states(50, 1)
     rss = model.calc_rss(flux_start)
     print("RSS of initial metabolic state seems to be:", rss)

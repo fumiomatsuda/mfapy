@@ -55,7 +55,8 @@ def initializing_Rm_fitting(numbers, vectors, matrixinv, template, initial_searc
         import mkl
         mkl.set_num_threads(1)
     except:
-        print("mkl-service is not installed this python!")
+        pass
+        #print("mkl-service is not installed this python!")
     # zero independent flux
     Rm_ind = list(numpy.zeros(independent_number))
     #boundaries
@@ -327,14 +328,7 @@ def fit_r_mdv_scipy(configure, experiments, numbers, vectors, matrixinv, func, f
         exec(func, globals(), locals_dic)
         calmdv = locals_dic["calmdv"]
         diffmdv = locals_dic["diffmdv"]
-    #
-    # Mas=number of MKL thread control
-    #
-    try:
-        import mkl
-        mkl.set_num_threads(1)
-    except:
-        print("mkl-service is not installed this python!")
+
     #
     #
     #Set max number of iteration in pyOpt
@@ -348,6 +342,15 @@ def fit_r_mdv_scipy(configure, experiments, numbers, vectors, matrixinv, func, f
         callbacklevel = configure['callbacklevel']
     else:
         callbacklevel = 0
+    #
+    # Mas=number of MKL thread control
+    #
+    try:
+        import mkl
+        mkl.set_num_threads(1)
+    except:
+        if callbacklevel > 1:
+            print("mkl-service is not installed this python!")
     # number of independent flux
     independent_number = numbers['independent_number']
     ind_start = numbers['independent_start']
@@ -485,14 +488,7 @@ def fit_r_mdv_nlopt(configure, experiments, numbers, vectors, matrixinv, func, f
         exec(func, globals(), locals_dic)
         calmdv = locals_dic["calmdv"]
         diffmdv = locals_dic["diffmdv"]
-    #
-    # Mas=number of MKL thread control
-    #
-    try:
-        import mkl
-        mkl.set_num_threads(1)
-    except:
-        print("mkl-service is not installed this python!")
+
     #
     #
     #Set max number of iteration in pyOpt
@@ -506,6 +502,16 @@ def fit_r_mdv_nlopt(configure, experiments, numbers, vectors, matrixinv, func, f
         callbacklevel = configure['callbacklevel']
     else:
         callbacklevel = 0
+    #
+    # Mas=number of MKL thread control
+    #
+    try:
+        import mkl
+        mkl.set_num_threads(1)
+    except:
+        if callbacklevel > 1:
+            print("mkl-service is not installed this python!")
+
     # number of independent flux
     independent_number = numbers['independent_number']
     ind_start = numbers['independent_start']

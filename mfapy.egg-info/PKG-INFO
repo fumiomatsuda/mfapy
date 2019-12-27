@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: mfapy
-Version: 0.5.1
+Version: 0.5.5
 Summary: Parallel and distributed programming for Python
 Home-page: https://github.com/fumiomatsuda/mfapy
 Author: Fumio Matsuda
@@ -90,13 +90,36 @@ Description: mfapy: A Python toolbox for 13C-metabolic flux analysis
         Sample scripts in 'sample' explain how to used mfapy. 
         Detailed explanations are available from docstrings
         
-        Example_1_toymodel.py  
-        Example_1_toymodel_INST.py 
-        Example_2_MCF7_taxol.py 
+        1. Example_1_toymodel.py  
+        2. Example_1_toymodel_INST.py 
+        3. Example_2_MCF7_taxol.py 
+        4. Example_3_Coryne.py 
         
         Learn more <https://github.com/fumiomatsuda/mfapy>
         
-        ---------------
+        Version 054
+        ----------------------------------------
+        19/06/28  
+        class MetabolicModel: search_ci  
+        Grid search procedure is updated.  
+        19/06/28  
+        class MdvData: add_gaussian_noise  
+        "normalize" option is newly added.  
+        19/07/01  
+        optimize: def fit_r_mdv_deep  
+        add global optimization by "GN_CRS2_LM" before iteration  
+        19/07/01  
+        class MetabolicModel: add new methods  
+        pp_pretreatment(self):  
+        pitch_fitting_flux_job(self, job_server, method = 'SLSQP', flux = [], jobs = [], label = ""):  
+        pp_posttreatment(self, job_server, jobs):  
+        for flexible parallel exection of fitting flux  
+        
+        Version 055
+        ----------------------------------------
+        19/12/27  
+        Support Python 3.8
+        Example_1_toymodel_INST.py is updated to explain a method to construct time course mdv data from mdv files.
         
         If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>
         

@@ -87,7 +87,11 @@ pitch_fitting_flux_job(self, job_server, method = 'SLSQP', flux = [], jobs = [],
 pp_posttreatment(self, job_server, jobs):  
 for flexible parallel exection of fitting flux  
 
----------------
+Version 055
+----------------------------------------
+19/12/27  
+Support Python 3.8
+Example_1_toymodel_INST.py is updated to explain a method to construct time course mdv data from mdv files.
 
 If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>
 
