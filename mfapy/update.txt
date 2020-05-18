@@ -7,4 +7,10 @@ pp_pretreatment(self):
 pitch_fitting_flux_job(self, job_server, method = 'SLSQP', flux = [], jobs = [], label = ""):
 pp_posttreatment(self, job_server, jobs):
 for flexible parallel exection of fitting flux
+ver0.55
 19/12/27 All "is" was removed to support Python 3.8
+ver0.56
+20/5/17 H0ratio = 0.9893 and H1ratio = 0.0107 were changed in generate_calmdv
+20/5/17 H0ratio = 0.9893 and H1ratio = 0.0107 were changed in set_experiment
+20/5/17 get_degree_of_freedom was corrected. if mode is "ST", number of free metabolites were extracted from degree of freedom
+20/5/17 New input parameter "outputthres" was added to search_ci

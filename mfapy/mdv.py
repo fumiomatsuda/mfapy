@@ -1127,7 +1127,7 @@ def INV_correcting(formula):
         for j in range(num_H +1):
             if j+i >=row:
                 break
-            DerivH[j+i,i]=binomial(num_H,j)*0.99985**(num_H-j)*0.00015**j
+            DerivH[j+i,i]=binomial(num_H,j)*0.999885**(num_H-j)*0.000115**j
     #
     #
     #   N
@@ -1136,7 +1136,7 @@ def INV_correcting(formula):
         for j in range(num_N+1):
             if j+i >= row :
                 break
-            DerivN[j+i,i] = binomial(num_N,j)*0.99632**(num_N - j)*0.00368**j
+            DerivN[j+i,i] = binomial(num_N,j)*0.99636**(num_N - j) * 0.00364**j
     #
     #
     #   O
@@ -1268,7 +1268,7 @@ def transition_matrix(formula):
         for j in range(num_H +1):
             if j+i >=row:
                 break
-            DerivH[j+i,i]=binomial(num_H,j)*0.99985**(num_H-j)*0.00015**j
+            DerivH[j+i,i]=binomial(num_H,j)*0.999885**(num_H-j)*0.000115**j
     #
     #
     #   N
@@ -1277,7 +1277,7 @@ def transition_matrix(formula):
         for j in range(num_N+1):
             if j+i >= row :
                 break
-            DerivN[j+i,i] = binomial(num_N,j)*0.99632**(num_N - j) * 0.00368**j
+            DerivN[j+i,i] = binomial(num_N,j)*0.99636**(num_N - j) * 0.00364**j
     #
     #
     #   P
