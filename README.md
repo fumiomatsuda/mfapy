@@ -93,13 +93,7 @@ Version 055
 Support Python 3.8
 Example_1_toymodel_INST.py is updated to explain a method to construct time course mdv data from mdv files.
 
-Version 056
-----------------------------------------
-20/5/18  
-Method to calculate natural isotope abundance of carbon was changed in generate_calmdv and set_experiment
-An error in get_degree_of_freedom was fixed. if mode is "ST", number of free metabolites were extracted from degree of freedom
-New input parameter "outputthres" was added to search_ci. Please check doc strings.
-
 If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>
+
 
 

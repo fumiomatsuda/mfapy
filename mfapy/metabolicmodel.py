@@ -4430,7 +4430,7 @@ class MetabolicModel:
                 flux_opt_rid = flux[group][rid]['value']
 
 
-                data={(group, rid):{"flux_data":[flux_opt_rid],"rss_data":[rss_bestfit],"state":["Best fit"],"raw_flux_data":[[flux["reaction"][i]["value"] for i in self.reaction_ids]]}}
+                data={(group, rid):{"flux_data":[flux_opt_rid],"rss_data":[rss_bestfit],"state":["Best fit"],"log":{},"raw_flux_data":[[flux["reaction"][i]["value"] for i in self.reaction_ids]]}}
                 data_tmp.update(data)
 
                 flux_lower =ci['data'][(group, rid)]["lower_boundary"]
@@ -4662,6 +4662,10 @@ class MetabolicModel:
                 flux_next_left  = max([x[0] for x in data_sorted if x[0] < flux_previous_left])
                 flux_next_right  = min([x[0] for x in data_sorted if x[0] > flux_previous_right])
                 #print("flux_next_left ",flux_next_left,", flux_next_right ",flux_next_right)
+                data_tmp[(group, rid)]["log"]["1st previous_left"] = flux_previous_left
+                data_tmp[(group, rid)]["log"]["1st previous_right"] = flux_previous_right
+                data_tmp[(group, rid)]["log"]["1st next_left"] = flux_next_left
+                data_tmp[(group, rid)]["log"]["1st next_right"] = flux_next_right
 
                 if callbacklevel >= 2:
                     print("flux_previous_left ",flux_previous_left,", flux_previous_right ",flux_previous_right)
@@ -4874,14 +4878,19 @@ class MetabolicModel:
                 right_group  = sorted([x for x in data_sorted if x[0] > flux_previous_right], key = lambda s: s[1])
 
 
-                rss_next_left = left_group[-1][1]
-                flux_next_left = left_group[-1][0]
+                #rss_next_left = left_group[-1][1]
+                #flux_next_left = left_group[-1][0]
+                rss_next_left = left_group[0][1]
+                flux_next_left = left_group[0][0]
                 rss_next_right = right_group[0][1]
                 flux_next_right = right_group[0][0]
 
 
                 flux_lower = flux_previous_left - (flux_previous_left - flux_next_left) * (thres - rss_previous_left)/(rss_next_left - rss_previous_left)
                 state_lower = "Determined"
+                #
+                # Check
+                #
                 if flux_next_left < ci['data'][(group, rid)]['lower_boundary']:
                     state_lower = "Not determined. Rearched to lower boundary"
                 if flux_lower < ci['data'][(group, rid)]['lower_boundary']:
@@ -4889,8 +4898,8 @@ class MetabolicModel:
 
                 flux_upper = flux_previous_right + (flux_next_right - flux_previous_right) * (thres - rss_previous_right)/(rss_next_right - rss_previous_right)
                 state_upper = "Determined"
-                if flux_next_right < ci['data'][(group, rid)]['upper_boundary']:
-                    state_lower = "Not determined. Rearched to upper boundary"
+                if flux_next_right > ci['data'][(group, rid)]['upper_boundary']:
+                    state_upper = "Not determined. Rearched to upper boundary"
                 if flux_upper > ci['data'][(group, rid)]['upper_boundary']:
                     flux_upper = ci['data'][(group, rid)]['upper_boundary']
 
@@ -4900,6 +4909,10 @@ class MetabolicModel:
                 #
                 # Detect lower bounary of confidence interval
                 #
+                data_tmp[(group, rid)]["log"]["2nd previous_left"] = flux_previous_left
+                data_tmp[(group, rid)]["log"]["2nd previous_right"] = flux_previous_right
+                data_tmp[(group, rid)]["log"]["2nd next_left"] = flux_next_left
+                data_tmp[(group, rid)]["log"]["2nd next_right"] = flux_next_right
 
 
                 if callbacklevel >= 1:
@@ -4909,6 +4922,10 @@ class MetabolicModel:
                 ci['data'][(group, rid)]['lower_boundary'] = flux_lower
                 ci['data'][(group, rid)]['upper_boundary_state'] = state_upper
                 ci['data'][(group, rid)]['lower_boundary_state'] = state_lower
+
+                data_tmp[(group, rid)]["log"]["upper_boundary"] = flux_upper
+                data_tmp[(group, rid)]["log"]["lower_boundary"] = flux_lower
+
                 #
                 # Grids with too large rss are removed
                 #
@@ -4922,8 +4939,18 @@ class MetabolicModel:
                 ci['data'][(group, rid)]['rss_data'] = rss_values_array
                 ci['data'][(group, rid)]['raw_flux_data'] = raw_flux_array
                 ci['data'][(group, rid)]['state'] = state_array
+                #Add upper boundary point
+                ci['data'][(group, rid)]['flux_data'].append(flux_upper)
+                ci['data'][(group, rid)]['rss_data'].append(thres)
+                ci['data'][(group, rid)]['raw_flux_data'].append({})
+                ci['data'][(group, rid)]['state'].append(state_lower)
+                #Add lower boundary point
+                ci['data'][(group, rid)]['flux_data'].append(flux_lower)
+                ci['data'][(group, rid)]['rss_data'].append(thres)
+                ci['data'][(group, rid)]['raw_flux_data'].append({})
+                ci['data'][(group, rid)]['state'].append(state_lower)
 
-
+                ci['data'][(group, rid)]['log'] = data_tmp[(group, rid)]["log"]
             #
             # Show calc time
             #
