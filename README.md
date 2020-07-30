@@ -21,10 +21,10 @@ This software is released under the MIT License, see LICENSE.txt.
 Requirement
 ----------------------------------------
 Python 3.6
-mfapy required the packages:
+mfapy requires the packages:
 NumPy and SciPy (van der Walt, Colbert & Varoquaux, 2011)
 nlopt https://nlopt.readthedocs.io/en/latest/
-parallel python (pp-1.6.4.4) https://www.parallelpython.com/ developed by Vitalii Vanovschi.
+joblib
 mkl-service
 
 mfapy was developed and tested using the PyScripter IDE, and was tested in 64 bit version of Anaconda3 distribution in Windows 10.
@@ -35,17 +35,13 @@ Install
 1. Install 64 bit version of Anaconda3
 2. Create virtual environment such as named "mfapy" and install required packages
 ~~~
-    > conda create -n mfapy python=3.6 numpy scipy matplotlib=2.1
+    > conda create -n mfapy python=3.6 numpy scipy matplotlib=2.1 joblib
     > conda activate mfapy 
     > conda install -c conda-forge nlopt
     > conda install -c anaconda mkl-service
 ~~~
-3. Download pp-1.6.4.4.zip from https://www.parallelpython.com/content/view/18/32/
-Unzip and set as current folder
-~~~
-    > python setup.py install
-~~~
-3. Install mfapy
+
+2. Install mfapy
 Unzip and set as current folder
 ~~~
     > python setup.py install
@@ -92,6 +88,21 @@ Version 055
 19/12/27  
 Support Python 3.8
 Example_1_toymodel_INST.py is updated to explain a method to construct time course mdv data from mdv files.
+
+Version 057
+----------------------------------------
+20/7/12 initializing_Rm_fitting, fit_r_mdv_scipy, fit_r_mdv_nlopt in optimizaton: Expection is newly raised to avoid error in  paralell proceccing
+20/7/13 joblib instead of pp is employed for paralell proceccing
+20/7/30 Format of model definition file was updated to support external with a backward compatibility
+20/7/30 load_metabolic_model_reactions in mfapyio: Support external id
+20/7/30 load_metabolic_model_metabolites in mfapyio: Support external id
+20/7/30 load_metabolic_model_reversibles in mfapyio: Support external id
+20/7/30 load_metabolic_model_fragments in mfapyio: Support external id
+20/7/30 External id data was added to Example_0_toymodel_model.txt
+20/7/30 External id data was added to Example_1_toymodel_model.txt
+20/7/30 show_results in metablicmodel: Output format was modified for more beautiful alignment
+20/7/30 show_results in metablicmodel: "checkrss" option was added to check RSS levels of each fragment and "fitting" reactions and metabolites.
+
 
 If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>
 

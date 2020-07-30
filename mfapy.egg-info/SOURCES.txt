@@ -20,6 +20,7 @@ sample/Example_0_toymodel_model.txt
 sample/Example_0_toymodel_status.csv
 sample/Example_1_toymodel.py
 sample/Example_1_toymodel_INST.py
+sample/Example_1_toymodel_expanded.py
 sample/Example_1_toymodel_mdv.txt
 sample/Example_1_toymodel_mdvtimecourse0sec.txt
 sample/Example_1_toymodel_mdvtimecourse10sec.txt
@@ -28,6 +29,7 @@ sample/Example_1_toymodel_mdvtimecourse30sec.txt
 sample/Example_1_toymodel_mdvtimecourse50sec.txt
 sample/Example_1_toymodel_mdvtimecourse5sec.txt
 sample/Example_1_toymodel_model.txt
+sample/Example_1_toymodel_resultoutput.csv
 sample/Example_1_toymodel_status.csv
 sample/Example_2_MCF7_taxol.py
 sample/Example_2_MCF7_taxol_mdv_1_13C_Glc.txt

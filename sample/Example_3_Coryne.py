@@ -70,7 +70,7 @@ if __name__ == '__main__':
     #model.show_results(results)
 
     #
-    # Fitting by local optimizer
+    # Fitting by global optimizer
     #
     method = "SLSQP"
     start = time.time()
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     results.append((method, flux_opt1))
 
     #
-    # Fitting by local + flobal optimizer
+    # Fitting by local optimizer
     #
     method = "deep"
     start = time.time()

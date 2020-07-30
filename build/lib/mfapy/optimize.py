@@ -55,8 +55,7 @@ def initializing_Rm_fitting(numbers, vectors, matrixinv, template, initial_searc
         import mkl
         mkl.set_num_threads(1)
     except:
-        pass
-        #print("mkl-service is not installed this python!")
+        print("mkl-service is not installed this python!")
     # zero independent flux
     Rm_ind = list(numpy.zeros(independent_number))
     #boundaries
@@ -64,59 +63,85 @@ def initializing_Rm_fitting(numbers, vectors, matrixinv, template, initial_searc
     ub = list(vectors["ub"])
     independent_lb = list(vectors["independent_lb"])
     independent_ub = list(vectors["independent_ub"])
-    for j in range(3):
-        #ランダムな反応の最低値をランダムな値にする。
-        lb_modified = list(lb)
-        ub_modified = list(ub)
 
-        #適当に初期値を発生させる
-        for i in range(len(Rm_ind)):
-            Rm_ind[i] = (independent_ub[i] - independent_lb[i]) * numpy.random.rand() + independent_lb[i]
-        # Instantiate Optimization Problem
+    tmp_r = []
+    result_Rm = []
+    result_ind = []
+    message = "Initial state"
+    try:
+        for j in range(3):
+            message = "Initial state"
 
-        parameters = {}
-        parameters['stoichiometric_num'] = numbers['independent_start']
-        parameters['reaction_num']=numbers['independent_end']
-        parameters['matrixinv']=matrixinv
-        parameters['Rm_initial']=numpy.array(list(vectors["Rm_initial"]))
-        parameters['lb'] = lb_modified
-        parameters['ub'] = ub_modified
-        parameters['template'] = template
+            #ランダムな反応の最低値をランダムな値にする。
+            lb_modified = list(lb)
+            ub_modified = list(ub)
 
+            #適当に初期値を発生させる
+            for i in range(len(Rm_ind)):
+                Rm_ind[i] = (independent_ub[i] - independent_lb[i]) * numpy.random.rand() + independent_lb[i]
+            # Instantiate Optimization Problem
+
+            parameters = {}
+            parameters['stoichiometric_num'] = numbers['independent_start']
+            parameters['reaction_num']=numbers['independent_end']
+            parameters['matrixinv']=matrixinv
+            parameters['Rm_initial']=numpy.array(list(vectors["Rm_initial"]))
+            parameters['lb'] = lb_modified
+            parameters['ub'] = ub_modified
+            parameters['template'] = template
+
+            #
+            #    Scipy
+            #
+
+            res = scipy.optimize.minimize(calc_protrude_scipy, Rm_ind, method='SLSQP', args = (parameters,))
+            result_ind = res.x
+            """
+
+            #
+            # nlopt
+            #
+            opt = nlopt.opt(nlopt.LN_COBYLA, independent_number)
+            opt.set_lower_bounds(independent_lb)
+            opt.set_upper_bounds(independent_ub)
+
+            opt.set_min_objective(lambda x,grad: calc_protrude_nlopt(x,grad,parameters))
+            opt.set_xtol_abs(0.0001)
+            opt.set_maxeval(initial_search_iteration_max)
+            result_ind = opt.optimize(Rm_ind)
+            minf = opt.last_optimum_value()
+
+            """
+            result_Rm = numpy.array(list(vectors["Rm_initial"]))
+            result_Rm[numbers['independent_start']: numbers['independent_end']] = result_ind[:]
+            tmp_r = numpy.dot(matrixinv, result_Rm)
+            check = 0;
+            for i in range(len(tmp_r)):
+                if tmp_r[i] < lb[i] - 0.0001:
+                    check = check + 1
+                if tmp_r[i] > ub[i] + 0.0001:
+                    check = check + 1
+            if check == 0:
+                message = "Determined"
+                break
+            else:
+                message = "Failed"
+
+
+                #return(tmp_r, result_Rm, result_ind, "Determined")
+            #print "mistake", tmp_r
         #
-        #    Scipy
-        #
-        res = scipy.optimize.minimize(calc_protrude_scipy, Rm_ind, method='SLSQP', args = (parameters,))
-        result_ind = res.x
-        """
+        #message = "Failed"
+        #return(tmp_r, result_Rm, result_ind, "Failed")
+    except Exception as e:
+        message = e
+    else:
+        pass
+    finally:
+        return(tmp_r, result_Rm, result_ind, message)
 
-        #
-        # nlopt
-        #
-        opt = nlopt.opt(nlopt.LN_COBYLA, independent_number)
-        opt.set_lower_bounds(independent_lb)
-        opt.set_upper_bounds(independent_ub)
 
-        opt.set_min_objective(lambda x,grad: calc_protrude_nlopt(x,grad,parameters))
-        opt.set_xtol_abs(0.0001)
-        opt.set_maxeval(initial_search_iteration_max)
-        result_ind = opt.optimize(Rm_ind)
-        minf = opt.last_optimum_value()
 
-        """
-        result_Rm = numpy.array(list(vectors["Rm_initial"]))
-        result_Rm[numbers['independent_start']: numbers['independent_end']] = result_ind[:]
-        tmp_r = numpy.dot(matrixinv, result_Rm)
-        check = 0;
-        for i in range(len(tmp_r)):
-            if tmp_r[i] < lb[i] - 0.0001:
-                check = check + 1
-            if tmp_r[i] > ub[i] + 0.0001:
-                check = check + 1
-        if check == 0:
-            return(tmp_r, result_Rm, result_ind, "Determined")
-        #print "mistake", tmp_r
-    return(tmp_r, result_Rm, result_ind, "Failed")
 
 def calc_protrude_scipy(independent_flux, *args):
     """
@@ -351,47 +376,55 @@ def fit_r_mdv_scipy(configure, experiments, numbers, vectors, matrixinv, func, f
     except:
         if callbacklevel > 1:
             print("mkl-service is not installed this python!")
-    # number of independent flux
-    independent_number = numbers['independent_number']
-    ind_start = numbers['independent_start']
-    ind_end = numbers['independent_end']
+    #
+    # Initial state
+    #
+    state = "Initial state"
+    kai = -1.0
+    opt_flux = []
+    result_ind = []
 
-    total_number = numbers['total_number']
-    # zero independent flux
-    if isinstance(flux, dict):
-        Rm_ind = [flux[group][id]["value"] for (group, id) in vectors['independent_flux']]
-    else:
-        Rm_ind = [flux[i] for i in vectors['independent_flux_position']]
-    #boundaries
-    lb = list(vectors["lb"])
-    ub = list(vectors["ub"])
-    independent_lb = list(vectors["independent_lb"])
-    independent_ub = list(vectors["independent_ub"])
-    #
-    # Generate MDV vector of all defined experiments
-    #
-    mdv_exp_original = list(vectors["value"])
-    mdv_std_original = list(vectors["stdev"])
-    mdv_use = list(vectors["use"])
-    for experiment in sorted(experiments.keys()):
-        mdv_exp_original.extend(experiments[experiment]['mdv_exp_original'])
-        mdv_std_original.extend(experiments[experiment]['mdv_std_original'])
-        mdv_use.extend(experiments[experiment]['mdv_use'])
-    mdv_exp = numpy.array([y for x, y in enumerate(mdv_exp_original) if mdv_use[x] != 0])
-    spectrum_std = numpy.array([y for x, y in enumerate(mdv_std_original) if mdv_use[x] != 0])
-    #
-    # Covariance matrix
-    #
-    covinv = numpy.zeros((len(spectrum_std),len(spectrum_std)))
-    for i, std in enumerate(spectrum_std):
-        covinv[i,i] = 1.0/(std**2)
+    try:
+        # number of independent flux
+        independent_number = numbers['independent_number']
+        ind_start = numbers['independent_start']
+        ind_end = numbers['independent_end']
 
-    state = {'text':"Function was called", 'value': 7}
-    for k in range(2):
+        total_number = numbers['total_number']
+        # zero independent flux
+        if isinstance(flux, dict):
+            Rm_ind = [flux[group][id]["value"] for (group, id) in vectors['independent_flux']]
+        else:
+            Rm_ind = [flux[i] for i in vectors['independent_flux_position']]
+        #boundaries
+        lb = list(vectors["lb"])
+        ub = list(vectors["ub"])
+        independent_lb = list(vectors["independent_lb"])
+        independent_ub = list(vectors["independent_ub"])
+        #
+        # Generate MDV vector of all defined experiments
+        #
+        mdv_exp_original = list(vectors["value"])
+        mdv_std_original = list(vectors["stdev"])
+        mdv_use = list(vectors["use"])
+        for experiment in sorted(experiments.keys()):
+            mdv_exp_original.extend(experiments[experiment]['mdv_exp_original'])
+            mdv_std_original.extend(experiments[experiment]['mdv_std_original'])
+            mdv_use.extend(experiments[experiment]['mdv_use'])
+        mdv_exp = numpy.array([y for x, y in enumerate(mdv_exp_original) if mdv_use[x] != 0])
+        spectrum_std = numpy.array([y for x, y in enumerate(mdv_std_original) if mdv_use[x] != 0])
+        #
+        # Covariance matrix
+        #
+        covinv = numpy.zeros((len(spectrum_std),len(spectrum_std)))
+        for i, std in enumerate(spectrum_std):
+            covinv[i,i] = 1.0/(std**2)
+
+        state = {'text':"Function was called", 'value': 7}
         #try:
         ##################################################################
         if (callbacklevel >= 2):
-            print(k, "Fitting Start")
+            print("Fitting Start")
         parameters = {}
         parameters['stoichiometric_num'] = ind_start
         parameters['reaction_num']=ind_end
@@ -433,7 +466,7 @@ def fit_r_mdv_scipy(configure, experiments, numbers, vectors, matrixinv, func, f
         state = res.message
 
         if (callbacklevel >= 2):
-            print(k+1, "th trial. ",state ,"RSS = ", kai)
+            print(state ,"RSS = ", kai)
 
         #Optimized flux distribution
         Rm_opt = numpy.array(list(vectors["Rm_initial"]))
@@ -442,10 +475,17 @@ def fit_r_mdv_scipy(configure, experiments, numbers, vectors, matrixinv, func, f
 
         opt_flux = numpy.dot(matrixinv, numpy.array(result_Rm))
 
+        #return(state, kai, opt_flux, result_ind)
+
+
+        #return(state,-1,[],[])
+    except Exception as e:
+        state = e
+    else:
+        pass
+    finally:
         return(state, kai, opt_flux, result_ind)
 
-
-    return(state,-1,[],[])
 
 def fit_r_mdv_nlopt(configure, experiments, numbers, vectors, matrixinv, func, flux,  method = "LN_PRAXIS"):
     """
@@ -511,48 +551,55 @@ def fit_r_mdv_nlopt(configure, experiments, numbers, vectors, matrixinv, func, f
     except:
         if callbacklevel > 1:
             print("mkl-service is not installed this python!")
+    #
+    # Initial state
+    #
+    state = "Initial state"
+    kai = -1.0
+    opt_flux = []
+    result_ind = []
 
-    # number of independent flux
-    independent_number = numbers['independent_number']
-    ind_start = numbers['independent_start']
-    ind_end = numbers['independent_end']
+    try:
+        # number of independent flux
+        independent_number = numbers['independent_number']
+        ind_start = numbers['independent_start']
+        ind_end = numbers['independent_end']
 
-    total_number = numbers['total_number']
-    # zero independent flux
-    if isinstance(flux, dict):
-        Rm_ind = [flux[group][id]["value"] for (group, id) in vectors['independent_flux']]
-    else:
-        Rm_ind = [flux[i] for i in vectors['independent_flux_position']]
-    #boundaries
-    lb = list(vectors["lb"])
-    ub = list(vectors["ub"])
-    independent_lb = list(vectors["independent_lb"])
-    independent_ub = list(vectors["independent_ub"])
-    #
-    # Generate MDV vector of all defined experiments
-    #
-    mdv_exp_original = list(vectors["value"])
-    mdv_std_original = list(vectors["stdev"])
-    mdv_use = list(vectors["use"])
-    for experiment in sorted(experiments.keys()):
-        mdv_exp_original.extend(experiments[experiment]['mdv_exp_original'])
-        mdv_std_original.extend(experiments[experiment]['mdv_std_original'])
-        mdv_use.extend(experiments[experiment]['mdv_use'])
-    mdv_exp = numpy.array([y for x, y in enumerate(mdv_exp_original) if mdv_use[x] != 0])
-    spectrum_std = numpy.array([y for x, y in enumerate(mdv_std_original) if mdv_use[x] != 0])
-    #
-    # Covariance matrix
-    #
-    covinv = numpy.zeros((len(spectrum_std),len(spectrum_std)))
-    for i, std in enumerate(spectrum_std):
-        covinv[i,i] = 1.0/(std**2)
+        total_number = numbers['total_number']
+        # zero independent flux
+        if isinstance(flux, dict):
+            Rm_ind = [flux[group][id]["value"] for (group, id) in vectors['independent_flux']]
+        else:
+            Rm_ind = [flux[i] for i in vectors['independent_flux_position']]
+        #boundaries
+        lb = list(vectors["lb"])
+        ub = list(vectors["ub"])
+        independent_lb = list(vectors["independent_lb"])
+        independent_ub = list(vectors["independent_ub"])
+        #
+        # Generate MDV vector of all defined experiments
+        #
+        mdv_exp_original = list(vectors["value"])
+        mdv_std_original = list(vectors["stdev"])
+        mdv_use = list(vectors["use"])
+        for experiment in sorted(experiments.keys()):
+            mdv_exp_original.extend(experiments[experiment]['mdv_exp_original'])
+            mdv_std_original.extend(experiments[experiment]['mdv_std_original'])
+            mdv_use.extend(experiments[experiment]['mdv_use'])
+        mdv_exp = numpy.array([y for x, y in enumerate(mdv_exp_original) if mdv_use[x] != 0])
+        spectrum_std = numpy.array([y for x, y in enumerate(mdv_std_original) if mdv_use[x] != 0])
+        #
+        # Covariance matrix
+        #
+        covinv = numpy.zeros((len(spectrum_std),len(spectrum_std)))
+        for i, std in enumerate(spectrum_std):
+            covinv[i,i] = 1.0/(std**2)
 
-    state = {'text':"Function was called", 'value': 7}
-    for k in range(2):
+        state = {'text':"Function was called", 'value': 7}
         #try:
         ##################################################################
         if (callbacklevel >= 1):
-            print(k, "Fitting Start")
+            print("Fitting Start")
         parameters = {}
         parameters['stoichiometric_num'] = ind_start
         parameters['reaction_num']=ind_end
@@ -605,7 +652,7 @@ def fit_r_mdv_nlopt(configure, experiments, numbers, vectors, matrixinv, func, f
 
 
         if (callbacklevel >= 1):
-            print(k+1, "th trial. Fitting was successfully finished. RSS = ", kai)
+            print("Fitting was successfully finished. RSS = ", kai)
 
         #Optimized flux distribution
         Rm_opt = numpy.array(list(vectors["Rm_initial"]))
@@ -614,10 +661,17 @@ def fit_r_mdv_nlopt(configure, experiments, numbers, vectors, matrixinv, func, f
 
         opt_flux = numpy.dot(matrixinv, numpy.array(result_Rm))
 
+        #return(state, kai, opt_flux, result_ind)
+
+
+        #return(state,-1,[],[])
+    except Exception as e:
+        state = e
+    else:
+        pass
+    finally:
         return(state, kai, opt_flux, result_ind)
 
-
-    return(state,-1,[],[])
 
 def fit_r_mdv_deep(configure, experiments, numbers, vectors, matrixinv, func, flux):
     """
@@ -675,15 +729,15 @@ def fit_r_mdv_deep(configure, experiments, numbers, vectors, matrixinv, func, fl
     else:
         callbacklevel = 0
     if (callbacklevel >= 2):
-        print("##Start GN_CRS2_LM method#############################################################################")
+        print("##Start GN_CRS2_LM method########################################################################")
     state, kai, flux, Rm_ind_sol = fit_r_mdv_nlopt(configure, experiments, numbers, vectors, matrixinv, func, flux, method = "GN_CRS2_LM")
 
     for k in range (number_of_repeat):
         if (callbacklevel >= 2):
-            print("##Start SLSQP method#############################################################################")
+            print("Deep",k,"Start SLSQP method######################################################################")
         state, kai, flux, Rm_ind_sol = fit_r_mdv_scipy(configure, experiments, numbers, vectors, matrixinv, func, flux, method = "SLSQP")
         if (callbacklevel >= 2):
-            print("##Start LN_PRAXIS method#########################################################################")
+            print("Deep",k,"Start LN_PRAXIS method##################################################################")
         state, kai, flux, Rm_ind_sol = fit_r_mdv_nlopt(configure, experiments, numbers, vectors, matrixinv, func, flux, method = "LN_PRAXIS")
 
 
@@ -872,6 +926,7 @@ def calc_MDV_residue(x, *args, **kwargs):
     Rm[stoichiometric_num: reaction_num] = list(x)
     tmp_r = numpy.dot(matrixinv, Rm)
 
+
     g = numpy.hstack((numpy.array(lb) - tmp_r, tmp_r - numpy.array(ub)))
     sum = 0.0
     for i in g:
@@ -898,6 +953,7 @@ def calc_MDV_residue(x, *args, **kwargs):
 
     mdv = numpy.array([y for x, y in enumerate(mdv_original) if mdv_use[x] != 0])
     res = mdv_exp - mdv
+
     f = numpy.dot(res, numpy.dot(covinv, res))
     if experiments[experiment]['mode'] == "INST":
         print(f)

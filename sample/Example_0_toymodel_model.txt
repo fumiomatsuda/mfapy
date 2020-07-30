@@ -19,21 +19,21 @@
 # 4. Atom mapping, text
 #	Only "+" and "-->" are accpectable separators. Please use A-Z to express carbon atom.
 #	"nd" means this reaction is an excretion reaction and ignored in the MDV calculation
-# 5. Use or ignore., text
-#	Rows insteaed of "use" are ignored in the model construction.
+# 5. Links to external ids
+#	Links to external ids can be described here
 # 6. Lower boundary of metabolic flux level, float
 #	Value must be more than zero
 # 7. Upper boundary of metabolic flux level, float
 #	Value must be more than zero
 //Reactions
-v1	AcCoA + OAC --> Cit	AcCoA + OAC --> Cit	AB + CDEF --> FEDBAC	use	0.1	300
-v2	Cit --> AKG + CO2ex	Cit --> AKG + CO2ex	ABCDEF --> ABCDE + F	use	0.1	300
-v3	AKG --> Glu	AKG --> Glu	ABCDE --> ABCDE 	use	0.1	300
-v4	AKG --> Suc + CO2ex	AKG --> Suc + CO2ex	ABCDE --> BCDE + A	use	0.1	300
-v5	Suc --> Fum	Suc --> Fum	ABCD --> ABCD	use	0.1	300
-v6	Fum --> OAC	Fum --> OAC	ABCD --> ABCD	use	0.1	300
-v7	OAC --> Fum	OAC --> Fum	ABCD --> ABCD	use	0.1	300
-v8	Asp --> OAC	Asp --> OAC	ABCD --> ABCD	use	0.1	300
+v1	AcCoA + OAC --> Cit	AcCoA + OAC --> Cit	AB + CDEF --> FEDBAC	(kegg:R00351)	0.0	300
+v2	Cit --> AKG + CO2ex	Cit --> AKG + CO2ex	ABCDEF --> ABCDE + F	(kegg:R00709)	0.0	300
+v3	AKG --> Glu	AKG --> Glu	ABCDE --> ABCDE 	(kegg:R00243)	0.0	300
+v4	AKG --> Suc + CO2ex	AKG --> Suc + CO2ex	ABCDE --> BCDE + A	(kegg:R01197)	0.0	300
+v5	Suc --> Fum	Suc --> Fum	ABCD --> ABCD	(kegg:R02164)	0.0	300
+v6	Fum --> OAC	Fum --> OAC	ABCD --> ABCD	(kegg:R01082)	0.0	300
+v7	OAC --> Fum	OAC --> Fum	ABCD --> ABCD	(kegg:R01082)	0.0	300
+v8	Asp --> OAC	Asp --> OAC	ABCD --> ABCD	(kegg:R00355)	0.0	300
 #
 # Definition of metabolites
 # 1. id, text
@@ -46,23 +46,25 @@ v8	Asp --> OAC	Asp --> OAC	ABCD --> ABCD	use	0.1	300
 #	Set "carbonsource" metabolites
 # 5. excretion, text
 #	Set "excreted" metabolites
-# 6. Lower boundary of metabolite pool size, float
+# 6. Links to external ids
+#	Links to external ids can be described here
+# 7. Lower boundary of metabolite pool size, float
 #	Value must be more than zero
 #	Required for INST-MFA mode
-# 7. Upper boundary of metabolite pool size, float
+# 8. Upper boundary of metabolite pool size, float
 #	Value must be more than zero
 #	Required for INST-MFA mode
 #
 //Metabolites
-CO2ex	1	no	no	excreted
-AcCoA	2	no	carbonsource	no
-OAC	4	no	no	no
-Cit	6	no	no	no
-AKG	5	no	no	no
-Suc	4	symmetry	no	no
-Fum	4	symmetry	no	no
-Glu	5	no	no	no
-Asp	4	no	carbonsource	no
+CO2ex	1	no	no	excreted	(kegg:C00011)	0.0	300
+AcCoA	2	no	carbonsource	no	(kegg:C00024)	0.0	300
+OAC	4	no	no	no	(kegg:C00036)	0.0	300
+Cit	6	no	no	no	(kegg:C00158)	0.0	300
+AKG	5	no	no	no	(kegg:C00026)	0.0	300
+Suc	4	symmetry	no	no	(kegg:C00042)	0.0	300
+Fum	4	symmetry	no	no	(kegg:C00122)	0.0	300
+Glu	5	no	no	no	(kegg:C00025)	0.0	300
+Asp	4	no	carbonsource	no	(kegg:C00049)	0.0	300
 #
 # Definition of reversible reactions
 # Reversible reaction is used for
@@ -79,11 +81,17 @@ Asp	4	no	carbonsource	no
 # 3 . reverse reaction, text
 #	Reacton id
 #	Set "nothing" if there is no data
+# 4. Links to external ids
+#	Links to external ids can be described here
+# 5. Lower boundary of metabolic flux level, float
+#	Value must be more than zero
+# 6. Upper boundary of metabolic flux level, float
+#	Value must be more than zero
 //Reversible_reactions
-FUM	v6	v7
+FUM	v6	v7	(kegg:R01082)	0.0	300
 #
-# Definition of Target compound
-# Target compounds are metabolite out side of the metabolic model whose MDV are generarted by the calmdv function.
+# Definition of Target fragments
+# Target fragments are metabolite out side of the metabolic model whose MDV are generarted by the calmdv function.
 # 1. id, text
 #	Please use alphabet and numbers. Please do not use space, "_" and other special characters to avoid unexpected errors.
 # 2. type, text
@@ -92,6 +100,10 @@ FUM	v6	v7
 #	"Glu_12345" indicated that the target compound has five carbons derived from 1-5th carbons of metabolite id "Glu".
 #	In the "gcms"mode, "OAC_12+OAC_12" indicated that the target compound has for carbons derived from 1-2th carbons of metabolite id "OAC".
 #	In the "msms"mode, "AKG_12345+AKG_1+AKG_2345" indicated carbon origins of "precursor ion" + "neutral loss2 + "product ion".
+# 4. Usage, text
+#	"use" means this target fragment is used in the analysis.  
+# 5. Formula, text
+#	Experimental, Chemical formula of target compound
 //Target_fragments
 Glue	gcms	Glu_1:2:3:4:5	use	C5H10N2O3
 Gluee	gcms	Glu_1:2:3+Glu_4:5	use	C5H10N2O3

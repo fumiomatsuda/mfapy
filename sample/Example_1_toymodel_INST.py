@@ -149,7 +149,7 @@ if __name__ == '__main__':
     print("Fitting is started in parallel mode.")
     state, flux_opt = model.generate_initial_states(50, 2)
     state, RSS_bestfit, flux_opt_parallel = model.fitting_flux(method = 'SLSQP', flux = flux_opt)
-    results.extend([('deep_para', flux) for (i,flux) in enumerate(flux_opt_parallel)])
+    results.extend([('SLSQP', flux) for (i,flux) in enumerate(flux_opt_parallel)])
     #
     # Show results
     #

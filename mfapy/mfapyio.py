@@ -19,24 +19,14 @@ def load_metabolic_model_reactions(filename, format = "text", output = "normal")
     Load metabolic reaction information from a text or CSV file with following format.
 
     //Reactions
-    v1	AcCoA + OAC --> Cit	AcCoA + OAC --> Cit	AB + CDEF --> FEDBAC	use	0.1	300
-    v2	Cit --> AKG + CO2ex	Cit --> AKG + CO2ex	ABCDEF --> ABCDE + F	use	0.1	300
-    v3	AKG --> Glu	AKG --> Glu	ABCDE --> ABCDE 	use	0.1	300
-    v4	AKG --> Suc + CO2ex	AKG --> Suc + CO2ex	ABCDE --> BCDE + A	use	0.1	300
-    v5	Suc --> Fum	Suc --> Fum	ABCD --> ABCD	use	0.1	300
-    v6	Fum --> OAC	Fum --> OAC	ABCD --> ABCD	use	0.1	300
-    v7	OAC --> Fum	OAC --> Fum	ABCD --> ABCD	use	0.1	300
-    v8	Asp --> OAC	Asp --> OAC	ABCD --> ABCD	use	0.1	300
-    v9	Suc --> Sucex	nd	nd	use	0.1	300
-    e1	Glu --> Gluex	nd	nd 	use	0.1	300
-    v10	OAC --> OACx	OAC --> OACx	ABCD --> ABCD	use	0.1	300
-    v11	OACs --> OACx	OACs --> OACx	ABCD --> ABCD	use	0.001	300
-    v12	OACx --> OACe	nd	nd	use	0.1	300
-    v13	OAC+OAC --> Fumx	OAC+OAC --> Fumx	ABCD+EFGH --> EFAB	use	0.1	300
-    v14	OA --> Fume	nd	nd	use	0.1	300
-    v15	OAC+Fum+Suc --> Tx	OAC+Fum+Suc --> Tx	ABCD+EFGH+IJKL --> CDHL	use	0.1	300
-    v16	Tx --> Te	nd	nd	use	0.1	300
-    v17	Fumx --> {2}OA	Fumx --> OA+OA	ABCD --> AB+CD	use	0.1	300
+    v1	AcCoA + OAC --> Cit	AcCoA + OAC --> Cit	AB + CDEF --> FEDBAC	(kegg:R00351)	0.0	300
+    v2	Cit --> AKG + CO2ex	Cit --> AKG + CO2ex	ABCDEF --> ABCDE + F	(kegg:R00709)	0.0	300
+    v3	AKG --> Glu	AKG --> Glu	ABCDE --> ABCDE 	(kegg:R00243)	0.0	300
+    v4	AKG --> Suc + CO2ex	AKG --> Suc + CO2ex	ABCDE --> BCDE + A	(kegg:R01197)	0.0	300
+    v5	Suc --> Fum	Suc --> Fum	ABCD --> ABCD	(kegg:R02164)	0.0	300
+    v6	Fum --> OAC	Fum --> OAC	ABCD --> ABCD	(kegg:R01082)	0.0	300
+    v7	OAC --> Fum	OAC --> Fum	ABCD --> ABCD	(kegg:R01082)	0.0	300
+    v8	Asp --> OAC	Asp --> OAC	ABCD --> ABCD	(kegg:R00355)	0.0	300
 
     Parameters
     ----------
@@ -110,7 +100,7 @@ def load_metabolic_model_reactions(filename, format = "text", output = "normal")
                 stoichiometry = row[1].replace(" ", "")
                 reaction = row[2].replace(" ", "")
                 atommap = row[3].replace(" ", "")
-                use = row[4].replace(" ", "")
+                exid = row[4]
                 if rid == "":
                     continue
 
@@ -119,7 +109,7 @@ def load_metabolic_model_reactions(filename, format = "text", output = "normal")
                 'stoichiometry': stoichiometry,
                 'reaction':reaction,
                 'atommap':atommap,
-                'use' :use,
+                'externalids' :exid,
                 'order':int(counter)
                 }
                 if len(row) >= 6:
@@ -134,25 +124,15 @@ def load_metabolic_model_metabolites(filename, format = "text", output = "normal
     Load Metabolite information from a file with following format.
 
     //Metabolites
-    CO2ex	1	no	no	excreted
-    AcCoA	2	no	carbonsource	no
-    OAC	4	no	no	no
-    OACs	4	no	carbonsource	no
-    OACx	4	no	no	no
-    OACe	4	no	no	excreted
-    Fumx	4	no	no	no
-    OA	2	no	no	no
-    Fume	4	no	no	excreted
-    Tx	4	no	no	no
-    Te	4	no	no	excreted
-    Cit	6	no	no	no
-    AKG	5	no	no	no
-    Suc	4	symmetry	no	no
-    Fum	4	symmetry	no	no
-    Glu	5	no	no	no
-    Gluex	5	no	no	excreted
-    Sucex	4	no	no	excreted
-    Asp	4	no	carbonsource	no
+    CO2ex	1	no	no	excreted	(kegg:C00011)	0.0	300
+    AcCoA	2	no	carbonsource	no	(kegg:C00024)	0.0	300
+    OAC	4	no	no	no	(kegg:C00036)	0.0	300
+    Cit	6	no	no	no	(kegg:C00158)	0.0	300
+    AKG	5	no	no	no	(kegg:C00026)	0.0	300
+    Suc	4	symmetry	no	no	(kegg:C00042)	0.0	300
+    Fum	4	symmetry	no	no	(kegg:C00122)	0.0	300
+    Glu	5	no	no	no	(kegg:C00025)	0.0	300
+    Asp	4	no	carbonsource	no	(kegg:C00049)	0.0	300
 
     Parameters
     ----------
@@ -228,7 +208,14 @@ def load_metabolic_model_metabolites(filename, format = "text", output = "normal
                 'carbonsource':carbonsource,
                 'excreted':excreted,
                 'order' :int(counter),
+                'externalids' :"no external id",
                 }
+                if len(row) >= 6:
+                    metabolites[name]['externalids'] = row[5]
+                if len(row) >= 7:
+                    metabolites[name]['lb'] = float(row[6].replace(" ", ""))
+                    metabolites[name]['ub'] = float(row[7].replace(" ", ""))
+                counter = counter + 1
 
 
 
@@ -240,8 +227,7 @@ def load_metabolic_model_reversibles(filename, format = "text", output = "normal
     Load definitions of reversible reactions from a metabolic model file with following format.
 
     //Reversible_reactions
-    FUM	v6	v7
-    Input	v9+e1	nothing
+    FUM	v6	v7	(kegg:R01082)	0.0	300
 
     Parameters
     ----------
@@ -310,8 +296,14 @@ def load_metabolic_model_reversibles(filename, format = "text", output = "normal
                 'forward':forward,
                 'reverse':reverse,
                 'type': "free",
-                'order' :int(counter)
+                'order' :int(counter),
+                'externalids' :"no external id",
                 }
+                if len(row) >= 4:
+                    dic[name]['externalids'] = row[3]
+                if len(row) >= 5:
+                    dic[name]['lb'] = float(row[4].replace(" ", ""))
+                    dic[name]['ub'] = float(row[5].replace(" ", ""))
                 counter = counter + 1
 
     return(dic)
@@ -321,18 +313,8 @@ def load_metabolic_model_fragments(filename, format = "text", output = "normal")
     Load mass fragment information from a metabolic model file with following format.
 
     //Target_fragments
-    Glue	gcms	Glu_12345	use
-    AKGe	gcms	AKG_12345	use
-    OACo	gcms	OACx_1234	use
-    OACi	gcms	OAC_1234	use
-    OACt	gcms	Fumx_1234	use
-    OACc	gcms	OAC_12+OAC_12	use
-    Txt	gcms	Tx_1234	use
-    Txc	gcms	OAC_34+Fum_4+Suc_4	use
-    Gluf	gcms	Glu_12+Glu_345	no
-    AKGmsms	msms	AKG_12345+AKG_1+AKG_2345	no
-    AKGms	gcms	AKG_12345	no
-    AKGc	gcms	AKG_12+AKG_345	no
+    Glue	gcms	Glu_1:2:3:4:5	use	C5H10N2O3
+    Gluee	gcms	Glu_1:2:3+Glu_4:5	use	C5H10N2O3
 
     Parameters
     ----------
@@ -397,7 +379,7 @@ def load_metabolic_model_fragments(filename, format = "text", output = "normal")
                 mtype = row[1].replace(" ", "")
                 atommap = row[2].replace(" ", "")
                 use = row[3].replace(" ", "")
-                if len(row) == 5:
+                if len(row) >= 5:
                     formula = row[4].replace(" ", "")
                 if name=="": continue
                 dic[name] = {

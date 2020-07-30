@@ -13,4 +13,17 @@ ver0.56
 20/5/17 H0ratio = 0.9893 and H1ratio = 0.0107 were changed in generate_calmdv
 20/5/17 H0ratio = 0.9893 and H1ratio = 0.0107 were changed in set_experiment
 20/5/17 get_degree_of_freedom was corrected. if mode is "ST", number of free metabolites were extracted from degree of freedom
-20/5/17 New input parameter "outputthres" was added to search_ci
+20/5/17 search_ci in metablicmodel: New input parameter "outputthres" was added
+ver0.57
+20/7/12 initializing_Rm_fitting, fit_r_mdv_scipy, fit_r_mdv_nlopt in optimizaton: Expection is newly raised to avoid error in  paralell proceccing
+20/7/13 joblib instead of pp is employed for paralell proceccing
+20/7/30 Format of model definition file was updated to support external with a backward compatibility
+20/7/30 load_metabolic_model_reactions in mfapyio: Support external id
+20/7/30 load_metabolic_model_metabolites in mfapyio: Support external id
+20/7/30 load_metabolic_model_reversibles in mfapyio: Support external id
+20/7/30 load_metabolic_model_fragments in mfapyio: Support external id
+20/7/30 External id data was added to Example_0_toymodel_model.txt
+20/7/30 External id data was added to Example_1_toymodel_model.txt
+20/7/30 show_results in metablicmodel: Output format was modified for more beautiful alignment
+20/7/30 show_results in metablicmodel: "checkrss" option was added to check RSS levels of each fragment and "fitting" reactions and metabolites.
+

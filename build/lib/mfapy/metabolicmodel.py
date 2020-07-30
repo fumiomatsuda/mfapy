@@ -298,8 +298,8 @@ class MetabolicModel:
         for id in sorted(self.reactions.keys(), key=lambda x: self.reactions[x]['order']):
             # ignore unused reactions
             #
-            if self.reactions[id]['use'] != 'use':
-                continue
+            #if self.reactions[id]['use'] != 'use':
+            #    continue
             #
             # Order of the reaction in self.reaction_ids is stored
             #
@@ -2225,19 +2225,25 @@ class MetabolicModel:
             #
             # y0[13] = 1.0
             #
+
+            # 200517 ver 056 modified
+            H0ratio = 0.9893
+            H1ratio = 0.0107
+
             (stem, pos) = emu.split("_")
+            pos = pos.replace(':','') #200517 ver 056 modified 炭素移動の表記が変わったので
             number_of_carbons = len(pos)
             #string += "\ty0["+str(position)+"] = 1.0\n"
             string += "\ty0["+str(position)+"] = "
-            string += str(0.98893**number_of_carbons)
+            string += str(H0ratio**number_of_carbons)
             string += "#"+str(emu)+" "+str(position)
             string += "\n"
             string += "\ty0["+str(position+1)+"] = "
-            string += str((0.98893**(number_of_carbons-1.0))*0.01106*number_of_carbons)
+            string += str((H0ratio**(number_of_carbons-1.0))*H1ratio*number_of_carbons)
             string += "\n"
             if number_of_carbons > 2:
                 string += "\ty0["+str(position+2)+"] = "
-                string += str(1.0- 0.98893**number_of_carbons - (0.98893**(number_of_carbons-1.0))*0.01106*number_of_carbons)
+                string += str(1.0- H0ratio**number_of_carbons - (H0ratio**(number_of_carbons-1.0))*H1ratio*number_of_carbons)
                 string += "\n"
             #print emu,position,stem, pos
         # emu_list = {}\
@@ -2946,12 +2952,17 @@ class MetabolicModel:
                 for position, emu in enumerate(self.emu_order_in_y):
                     #
                     if emu[1] == 0:
+                        # 200517 ver 056 modified
+                        H0ratio = 0.9893
+                        H1ratio = 0.0107
+
                         (stem, pos) = emu[0].split("_")
+                        pos = pos.replace(':','') #200517 ver 056 modified 炭素移動の表記が変わったので
                         number_of_carbons = len(pos)
-                        self.experiments[name]["y0"][position] = 0.98893**number_of_carbons
-                        self.experiments[name]["y0"][position + 1] = (0.98893**(number_of_carbons-1.0))*0.01106*number_of_carbons
+                        self.experiments[name]["y0"][position] = H0ratio**number_of_carbons
+                        self.experiments[name]["y0"][position + 1] = (H0ratio**(number_of_carbons-1.0))*H1ratio*number_of_carbons
                         if number_of_carbons > 2:
-                            self.experiments[name]["y0"][position + 2] = 1.0- 0.98893**number_of_carbons - (0.98893**(number_of_carbons-1.0))*0.01106*number_of_carbons
+                            self.experiments[name]["y0"][position + 2] = 1.0- H0ratio**number_of_carbons - (H0ratio**(number_of_carbons-1.0))*H1ratio*number_of_carbons
         if self.configuration['callbacklevel'] >= 5:
             print("Set experiment: ", name,' was added to the metabolic model.')
         return True
@@ -3154,7 +3165,7 @@ class MetabolicModel:
 
         if len(template) > 0:
             template = [template[type][id]["value"] for (type, id) in self.vector["ids"]]
-        if method == "parallel":
+        if method == "parallelpp":
             #for i in range(iterations):
             #    tmp_r, Rm_temp, Rm_ind, state = optimize.initializing_Rm_fitting(numbers, vectors, matrixinv, template ,initial_search_iteration_max)
             #    if state == "Determined":
@@ -3182,7 +3193,7 @@ class MetabolicModel:
                 print("This function requires Parallel Python!")
                 return False
 
-            if (self.configuration['callbacklevel'] >= 6):
+            if (self.configuration['callbacklevel'] >= 2):
                 print("Number of active nodes:", job_server.get_active_nodes())
 
             jobs = []
@@ -3207,6 +3218,52 @@ class MetabolicModel:
             if (self.configuration['callbacklevel'] >= 6):
                 job_server.print_stats()
             job_server.destroy()
+        #
+        # joblib
+        #
+        elif method == "parallel":
+            #for i in range(iterations):
+            #    tmp_r, Rm_temp, Rm_ind, state = optimize.initializing_Rm_fitting(numbers, vectors, matrixinv, template ,initial_search_iteration_max)
+            #    if state == "Determined":
+            #        flux_temp_r = self.generate_state_dict(tmp_r)
+            #        fluxes.append(flux_temp_r)
+            #        rsses.append(self.calc_rss(flux_temp_r))
+            #Set ncpus
+            if 'ncpus' in self.configuration:
+                ncpus = self.configuration['ncpus']
+            else:
+                ncpus = 1
+            #
+            # tuple of all parallel python servers to connect with
+            #
+            try:
+                from joblib import Parallel, delayed
+            except:
+                print("This function requires joblib!")
+                return False
+
+
+
+            jobs = []
+
+
+            for i in range(iterations):
+                parameters = (numbers, vectors, matrixinv, template ,initial_search_iteration_max)
+                jobs.append(parameters)
+                #jobs.append([i, job_server.submit(optimize.initializing_Rm_fitting, parameters,
+                # (optimize.calc_protrude_scipy,),
+                # ("numpy","scipy.optimize","mkl"))])
+            result = Parallel(n_jobs=ncpus)([delayed(optimize.initializing_Rm_fitting)(numbers, vectors, matrixinv, template ,initial_search_iteration_max) for (numbers, vectors, matrixinv, template ,initial_search_iteration_max) in jobs])
+
+
+            for results in result:
+                if results == None:
+                    continue
+                tmp_r, Rm_temp, Rm_ind, state = results
+                if state == "Determined":
+                    flux_temp_r = self.generate_state_dict(tmp_r)
+                    fluxes.append(flux_temp_r)
+                    rsses.append(self.calc_rss(flux_temp_r))
 
         else:
             for i in range(iterations):
@@ -3360,7 +3417,102 @@ class MetabolicModel:
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_scipy(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "SLSQP")
             return state, kai, self.generate_state_dict(opt_flux)
 
+        else:
+            #Set callbacklevel
+            if 'ncpus' in self.configuration:
+                ncpus = self.configuration['ncpus']
+            else:
+                ncpus = 1
 
+            #Set callbacklevel
+            if 'ppservers' in self.configuration:
+                ppservers = self.configuration['ppservers']
+            else:
+                ppservers = ("",)
+            #
+            # tuple of all parallel python servers to connect with
+            #
+            try:
+                from joblib import Parallel, delayed
+            except:
+                print("This function requires joblib")
+                return False
+
+            jobs = []
+
+            if method == "SLSQP":
+                for i, flux_temp in enumerate(flux):
+                    parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp, "SLSQP")
+                    jobs.append(parameters)
+                result = Parallel(n_jobs=ncpus)([delayed(optimize.fit_r_mdv_scipy)(configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) for (configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) in jobs])
+
+                    #jobs.append([i, job_server.submit(optimize.fit_r_mdv_scipy, parameters,
+                    # (optimize.calc_MDV_residue_scipy,),
+                    # ("numpy","scipy","scipy.integrate"))])
+            elif method == "LN_PRAXIS":
+                for i, flux_temp in enumerate(flux):
+                    parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp, "LN_PRAXIS")
+                    jobs.append(parameters)
+                result = Parallel(n_jobs=ncpus)([delayed(optimize.fit_r_mdv_nlopt)(configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) for (configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) in jobs])
+
+                    #jobs.append([i, job_server.submit(optimize.fit_r_mdv_nlopt, parameters,
+                    # (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
+                    # ("numpy","nlopt","scipy","scipy.integrate"))])
+            elif method == "GN_CRS2_LM":
+                for i, flux_temp in enumerate(flux):
+                    parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp, "GN_CRS2_LM")
+                    jobs.append(parameters)
+                result = Parallel(n_jobs=ncpus)([delayed(optimize.fit_r_mdv_nlopt)(configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) for (configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) in jobs])
+
+                    #jobs.append([i, job_server.submit(optimize.fit_r_mdv_nlopt, parameters,
+                    # (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
+                    # ("numpy","nlopt","scipy","scipy.integrate"))])
+            elif method == "deep":
+                for i, flux_temp in enumerate(flux):
+                    parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp)
+                    jobs.append(parameters)
+                result = Parallel(n_jobs=ncpus)([delayed(optimize.fit_r_mdv_deep)(configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp) for (configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp) in jobs])
+
+                    #jobs.append([i, job_server.submit(optimize.fit_r_mdv_deep, parameters,
+                    # (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
+                    # ("numpy","nlopt","scipy","scipy.integrate"))])
+            else:
+                for i, flux_temp in enumerate(flux):
+                    parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp)
+                    jobs.append(parameters)
+                result = Parallel(n_jobs=ncpus)([delayed(optimize.fit_r_mdv_deep)(configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp) for (configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp) in jobs])
+
+                    #jobs.append([i, job_server.submit(optimize.fit_r_mdv_deep, parameters,
+                    # (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
+                    # ("numpy","nlopt","scipy","scipy.integrate"))])
+
+
+            state_list = []
+            kai_list = []
+            flux_list = []
+            Rm_ind_sol_list = []
+            for job in result:
+                results = job
+                if results == None:
+                    continue
+                state, rss, flux, Rm_ind_sol = results
+                if len(flux) == 0:
+                    continue
+                state_list.append(state)
+                kai_list.append(rss)
+                flux_list.append(self.generate_state_dict(flux))
+                Rm_ind_sol_list.append(Rm_ind_sol)
+                if (self.configuration['callbacklevel'] >= 3):
+                    print('RSS', j,':', rss, state)
+
+            order = list(range(len(state_list)))
+            order.sort(key = lambda x: kai_list[x])
+            states = [state_list[x] for x in order]
+            kais = [kai_list[x] for x in order]
+            fluxes = [flux_list[x] for x in order]
+            return states, kais, fluxes
+
+        """
         else:
             #Set callbacklevel
             if 'ncpus' in self.configuration:
@@ -3445,201 +3597,10 @@ class MetabolicModel:
             kais = [kai_list[x] for x in order]
             fluxes = [flux_list[x] for x in order]
             return states, kais, fluxes
-    def pp_pretreatment(self):
-        """
-        Pitch a fitting_flux job to parallel python
-
-        Parameters
-        ----------
-
-        Examples
-        --------
-
-
-        See Also
-        --------
-
-
-
         """
 
-        #Set callbacklevel
-        if 'ncpus' in self.configuration:
-            ncpus = self.configuration['ncpus']
-        else:
-            ncpus = 1
 
-        #Set callbacklevel
-        if 'ppservers' in self.configuration:
-            ppservers = self.configuration['ppservers']
-        else:
-            ppservers = ("",)
-        #
-        # tuple of all parallel python servers to connect with
-        #
-        try:
-            import pp
-            job_server = pp.Server(ncpus = ncpus, ppservers=ppservers)
-        except:
-            print("This function requires Parallel Python!")
-            return False
-
-        if (self.configuration['callbacklevel'] >= 4):
-            print("Number of active nodes by pp", job_server.get_active_nodes())
-
-        return job_server
-
-
-    def pitch_fitting_flux_job(self, job_server, method = 'SLSQP', flux = [], jobs = [], label = ""):
-        """
-        Pitch a fitting_flux job to parallel python
-
-        Parameters
-        ----------
-        method:
-            'SLSQP': A sequential least squares programming algorithm implemented by scipy
-            "LN_PRAXIS": Gradient-free local optimization via the "principal-axis method" implemented by nlopt
-            "GN_CRS2_LM": Controlled random searchimplemented for global optimizatoin by nlopt
-            'deep': Repeated execution of SLSQP & LN_PRAXIS
-        flux: Initial flux distribution generated by self.generate_initial_states().
-        When flux is a dict of one state, single fitting trial is exected.
-        When flux is a array of multiple dists of states, muptiple fitting trial is exected by using the parallel python.
-
-        output: Output method. (default, output = 'result')
-            'result': Fitting problem is solved inside of the function.
-            'for_parallel': Fitting problems is NOT solved inside of the function. In this mode, a tupple of
-            parameters for fit_r_mdv_pyopt() functions are generated for parallel computing.
-
-        Parameters in self.configuration:
-            iteration_max: Maximal number of interation in the optimizers. Example: self.set_configuration(iteration_max = 1000)
-            number_of_repeat: Number of repeated execution by 'deep' functions. model.set_configuration(number_of_repeat = 2)
-
-        Examples
-        --------
-        #
-        # Single fitting trial
-        #
-        >>> state, flux_initial = model.generate_initial_states(10, 1)
-        >>> state, RSS_bestfit, flux_opt = model.fitting_flux(method = 'deep', flux = flux_initial)
-        >>> results= [("deep", flux_opt)]
-        >>> model.show_results(results, pool_size = "off")
-        #
-        # Multipe fitting trials by using parallel python
-        #
-        >>> state, flux_initial = model.generate_initial_states(50, 4)
-        >>> state, RSS_bestfit, flux_opt_slsqp = model.fitting_flux(method = "SLSQP", flux = flux_initial)
-        >>> results= [("deep", flux_opt[0])]
-        >>> model.show_results(results, pool_size = "off")
-        #
-        # Generating parameters for parallel python
-        #
-        >>> parameters = model.fitting_flux(method = "SLSQP", flux = flux_initial, output = "for_parallel")
-
-        See Also
-        --------
-        generate_initial_states()
-
-
-        """
-        #
-        # Check experiment
-        #
-        if len(self.experiments.keys()) == 0:
-            if self.configuration['callbacklevel'] >= 0:
-                print('No experiment was set to the modelnames.')
-            return False
-        if flux == []:
-            if self.configuration['callbacklevel'] >= 0:
-                print('Metabolic state data is required.')
-            return False
-
-
-
-        if isinstance(flux, dict):
-            flux = [flux]
-
-        if method == "SLSQP":
-            for i, flux_temp in enumerate(flux):
-                parameters = self.fitting_flux(method = 'SLSQP', flux = flux_temp, output = 'for_parallel')
-                jobs.append([label, job_server.submit(optimize.fit_r_mdv_scipy, parameters,
-                 (optimize.calc_MDV_residue_scipy,),
-                 ("numpy","scipy","scipy.integrate"))])
-        elif method == "LN_PRAXIS":
-            for i, flux_temp in enumerate(flux):
-                parameters = self.fitting_flux(method = 'LN_PRAXIS', flux = flux_temp, output = 'for_parallel')
-                jobs.append([label, job_server.submit(optimize.fit_r_mdv_nlopt, parameters,
-                 (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
-                 ("numpy","nlopt","scipy","scipy.integrate"))])
-        elif method == "GN_CRS2_LM":
-            for i, flux_temp in enumerate(flux):
-                parameters = self.fitting_flux(method = 'GN_CRS2_LM', flux = flux_temp, output = 'for_parallel')
-                jobs.append([label, job_server.submit(optimize.fit_r_mdv_nlopt, parameters,
-                 (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
-                 ("numpy","nlopt","scipy","scipy.integrate"))])
-        elif method == "deep":
-            for i, flux_temp in enumerate(flux):
-                parameters = self.fitting_flux(method = 'deep', flux =flux_temp, output = 'for_parallel')
-                jobs.append([label, job_server.submit(optimize.fit_r_mdv_deep, parameters,
-                 (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
-                 ("numpy","nlopt","scipy","scipy.integrate"))])
-        else:
-            for i, flux_temp in enumerate(flux):
-                parameters = self.fitting_flux(method = 'deep', flux = flux_temp, output = 'for_parallel')
-                jobs.append([label, job_server.submit(optimize.fit_r_mdv_deep, parameters,
-                 (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
-                 ("numpy","nlopt","scipy","scipy.integrate"))])
-
-
-
-    def pp_posttreatment(self, job_server, jobs):
-        """
-        Pitch a fitting_flux job to parallel python
-
-        Parameters
-        ----------
-
-        Examples
-        --------
-
-
-        See Also
-        --------
-
-
-
-        """
-        label_list = []
-        state_list = []
-        kai_list = []
-        flux_list = []
-        Rm_ind_sol_list = []
-        for label, job in jobs:
-            results = job()
-            if results == None:
-                continue
-            state, rss, flux, Rm_ind_sol = results
-            if len(flux) == 0:
-                continue
-            label_list.append(label)
-            state_list.append(state)
-            kai_list.append(rss)
-            flux_list.append(self.generate_state_dict(flux))
-            Rm_ind_sol_list.append(Rm_ind_sol)
-            if (self.configuration['callbacklevel'] >= 3):
-                print('RSS', j,':', rss, state)
-        if (self.configuration['callbacklevel'] >= 4):
-            job_server.print_stats()
-        job_server.destroy()
-        order = list(range(len(state_list)))
-        order.sort(key = lambda x: kai_list[x])
-        states = [state_list[x] for x in order]
-        kais = [kai_list[x] for x in order]
-        fluxes = [flux_list[x] for x in order]
-        lables = [label_list[x] for x in order]
-        return lables, states, kais, fluxes
-
-
-    def show_results(self, input, flux = "on", rss = "on", mdv = "on", pool_size = "on", filename = "", format = "csv"):
+    def show_results(self, input, flux = "on", rss = "on", mdv = "on", pool_size = "on", checkrss= "off", filename = "", format = "csv"):
         """
         List of reactions in the model with metabolic flux data.
 
@@ -3654,6 +3615,7 @@ class MetabolicModel:
         rss: show rss data "on"/"off"
         mdv: show mdv data "on"/"off"
         pool_size: show metabolite data "on"/"off"
+        check rss: show each RSS value "on"/"off"
         filename: Results are saved when file name is not ""/
         format: "csv" or "text"
 
@@ -3666,34 +3628,35 @@ class MetabolicModel:
         reaction_header = []
         rssd = []
         reaction = []
+        rssdata = []
         mdv_header = []
         mdvd = []
         metabolites_header = []
         metabolites = []
-        #
+
         # Reaction header
         #
-        reaction_header.extend(['Id', 'Reaction'])
+        reaction_header.extend(['Id', 'Reaction', "External ids"])
         reaction_header.extend([z[0] for z in input])
-        reaction_header.extend(['Atom_mapping','lb','ub','Used','Type','Value', 'Stdev', 'Reversible'])
+        reaction_header.extend(['Type','Value', 'Stdev',' lb','ub', 'Atom_mapping','Reversible'])
         #print reaction_header
         #
         # Metabolite header header
         #
-        metabolites_header.extend(['Id', 'C_number'])
+        metabolites_header.extend(['Id', 'C_number', "External ids"])
         metabolites_header.extend([z[0] for z in input])
-        metabolites_header.extend(['Excreted','lb','ub','Symmetry','Type','Value', 'Stdev', 'carbonsource'])
+        metabolites_header.extend(['Type','Value', 'Stdev','lb','ub','Excreted','Symmetry', 'carbonsource'])
         #
         # RSS
         #
         rssd.append([])
-        rssd[0].extend(['RSS', ''])
+        rssd[0].extend(['RSS', '', ""])
         for fluxd in input:
             rssd[0].append(self.calc_rss(fluxd[1]))
         rssd.append([])
         rssd.append([])
-        rssd[1].extend(['Thres', ''])
-        rssd[2].extend(['p_value', ''])
+        rssd[1].extend(['Thres', '', ""])
+        rssd[2].extend(['p_value', '', ""])
         for fluxd in input:
             pvalue, rss_thres = self.goodness_of_fit(fluxd[1], alpha = 0.05)
             rssd[1].append(rss_thres)
@@ -3705,15 +3668,35 @@ class MetabolicModel:
             metabolites.append([])
             metabolites[i].append(metid)# 1 id
             metabolites[i].append(self.metabolites[metid]['C_number'])# 2 reaction
+            metabolites[i].append(self.metabolites[metid]['externalids'])# 2 reaction
             metabolites[i].extend([fluxdd["metabolite"][metid]['value'] for (name, fluxdd) in input])# 4 values
-            metabolites[i].append(self.metabolites[metid]['excreted'])# 5 atom mapping
+            metabolites[i].append(self.metabolites[metid]['type'])# 8 type
+            metabolites[i].append(self.metabolites[metid]['value'])# 9 met value (measured)
+            metabolites[i].append(self.metabolites[metid]['stdev'])# 10 met std
             metabolites[i].append(self.metabolites[metid]['lb'])# 6 lb
             metabolites[i].append(self.metabolites[metid]['ub'])# 7 ub
-            metabolites[i].append(self.metabolites[metid]['symmetry'])# 8 use or not
-            metabolites[i].append(self.metabolites[metid]['type'])# 9 type
-            metabolites[i].append(self.metabolites[metid]['value'])# 10 met value (measured)
-            metabolites[i].append(self.metabolites[metid]['stdev'])# 11 met std
-            metabolites[i].append(self.metabolites[metid]['carbonsource'])# 12 revserible#id
+            metabolites[i].append(self.metabolites[metid]['excreted'])# 5 atom mapping
+            metabolites[i].append(self.metabolites[metid]['symmetry'])# 11 symmetry
+            metabolites[i].append(self.metabolites[metid]['carbonsource'])# 12 revserible
+            #
+            #metabolites rss
+            #
+            if not self.metabolites[metid]['type'] == "fitting":
+                continue
+            value = self.metabolites[metid]['value']
+            stdev = self.metabolites[metid]['stdev']
+            fluxlist = [fluxdd["metabolite"][metid]['value'] for (name, fluxdd) in input]
+            temprssd = []
+            temprssd.append(metid)# 1 id
+            temprssd.append(self.metabolites[metid]['C_number'])# 2 reaction
+            temprssd.append(self.metabolites[metid]['externalids'])# 2 reaction
+            temprssd.extend([((x-value)/stdev)**2 for x in fluxlist])# 4 values
+            temprssd.append(self.metabolites[metid]['type'])# 8 type
+            temprssd.append(self.metabolites[metid]['value'])# 9 met value (measured)
+            temprssd.append(self.metabolites[metid]['stdev'])# 10 met std
+            rssdata.append(temprssd)
+
+
         #
         # Reaction and fluxes
         #
@@ -3721,15 +3704,34 @@ class MetabolicModel:
             reaction.append([])
             reaction[i].append(rid)# 1 id
             reaction[i].append(self.reactions[rid]['stoichiometry'])# 2 reaction
+            reaction[i].append(self.reactions[rid]['externalids'])# 3 external ids
             reaction[i].extend([fluxdd["reaction"][rid]['value'] for (name, fluxdd) in input])# 4 values
-            reaction[i].append(self.reactions[rid]['atommap'])# 5 atom mapping
+            reaction[i].append(self.reactions[rid]['type'])# 8 type
+            reaction[i].append(self.reactions[rid]['value'])# 9 flux value
+            reaction[i].append(self.reactions[rid]['stdev'])# 10 flux std
             reaction[i].append(self.reactions[rid]['lb'])# 6 lb
             reaction[i].append(self.reactions[rid]['ub'])# 7 ub
-            reaction[i].append(self.reactions[rid]['use'])# 8 use or not
-            reaction[i].append(self.reactions[rid]['type'])# 9 type
-            reaction[i].append(self.reactions[rid]['value'])# 10 flux value
-            reaction[i].append(self.reactions[rid]['stdev'])# 11 flux std
-            reaction[i].append(self.reactions[rid]['reversible'])# 12 revserible#id
+            reaction[i].append(self.reactions[rid]['atommap'])# 5 atom mapping
+            reaction[i].append(self.reactions[rid]['reversible'])# 11 revserible#id
+            #
+            # RSS
+            #
+            if not self.reactions[rid]['type'] == "fitting":
+                continue
+
+            value = self.reactions[rid]['value']
+            stdev = self.reactions[rid]['stdev']
+            fluxlist =[fluxdd["reaction"][rid]['value'] for (name, fluxdd) in input]
+            temprssd = []
+            temprssd.append(rid)# 1 id
+            temprssd.append(self.reactions[rid]['stoichiometry'])# 2 reaction
+            temprssd.append(self.reactions[rid]['externalids'])# 3 external ids
+            temprssd.extend([((x-value)/stdev)**2 for x in fluxlist])# 4 values
+            temprssd.append(self.reactions[rid]['type'])# 8 type
+            temprssd.append(self.reactions[rid]['value'])# 9 flux value
+            temprssd.append(self.reactions[rid]['stdev'])# 10 flux std
+            rssdata.append(temprssd)
+
         reversible_list = self.reversible.keys()
         length = len(reaction)
         for i, rid in enumerate(self.reversible.keys()):
@@ -3738,21 +3740,43 @@ class MetabolicModel:
             reaction.append([])
             reaction[length + i].append(rid)# 1 id
             reaction[length + i].append(str(forward + "<=>" + reverse))# 2 reaction
+            reaction[length + i].append(self.reversible[rid]['externalids'])# 3 reaction
             reaction[length + i].extend([fluxdd["reversible"][rid]['value'] for (name, fluxdd) in input])# 4 values
-            reaction[length + i].append('')# 5 atom mapping
+            reaction[length + i].append(self.reversible[rid]['type'])# 8 type
+            reaction[length + i].append(self.reversible[rid]['value'])# 9 flux value
+            reaction[length + i].append(self.reversible[rid]['stdev'])# 10 flux std
             reaction[length + i].append(self.reversible[rid]['lb'])# 6 lb
             reaction[length + i].append(self.reversible[rid]['ub'])# 7 ub
-            reaction[length + i].append('')# 8 use or not
-            reaction[length + i].append(self.reversible[rid]['type'])# 9 type
-            reaction[length + i].append(self.reversible[rid]['value'])# 10 flux value
-            reaction[length + i].append(self.reversible[rid]['stdev'])# 11 flux std
-            reaction[length + i].append('')# 12 revserible#id
+            reaction[length + i].append('')# 5 atom mapping
+            reaction[length + i].append('')# 11 revserible#id
+            #
+            # RSS
+            #
+            if not self.reversible[rid]['type'] == "fitting":
+                continue
+
+            value = self.reversible[rid]['value']
+            stdev = self.reversible[rid]['stdev']
+            fluxlist =[fluxdd["reversible"][rid]['value'] for (name, fluxdd) in input]
+
+            forward = self.reversible[rid]['forward']
+            reverse = self.reversible[rid]['reverse']
+            temprssd = []
+            temprssd.append(rid)# 1 id
+            temprssd.append(str(forward + "<=>" + reverse))# 2 reaction
+            temprssd.append(self.reversible[rid]['externalids'])# 3 reaction
+            temprssd.extend([((x-value)/stdev)**2 for x in fluxlist])# 4 values
+            temprssd.append(self.reversible[rid]['type'])# 8 type
+            temprssd.append(self.reversible[rid]['value'])# 9 flux value
+            temprssd.append(self.reversible[rid]['stdev'])# 10 flux std
+            rssdata.append(temprssd)
+
         #print reaction
         #
         #
         # MDVs header
         #
-        mdv_header.extend(['Experiment', 'Fragment_Num',"Time"])
+        mdv_header.extend(['Experiment', 'Fragment_Num', "Time"])
         mdv_header.extend([fluxd[0] for fluxd in input])
         mdv_header.extend(['Use','Ratio','Stdev'])
         #
@@ -3780,6 +3804,25 @@ class MetabolicModel:
                     mdvd[len(mdvd)-1].append(self.experiments[ex_id]['mdv_use'][i]) # 6 use or not
                     mdvd[len(mdvd)-1].append(self.experiments[ex_id]['mdv_exp_original'][i]) # 7 ratio
                     mdvd[len(mdvd)-1].append(self.experiments[ex_id]['mdv_std_original'][i]) # 7 stdev
+                    #
+                    # RSS
+                    #
+                    if not self.experiments[ex_id]['mdv_use'][i] == 1:
+                        continue
+
+                    value = self.experiments[ex_id]['mdv_exp_original'][i]
+                    stdev = self.experiments[ex_id]['mdv_std_original'][i]
+                    fluxlist =[mdvdd[1][fragment][number] for mdvdd in mdv_data]
+
+                    temprssd = []
+                    temprssd.append(ex_id) # 1 ex
+                    temprssd.append(fragment_number) # 2 fragment
+                    temprssd.append(int(0)) # 3 Timecourse
+                    temprssd.extend([((x-value)/stdev)**2 for x in fluxlist])
+                    temprssd.append(self.experiments[ex_id]['mdv_use'][i]) # 6 use or not
+                    temprssd.append(self.experiments[ex_id]['mdv_exp_original'][i]) # 7 ratio
+                    temprssd.append(self.experiments[ex_id]['mdv_std_original'][i]) # 7 stdev
+                    rssdata.append(temprssd)
 
             elif self.experiments[ex_id]['mode'] == "INST":
                 timepoints = self.experiments[ex_id]['timepoint']
@@ -3806,6 +3849,27 @@ class MetabolicModel:
                     mdvd[len(mdvd)-1].append(self.experiments[ex_id]['mdv_use'][j]) # 6 use or not
                     mdvd[len(mdvd)-1].append(self.experiments[ex_id]['mdv_exp_original'][j]) # 7 ratio
                     mdvd[len(mdvd)-1].append(self.experiments[ex_id]['mdv_std_original'][j]) # 7 stdev
+                    #
+                    # RSS
+                    #
+                    if not self.experiments[ex_id]['mdv_use'][j] == 1:
+                        continue
+                    value = self.experiments[ex_id]['mdv_exp_original'][j]
+                    stdev = self.experiments[ex_id]['mdv_std_original'][j]
+                    fluxlist =[mdvdd[1][fragment][timepoint_id[timepoint_list[j]]][number] for mdvdd in mdv_data]
+
+                    temprssd = []
+                    temprssd.append(ex_id) # 1 ex
+
+                    temprssd.append(fragment_number) # 2 fragment
+                    temprssd.append(timepoint_list[j])   # 3 timepoint
+                    temprssd.extend([((x-value)/stdev)**2 for x in fluxlist])
+                    temprssd.append(ex_id) # 1 ex
+                    temprssd.append(self.experiments[ex_id]['mdv_use'][j]) # 6 use or not
+                    temprssd.append(self.experiments[ex_id]['mdv_exp_original'][j]) # 7 ratio
+                    temprssd.append(self.experiments[ex_id]['mdv_std_original'][j]) # 7 stdev
+                    rssdata.append(temprssd)
+
 
         #
         #
@@ -3814,131 +3878,164 @@ class MetabolicModel:
         #
         if len(filename) > 0:
             import csv
-            if format == "csv":
-                with open(filename, 'w', newline='') as f:
+
+            with open(filename, 'w', newline='') as f:
+                if format == "csv":
                     writer = csv.writer(f, dialect='excel')
-                    #writer = csv.writer(f)
-                    if rss == "on":
-                        writer.writerow(reaction_header)
-                        writer.writerows(rssd)
-                    if flux == "on":
-                        writer.writerow(reaction_header)
-                        writer.writerows(reaction)
-                    if pool_size == "on":
-                        writer.writerow(metabolites_header)
-                        writer.writerows(metabolites)
-                    if mdv == "on":
-                        writer.writerow(mdv_header)
-                        writer.writerows(mdvd)
-                f.close()
-            if format == "text":
-                with open(filename, 'w', newline='') as f:
+                else:
                     writer = csv.writer(f, delimiter='\t')
-                    if rss == "on":
-                        writer.writerow(reaction_header)
-                        writer.writerows(rssd)
-                    if flux == "on":
-                        writer.writerow(reaction_header)
-                        writer.writerows(reaction)
-                    if pool_size == "on":
-                        writer.writerow(metabolites_header)
-                        writer.writerows(metabolites)
-                    if mdv == "on":
-                        writer.writerow(mdv_header)
-                        writer.writerows(mdvd)
+                #writer = csv.writer(f)
+                if rss == "on":
+                    writer.writerow(reaction_header)
+                    writer.writerows(rssd)
+                if flux == "on":
+                    writer.writerow(reaction_header)
+                    writer.writerows(reaction)
+                if pool_size == "on":
+                    writer.writerow(metabolites_header)
+                    writer.writerows(metabolites)
+                if mdv == "on":
+                    writer.writerow(mdv_header)
+                    writer.writerows(mdvd)
+                if checkrss == "on":
+                    writer.writerow(mdv_header)
+                    writer.writerows(rssdata)
+
+
         else:
             text = ""
             if rss == "on":
                 #print reaction header
                 text = text + "{0:15.15s}".format(reaction_header[0])
                 text = text + "{0:25.25s}".format(reaction_header[1])
+                text = text + "{0:10.10s}".format(reaction_header[2])
                 for i in range(len(input)):
-                    text = text + "{0:>8.7s}".format(str(reaction_header[2+i]))
+                    text = text + "{0:>8.7s}".format(str(reaction_header[3+i]))
                 text = text + "\n"
                 for data in rssd:
                     text = text + "{0:15.15s}".format(data[0])
                     text = text + "{0:25.25s}".format(data[1])
+                    text = text + "{0:10.10s}".format(data[2])
                     for i in range(len(input)):
-                        text = text + "{0:>8.2f}".format(data[2+i])
+                        text = text + "{0:>8.2f}".format(data[3+i])
                     text = text + "\n"
 
             if flux == "on":
                 #print flux data
                 text = text + "{0:15.15s}".format(reaction_header[0])
                 text = text + "{0:25.25s}".format(reaction_header[1])
+                text = text + "{0:10.10s}".format(reaction_header[2])
+                step = 2
                 for i in range(len(input)):
-                    text = text + "{0:>8.7s}".format(str(reaction_header[2+i]))
-                text = text + " " + "{0:25.25s}".format(reaction_header[-8])
-                text = text + "{0:>6.5s}".format(reaction_header[-7])
-                text = text + "{0:>6.5s}".format(reaction_header[-6])
-                text = text + " " + "{0:5.4s}".format(reaction_header[-5])
-                text = text + "{0:8.7s}".format(reaction_header[-4])
-                text = text + "{0:>6.5s}".format(reaction_header[-3])
-                text = text + "{0:>6.5s}".format(reaction_header[-2])
+                    step = step + 1
+                    text = text + "{0:>8.7s}".format(str(reaction_header[step]))
+                text = text + " " + "{0:8.7s}".format(reaction_header[step + 1])
+                text = text + "{0:>6.5s}".format(reaction_header[step + 2])
+                text = text + "{0:>6.5s}".format(reaction_header[step + 3])
+                text = text + "{0:>6.5s}".format(reaction_header[step + 4])
+                text = text + "{0:>6.5s}".format(reaction_header[step + 5])
+                text = text + " " + "{0:25.25s}".format(reaction_header[step + 6])
+
+
                 text = text + "\n"
                 for data in reaction:
                     text = text + "{0:15.15s}".format(data[0])
                     text = text + "{0:25.25s}".format(data[1])
+                    text = text + "{0:10.10s}".format(data[2])
+                    step = 2
                     for i in range(len(input)):
-                        text = text + "{0:>8.1f}".format(data[2+i])
-                    text = text + " " + "{0:25.25s}".format(data[-8])
-                    text = text + "{0:6.1f}".format(float(data[-7]))
-                    text = text + "{0:6.1f}".format(float(data[-6]))
-                    text = text + " " + "{0:5.4s}".format(data[-5])
-                    text = text + "{0:8.7s}".format(data[-4])
-                    text = text + "{0:6.1f}".format(data[-3])
-                    text = text + "{0:6.1f}".format(data[-2])
+                        step = step + 1
+                        text = text + "{0:>8.1f}".format(data[step])
+                    text = text + " " + "{0:8.7s}".format(data[step + 1])
+                    text = text + "{0:6.1f}".format(data[step + 2])
+                    text = text + "{0:6.1f}".format(data[step + 3])
+                    text = text + "{0:6.1f}".format(float(data[step + 4]))
+                    text = text + "{0:6.1f}".format(float(data[step + 5]))
+                    text = text + " " + "{0:25.25s}".format(data[step + 6])
                     text = text + "\n"
 
             if pool_size == "on":
                 #print reaction header
                 text = text + "{0:15.15s}".format(metabolites_header[0])
-                text = text + "{0:5.5s}".format(metabolites_header[1])
+                text = text + "{0:25.5s}".format(metabolites_header[1])
+                text = text + "{0:10.10s}".format(metabolites_header[2])
+                step = 2
                 for i in range(len(input)):
-                    text = text + "{0:>8.7s}".format(str(metabolites_header[2+i]))
-                text = text + " "+"{0:6.6s}".format(metabolites_header[-7])
-                text = text + " "+"{0:6.6s}".format(metabolites_header[-6])
-                text = text + " "+"{0:9.9s}".format(metabolites_header[-5])
-                text = text + "{0:7.7s}".format(metabolites_header[-4])
-                text = text + "{0:>6.6s}".format(metabolites_header[-3])
-                text = text + "{0:>6.6s}".format(metabolites_header[-2])
+                    step = step + 1
+                    text = text + "{0:>8.7s}".format(str(metabolites_header[step]))
+                text = text + " "+"{0:8.7s}".format(metabolites_header[step + 1])
+                text = text + "{0:>6.6s}".format(metabolites_header[step + 2])
+                text = text + "{0:>6.6s}".format(metabolites_header[step + 3])
+
+                text = text + " "+"{0:6.6s}".format(metabolites_header[step + 4])
+                text = text + " "+"{0:6.6s}".format(metabolites_header[step + 5])
+                text = text + " "+"{0:9.9s}".format(metabolites_header[step + 6])
+                text = text + " "+"{0:9.9s}".format(metabolites_header[step + 7])
+                text = text + " "+"{0:9.9s}".format(metabolites_header[step + 8])
                 text = text + "\n"
                 for data in metabolites:
                     text = text + "{0:15.15s}".format(data[0])
-                    text = text + "{0:5.0f}".format(data[1])
+                    text = text + "{0:<25.0f}".format(data[1])
+                    text = text + "{0:10.10s}".format(data[2])
+                    step = 2
                     for i in range(len(input)):
-                        text = text + "{0:>8.3f}".format(data[2+i])
-                    text = text + " "+"{0:6.3f}".format(float(data[-7]))
-                    text = text + " "+"{0:6.1f}".format(float(data[-6]))
-                    text = text + " "+"{0:9.9s}".format(data[-5])
-                    text = text + "{0:7.7s}".format(data[-4])
-                    text = text + "{0:6.1f}".format(data[-3])
-                    text = text + "{0:6.1f}".format(data[-2])
+                        step = step + 1
+                        text = text + "{0:>8.3f}".format(data[step])
+                    text = text + " "+"{0:8.7s}".format(data[step + 1])
+                    text = text + "{0:6.1f}".format(data[step + 2])
+                    text = text + "{0:6.1f}".format(data[step + 3])
+
+                    text = text + " "+"{0:6.3f}".format(float(data[step + 4]))
+                    text = text + " "+"{0:6.1f}".format(float(data[step + 5]))
+                    text = text + " "+"{0:9.9s}".format(data[step + 6])
+                    text = text + " "+"{0:9.9s}".format(data[step + 7])
+                    text = text + " "+"{0:9.9s}".format(data[step + 8])
+
                     text = text + "\n"
 
             if mdv == "on":
                 text = text + "{0:15.15s}".format(mdv_header[0])
-                text = text + "{0:15.10s}".format(mdv_header[1])
-                text = text + "{0:5.5s}".format(mdv_header[2])
+                text = text + "{0:25.10s}".format(mdv_header[1])
+                text = text + "{0:10.5s}".format(mdv_header[2])
                 for i in range(len(input)):
-                    text = text + "{0:8.7s}".format(str(mdv_header[3+i]))
-                text = text + "{0:>6.5s}".format(str(mdv_header[-3]))
+                    text = text + "{0:>8.7s}".format(str(mdv_header[3+i]))
+                text = text + "{0:>8.5s}".format(str(mdv_header[-3]))
                 text = text + " " + "{0:>6.6s}".format(mdv_header[-2])
                 text = text + "{0:>6.6s}".format(mdv_header[-1])
                 text = text + "\n"
                 for data in mdvd:
                     text = text + "{0:15.15s}".format(data[0])
-                    text = text + "{0:15.15s}".format(data[1])
-                    text = text + "{0:5.2f}".format(data[2])
+                    text = text + "{0:25.15s}".format(data[1])
+                    text = text + "{0:<10.2f}".format(data[2])
                     for i in range(len(input)):
                         text = text + "{0:8.4f}".format(data[3+i])
-                    text = text + "{0:>6.5s}".format(str(data[-3]))
+                    text = text + "{0:>8.5s}".format(str(data[-3]))
+                    text = text + " " + "{0:6.4f}".format(data[-2])
+                    text = text + "{0:6.2f}".format(data[-1])
+                    text = text + "\n"
+            if checkrss == "on":
+                text = text + "{0:15.15s}".format(mdv_header[0])
+                text = text + "{0:25.10s}".format(mdv_header[1])
+                text = text + "{0:10.5s}".format(mdv_header[2])
+                for i in range(len(input)):
+                    text = text + "{0:>8.7s}".format(str(mdv_header[3+i]))
+                text = text + "{0:>8.5s}".format(str(mdv_header[-3]))
+                text = text + " " + "{0:>6.6s}".format(mdv_header[-2])
+                text = text + "{0:>6.6s}".format(mdv_header[-1])
+                text = text + "\n"
+                for data in rssdata:
+                    text = text + "{0:15.15s}".format(data[0])
+                    text = text + "{0:25.15s}".format(data[1])
+                    text = text + "{0:<10.2s}".format(str(data[2]))
+                    for i in range(len(input)):
+                        text = text + "{0:8.2f}".format(data[3+i])
+                    text = text + "{0:>8.5s}".format(str(data[-3]))
                     text = text + " " + "{0:6.4f}".format(data[-2])
                     text = text + "{0:6.2f}".format(data[-1])
                     text = text + "\n"
             print(text)
 
-    def calc_rss(self, flux, mode = "flux"):
+    def calc_rss(self, fluxes, mode = "flux"):
         """
         Determine a residual sum of square (RSS) between estimated MDVs of 'flux' and measured MDVs in 'experiment(s)'
 
@@ -3976,54 +4073,69 @@ class MetabolicModel:
             if self.configuration['callbacklevel'] >= 0:
                 print('No experiment was set to the modelnames.')
             return False
-        if flux == []:
+        if fluxes == []:
             if self.configuration['callbacklevel'] >= 0:
                 print('Metabolic state data is required.')
             return False
 
-        # zero independent flux
-        if mode == "independent":
-            Rm_ind = flux
+        if type(fluxes) == list:
+            fluxlist = fluxes
         else:
-            Rm_ind = [flux[group][id]["value"] for (group, id) in self.vector['independent_flux']]
-        #
-        # MDV vector of all experiments
-        #
+            fluxlist = [fluxes]
 
-        mdv_exp_original = list(self.vector["value"])
-        mdv_std_original = list(self.vector["stdev"])
-        mdv_use = list(self.vector["use"])
-        for experiment in sorted(self.experiments.keys()):
-            mdv_exp_original.extend(self.experiments[experiment]['mdv_exp_original'])
-            mdv_std_original.extend(self.experiments[experiment]['mdv_std_original'])
-            mdv_use.extend(self.experiments[experiment]['mdv_use'])
-        mdv_exp = numpy.array([y for x, y in enumerate(mdv_exp_original) if mdv_use[x] != 0])
-        spectrum_std = numpy.array([y for x, y in enumerate(mdv_std_original) if mdv_use[x] != 0])
-        #
-        # Covariance matrix
-        #
-        covinv = numpy.zeros((len(spectrum_std),len(spectrum_std)))
-        for i, std in enumerate(spectrum_std):
-            if std <= 0.0:
-                print("Error in ", i, std)
-            covinv[i,i] = 1.0/(std**2)
+        rss_list = []
 
-        rss = optimize.calc_MDV_residue(Rm_ind,
-            stoichiometric_num = self.numbers['independent_start'],
-            reaction_num= self.numbers['total_number'],
-            matrixinv=self.matrixinv,
-            experiments=self.experiments,
-            mdv_exp=mdv_exp,
-            mdv_use=mdv_use,
-            covinv=covinv,
-            Rm_initial= self.vector["Rm_initial"],
-            lb = copy.copy(self.vector["lb"]),
-            ub = copy.copy(self.vector["ub"]),
-            reac_met_number = self.numbers['reac_met_number'],
-            calmdv = self.func["calmdv"],
-            diffmdv = self.func["diffmdv"]
-            )
-        return rss
+        for flux in fluxlist:
+            # zero independent flux
+            if mode == "independent":
+                Rm_ind = flux
+            else:
+                if type(flux) == list:
+                    flux = flux[0]
+
+                Rm_ind = [flux[group][id]["value"] for (group, id) in self.vector['independent_flux']]
+            #
+            # MDV vector of all experiments
+            #
+
+            mdv_exp_original = list(self.vector["value"])
+            mdv_std_original = list(self.vector["stdev"])
+            mdv_use = list(self.vector["use"])
+            for experiment in sorted(self.experiments.keys()):
+                mdv_exp_original.extend(self.experiments[experiment]['mdv_exp_original'])
+                mdv_std_original.extend(self.experiments[experiment]['mdv_std_original'])
+                mdv_use.extend(self.experiments[experiment]['mdv_use'])
+            mdv_exp = numpy.array([y for x, y in enumerate(mdv_exp_original) if mdv_use[x] != 0])
+            spectrum_std = numpy.array([y for x, y in enumerate(mdv_std_original) if mdv_use[x] != 0])
+            #
+            # Covariance matrix
+            #
+            covinv = numpy.zeros((len(spectrum_std),len(spectrum_std)))
+            for i, std in enumerate(spectrum_std):
+                if std <= 0.0:
+                    print("Error in ", i, std)
+                covinv[i,i] = 1.0/(std**2)
+
+            rss = optimize.calc_MDV_residue(Rm_ind,
+                stoichiometric_num = self.numbers['independent_start'],
+                reaction_num= self.numbers['total_number'],
+                matrixinv=self.matrixinv,
+                experiments=self.experiments,
+                mdv_exp=mdv_exp,
+                mdv_use=mdv_use,
+                covinv=covinv,
+                Rm_initial= self.vector["Rm_initial"],
+                lb = copy.copy(self.vector["lb"]),
+                ub = copy.copy(self.vector["ub"]),
+                reac_met_number = self.numbers['reac_met_number'],
+                calmdv = self.func["calmdv"],
+                diffmdv = self.func["diffmdv"]
+                )
+            rss_list.append(rss)
+        if type(fluxes) == list:
+            return rss_list
+        else:
+            return rss_list[0]
 
     def goodness_of_fit(self, flux, alpha = 0.05):
         """
@@ -4134,8 +4246,16 @@ class MetabolicModel:
         degree_of_freedom: degree of freedom.
 
         """
-        return self.numbers["independent_number"]
-
+        #modified 056 200517
+        if self.experiments[sorted(self.experiments.keys())[0]]["mode"] == "ST":
+            free_metabolites = 0
+            for i in range(len(self.metabolite_ids)):
+                if self.metabolites[self.metabolite_ids[i]]["type"] == "free":
+                    free_metabolites = free_metabolites + 1
+            p = self.numbers["independent_number"] - free_metabolites
+            return p
+        if self.experiments[sorted(self.experiments.keys())[0]]["mode"] == "INST":
+            return self.numbers["independent_number"]
     def get_number_of_independent_measurements(self):
         """
         Getter of number of independent measurements of the model
@@ -4285,7 +4405,7 @@ class MetabolicModel:
 
 
 
-    def search_ci(self, ci, flux, method = 'grid', alpha = 0.05, dist = 'F_dist'):
+    def search_ci(self, ci, flux, method = 'grid', alpha = 0.05, dist = 'F_dist', outputthres = 2.0):
         """
         Confidence intervals were determined based on information in 'ci'
 
@@ -4299,6 +4419,9 @@ class MetabolicModel:
         dist:
             'F-dist' (default): Using F-distribution
             'chai-dist':Using Chai-square distribution
+
+        outputthres:
+            The grid search results larger than outputthres * threshold rss were removed from output
 
         Examples
         --------
@@ -4354,30 +4477,32 @@ class MetabolicModel:
         # Calc threadfold
         #
         thres, number_of_measurements, degree_of_freedom  = self.get_thres_confidence_interval(flux, alpha = alpha, dist = dist)
-        #
-        # Check Parallel python
-        #
-        try:
-            import pp
-            job_server = pp.Server(ncpus = ncpus, ppservers=ppservers)
-        except:
-            print("This function requires Parallel Python!")
-            return False
 
-        if (callbacklevel >= 2):
-            print("Number of active nodes is " + str(job_server.get_active_nodes()))
+
+        #if (callbacklevel >= 2):
+        #    print("Number of active nodes is " + str(job_server.get_active_nodes()))
         ci['record']['flux'] = flux
         ci['record']['thres'] = thres
         ci['record']['rss'] = self.calc_rss(flux)
 
-        jobs = []
+
 
         #######################################################
         #
         # Grid search
         #
         ########################################################
-        if method == "grid":
+        if method == "gridpp":
+            #
+            # Check Parallel python
+            #
+            try:
+                import pp
+                #job_server = pp.Server(ncpus = ncpus, ppservers=ppservers, restart=True, socket_timeout=7200)
+            except:
+                print("This function requires Parallel Python!")
+                return False
+
             starttime=time.perf_counter()
             step = 0.0
             data_tmp={}
@@ -4387,13 +4512,13 @@ class MetabolicModel:
             # confidence interval
             #
             rss_bestfit = self.calc_rss(flux)
-            jobs=[]
+
             for group, rid in sorted(ci['data'].keys()):
                 if ci['data'][(group, rid)]['use'] != 'on': continue
                 flux_opt_rid = flux[group][rid]['value']
 
 
-                data={(group, rid):{"flux_data":[flux_opt_rid],"rss_data":[rss_bestfit],"raw_flux_data":[[flux["reaction"][i]["value"] for i in self.reaction_ids]]}}
+                data={(group, rid):{"flux_data":[flux_opt_rid],"rss_data":[rss_bestfit],"state":["Best fit"],"log":{},"raw_flux_data":[[flux["reaction"][i]["value"] for i in self.reaction_ids]]}}
                 data_tmp.update(data)
 
                 flux_lower =ci['data'][(group, rid)]["lower_boundary"]
@@ -4405,10 +4530,9 @@ class MetabolicModel:
                 if (flux_upper-flux_lower)>=100:
                     n=15
                 else:
-                    n=10.0
-                n=15
+                    n=10
 
-                if self.configuration['callbacklevel'] >= 1:
+                if callbacklevel >= 1:
                     print("Setting:", rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower," ub ",flux_upper, "n=", n)
                 #
                 # Store original metabolic constrains
@@ -4425,43 +4549,49 @@ class MetabolicModel:
                         break
                     step = (flux_upper-flux_opt_rid) * (0.5**(n-i))
                     fixed_flux = flux_opt_rid + step
-                    if fixed_flux > flux_upper:
+                    if fixed_flux >= flux_upper:
                         fixed_flux = flux_upper
-                    if fixed_flux < flux_lower:
+                    if fixed_flux <= flux_lower:
                         fixed_flux = flux_lower
                     #
                     # Fix reaction
                     #
-
-
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
                     self.update()
-                    if self.configuration['callbacklevel'] >= 3:
-                        print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                    if callbacklevel >= 3:
+                        print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux,flux_lower,flux_upper, "interation", i)
 
-                    for i in range(job_number):
-                        #state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
-                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux)
+                    initial_state_flag = 0
+
+                    for job_n in range(job_number):
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallelpp")
+                        if len(flux_opt) == 0:
+                            if callbacklevel >= 3:
+                                print("Can't find initial state using template:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i, "job", job_n)
+                            state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, method = "parallelpp")
                         #
                         # When initial flux could not be found
                         #
                         if len(flux_opt) == 0:
-                            #
-                            # Set large data
-                            #
-                            data_tmp[(group, rid)]["flux_data"].append(fixed_flux)
-                            data_tmp[(group, rid)]["rss_data"].append(thres * 10.0)
-                            data_tmp[(group, rid)]["raw_flux_data"].append([])
-                            if self.configuration['callbacklevel'] >= 2:
-                                print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
-                            counter_of_missed_initial_state = counter_of_missed_initial_state + 1
+                            if callbacklevel >= 2:
+                                print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i, "job", job_n)
                             continue
                         temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
-                        #parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
-                        #functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
-                        #jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
-                        #if self.configuration['callbacklevel'] >= 2:
-                        #    print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                        initial_state_flag = initial_state_flag + 1
+                    #
+                    # if initial state was found
+                    #
+                    if initial_state_flag > 0:
+                        counter_of_missed_initial_state = 0
+                    else:
+                        counter_of_missed_initial_state = counter_of_missed_initial_state + 1
+                        #
+                        # Set large data
+                        #
+                        data_tmp[(group, rid)]["flux_data"].append(fixed_flux)
+                        data_tmp[(group, rid)]["rss_data"].append(thres * 10.0)
+                        data_tmp[(group, rid)]["raw_flux_data"].append([])
+                        data_tmp[(group, rid)]["state"].append("Failed to find initial state") #
                 #
                 # Set initial search to upward
                 #
@@ -4472,169 +4602,165 @@ class MetabolicModel:
                         break
                     step = (flux_opt_rid - flux_lower) * (0.5**(n-i))
                     fixed_flux = flux_opt_rid - step
-                    if fixed_flux > flux_upper:
+                    if fixed_flux >= flux_upper:
                         fixed_flux = flux_upper
-                    if fixed_flux < flux_lower:
+                    if fixed_flux <= flux_lower:
                         fixed_flux = flux_lower
                     #
                     # Fix reaction
+                    #
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
                     self.update()
-                    if self.configuration['callbacklevel'] >= 3:
-                        print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)                    #
+                    if callbacklevel >= 3:
+                        print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux,flux_lower,flux_upper, "interation", i)
 
-                    for i in range(job_number):
-                        #state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
-                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux)
+                    initial_state_flag = 0
+
+                    for job_n in range(job_number):
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallelpp")
+                        if len(flux_opt) == 0:
+                            if callbacklevel >= 3:
+                                print("Can't find initial state using template:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i, "job", job_n)
+                            state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, method = "parallelpp")
                         #
                         # When initial flux could not be found
                         #
                         if len(flux_opt) == 0:
-                            #
-                            # Set large data
-                            #
-                            data_tmp[(group, rid)]["flux_data"].append(fixed_flux)
-                            data_tmp[(group, rid)]["rss_data"].append(thres * 10.0)
-                            data_tmp[(group, rid)]["raw_flux_data"].append([])
-                            if self.configuration['callbacklevel'] >= 2:
-                                print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
-                            counter_of_missed_initial_state = counter_of_missed_initial_state + 1
+                            if callbacklevel >= 2:
+                                print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i, "job", job_n)
                             continue
                         temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
-                        #parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
-                        #functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
-                        #jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
-                        #if self.configuration['callbacklevel'] >= 2:
-                        #    print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
-                for (group_temp, rid_temp, fixed_flux, flux_opt) in temp_array_initial_fluxes:
+                        initial_state_flag = initial_state_flag + 1
+                    #
+                    # if initial state was found
+                    #
+                    if initial_state_flag > 0:
+                        counter_of_missed_initial_state = 0
+                    else:
+                        counter_of_missed_initial_state = counter_of_missed_initial_state + 1
+                        #
+                        # Set large data
+                        #
+                        data_tmp[(group, rid)]["flux_data"].append(fixed_flux)
+                        data_tmp[(group, rid)]["rss_data"].append(thres * 10.0)
+                        data_tmp[(group, rid)]["raw_flux_data"].append([])
+                        data_tmp[(group, rid)]["state"].append("Failed to find initial state") #
+                #
+                # Pitch jobs to pp
+                #
+                jobs=[]
+                job_server = pp.Server(ncpus = ncpus, ppservers=ppservers, restart=True, socket_timeout=7200)
+                for (group_temp, rid_temp, fixed_flux, flux_opt) in reversed(temp_array_initial_fluxes):
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
                     self.update()
-                    if self.configuration['callbacklevel'] >= 3:
-                        print("Fixed for fitting:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                    try:
+                        rss = self.calc_rss(flux_opt)
+                    except:
+                        print("Skipped:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
+                        continue
+
+                    if callbacklevel >= 3:
+                        print("Fixed for fitting:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
+
                     parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
                     functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
-                    jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
-                    if self.configuration['callbacklevel'] >= 2:
-                        print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                    jobs.append([(group, rid),fixed_flux, flux_opt, job_server.submit(optimize.fit_r_mdv_deep, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
+                    if callbacklevel >= 2:
+                        print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
 
                 #
                 # Return to original position
                 #
                 self.set_constrain(group, rid, temp_type, temp_value, temp_stdev)
                 self.update()
-                if self.configuration['callbacklevel'] >= 2:
+                if callbacklevel >= 2:
                     print("Waiting for pp response", rid, "flux_opt ")
-            #
-            #
-            # Retrive results
-            #
-            for (group, rid), flux_value, job in jobs:
-                results = job()
-                if results == None:
-                    #continue
-                    #
-                    # Large value is used when falied
-                    #
-                    rss = thres * 10.0
-                    opt_flux = []
-                    state = "failed"
-                else:
-                    state, rss, opt_flux, Rm_ind_sol = results
                 #
-                #  Large value is used when falied
+                # Retrive results
                 #
-                if len(opt_flux) == 0:
-                    #continue
-                    rss = thres * 10.0
-                    opt_flux = []
+                for (group, rid), flux_value, flux_opt, job in jobs:
+                    print(group, rid)
+                    results = job()
+                    if results == None:
+                        #continue
+                        #
+                        # Large value is used when falied
+                        #
+                        rss = 1000000000000 #★200317追加　落ちてないのかfialしたのか判断できないので固定値にした
+                        #rss = thres * 10.0 + abs(flux_value-flux_opt) * 0.00001
+                        #opt_flux = []
+                        state = "Failed in optimization"
+                    else:
+                        state, rss, opt_flux, Rm_ind_sol = results
+                        state =  "Finished successfully "
+                    #
+                    #  Large value is used when falied
+                    #
+                    if len(opt_flux) == 0:
+                        #continue
+                        rss = 1000000000000 #★200317追加　落ちてないのかfialしたのか判断できないので固定値にした
+                        #rss = thres * 10.0 + abs(flux_value-flux_opt) * 0.00001
+                        opt_flux = []
+                        state = "Failed in optimization"
+                    #
+                    #  Store data
+                    #
+                    data_tmp[(group, rid)]["flux_data"].append(flux_value)
+                    data_tmp[(group, rid)]["rss_data"].append(rss)
+                    data_tmp[(group, rid)]["raw_flux_data"].append(opt_flux)
+                    data_tmp[(group, rid)]["state"].append(state) #★200517追加　落ちてないのかfialしたのか判断できないので固定値にした
 
-                if self.configuration['callbacklevel'] >= 2:
-                    print("Finished:", rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower,", ub ",flux_upper, ",n ", n)
+                    if callbacklevel >= 2:
+                        print("Finished:", group, rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower,", ub ",flux_upper, "flux_fixed", flux_value, "rss", rss, "state", state)
+                job_server.destroy()
 
-                data_tmp[(group, rid)]["flux_data"].append(flux_value)
-                data_tmp[(group, rid)]["rss_data"].append(rss)
-                data_tmp[(group, rid)]["raw_flux_data"].append(opt_flux)
 
             #
             # Cals again around thres
             #
-            jobs_right=[]
-            jobs_left=[]
-            for group, rid in ci['data'].keys():
+            for group, rid in sorted(ci['data'].keys()):
                 if ci['data'][(group, rid)]['use'] != 'on': continue
-                forward_id = ci['data'][(group, rid)]['forward']
-                reverse_id = ci['data'][(group, rid)]['reverse']
+                print(group, rid)
+
                 flux_upper = ci['data'][(group, rid)]['upper_boundary']
                 flux_lower = ci['data'][(group, rid)]['lower_boundary']
 
                 flux_values_array_tmp = data_tmp[(group, rid)]['flux_data']
                 rss_values_array_tmp = data_tmp[(group, rid)]['rss_data']
                 raw_flux_array_tmp = data_tmp[(group, rid)]['raw_flux_data']
+
+                data_sorted = sorted([(x, rss_values_array_tmp[i]) for i, x in enumerate(flux_values_array_tmp)], key = lambda s: s[0])
+                #
+                # Add right and left end points
+                #
+                interval = flux_upper - flux_lower # Added at 200517 to exactly detect edges
+                data_sorted.append((flux_upper + interval * 0.0001, thres * 11.0))
+                data_sorted.insert(0, (flux_lower - (interval * 0.0001), thres * 11.0))
+                #
+                # points under the threshold
+                #
+                below_threshold  = [x for x in data_sorted if x[1] < thres]
                 # Detect just before the lower boundary
-                data_sorted = sorted([(x, rss_values_array_tmp[i]) for i, x in enumerate(flux_values_array_tmp)], key = lambda s: s[1])
-                #
-                # Determinie lower bondary
-                #
-
-                for i, tuples in enumerate(data_sorted):
-                    rss = tuples[1]
-                    flux_temp = tuples[0]
-                    if i == 0:
-                        rss_previous = rss * 1.0
-                        flux_previous_left  = flux_temp * 1.0
-                        continue
-                    if flux_temp >= flux_previous_left -0.01:
-                        continue
-                    if rss > thres:
-                        #flux_next_left = flux * 1.0
-                        continue
-                    rss_previous = rss * 1.0
-                    flux_previous_left = flux_temp * 1.0
-
-                flux_next_left = ci['data'][(group, rid)]["lower_boundary"]
-                for i, tuples in enumerate(data_sorted):
-                    rss = tuples[1]
-                    flux_temp = tuples[0]
-                    if flux_temp >= flux_previous_left:
-                        continue
-                    if rss > thres:
-                        flux_next_left = flux_temp * 1.0
-                        break
-
-
-
+                flux_previous_left = below_threshold[0][0]
                 # Detect just before the upper boundary
-                data_sorted = sorted([(x, rss_values_array_tmp[i]) for i, x in enumerate(flux_values_array_tmp)], key = lambda s: s[1])
+                flux_previous_right = below_threshold[-1][0]
 
-                for i, tuples in enumerate(data_sorted):
-                    rss = tuples[1]
-                    flux_temp = tuples[0]
-                    if i == 0:
-                        rss_previous = rss * 1.0
-                        flux_previous_right = flux_temp * 1.0
-                        continue
-                    if flux_temp <= flux_previous_right+0.01:
-                        continue
-                    if rss > thres:
-                        #flux_next_right = flux * 1.0
-                        break
-                    rss_previous = rss * 1.0
-                    flux_previous_right = flux_temp * 1.0
+                # Detect just next to the boundary
+                #print(data_sorted, flux_previous_left, flux_previous_right)
+                flux_next_left  = max([x[0] for x in data_sorted if x[0] < flux_previous_left])
+                flux_next_right  = min([x[0] for x in data_sorted if x[0] > flux_previous_right])
+                #print("flux_next_left ",flux_next_left,", flux_next_right ",flux_next_right)
+                data_tmp[(group, rid)]["log"]["1st previous_left"] = flux_previous_left
+                data_tmp[(group, rid)]["log"]["1st previous_right"] = flux_previous_right
+                data_tmp[(group, rid)]["log"]["1st next_left"] = flux_next_left
+                data_tmp[(group, rid)]["log"]["1st next_right"] = flux_next_right
 
-                flux_next_right = ci['data'][(group, rid)]["upper_boundary"]
-                for i, tuples in enumerate(data_sorted):
-                    rss = tuples[1]
-                    flux_temp = tuples[0]
-                    if flux_temp <= flux_previous_right:
-                        continue
-                    if rss > thres:
-                        flux_next_right = flux_temp * 1.0
-                        break
-
-                if self.configuration['callbacklevel'] >= 2:
+                if callbacklevel >= 2:
                     print("flux_previous_left ",flux_previous_left,", flux_previous_right ",flux_previous_right)
                     print("flux_next_left ",flux_next_left,", flux_next_right ",flux_next_right)
-
+                #
+                # This part should be reconsiderd 200517
+                #
                 if (flux_next_right-flux_next_left)>=40:
                     n=20
                 elif (flux_next_right-flux_next_left)>=5:
@@ -4659,38 +4785,41 @@ class MetabolicModel:
                         fixed_flux = flux_lower
 
                     #
-                    # fix reacton
+                    # Fix reaction
                     #
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
                     self.update()
-                    for i in range(job_number):
-                        #state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
-                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux)
+                    if callbacklevel >= 3:
+                        print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e)
+
+                    initial_state_flag = 0
+
+                    for job_n in range(job_number):
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallelpp")
+                        if len(flux_opt) == 0:
+                            if callbacklevel >= 3:
+                                print("Can't find initial state using template:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e, "job", job_n)
+                            state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, method = "parallelpp")
                         #
                         # When initial flux could not be found
                         #
                         if len(flux_opt) == 0:
-                            #
-                            # Set large data
-                            #
-                            data_tmp[(group, rid)]["flux_data"].append(fixed_flux)
-                            data_tmp[(group, rid)]["rss_data"].append(thres * 10.0)
-                            data_tmp[(group, rid)]["raw_flux_data"].append([])
-
-                            if self.configuration['callbacklevel'] >= 2:
-                                print("Passed:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                            if callbacklevel >= 2:
+                                print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e, "job", job_n)
                             continue
                         temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
+                        initial_state_flag = initial_state_flag + 1
+                    #
+                    # if initial state was found
+                    #
+                    if initial_state_flag == 0:
                         #
+                        # Set large data
                         #
-                        #
-                        #parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
-                        #functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
-                        #jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
-                        #if self.configuration['callbacklevel'] >= 2:
-                        #    print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
-
-
+                        data_tmp[(group, rid)]["flux_data"].append(fixed_flux)
+                        data_tmp[(group, rid)]["rss_data"].append(thres * 10.0)
+                        data_tmp[(group, rid)]["raw_flux_data"].append([])
+                        data_tmp[(group, rid)]["state"].append("Failed to find initial state") #
                     #
                     # left reaction
                     #
@@ -4701,167 +4830,809 @@ class MetabolicModel:
                     if fixed_flux < flux_lower:
                         fixed_flux = flux_lower
                     #
-                    # fixed reaction
+                    # Fix reaction
                     #
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
                     self.update()
-                    for i in range(job_number):
-                        #state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
-                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux)
+                    if callbacklevel >= 3:
+                        print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e)
+
+                    initial_state_flag = 0
+
+                    for job_n in range(job_number):
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallelpp")
+                        if len(flux_opt) == 0:
+                            if callbacklevel >= 3:
+                                print("Can't find initial state using template:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e, "job", job_n)
+                            state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, method = "parallelpp")
+                        #
                         # When initial flux could not be found
                         #
                         if len(flux_opt) == 0:
-                            #
-                            # Set large data
-                            #
-                            data_tmp[(group, rid)]["flux_data"].append(fixed_flux)
-                            data_tmp[(group, rid)]["rss_data"].append(thres * 10.0)
-                            data_tmp[(group, rid)]["raw_flux_data"].append([])
-                            if self.configuration['callbacklevel'] >= 2:
-                                print("Passed:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                            if callbacklevel >= 2:
+                                print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e, "job", job_n)
                             continue
                         temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
+                        initial_state_flag = initial_state_flag + 1
+                    #
+                    # if initial state was found
+                    #
+                    if initial_state_flag == 0:
                         #
+                        # Set large data
                         #
-                        #
-                        #parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
-                        #functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
-                        #jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
-                        #if self.configuration['callbacklevel'] >= 2:
-                        #    print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                        data_tmp[(group, rid)]["flux_data"].append(fixed_flux)
+                        data_tmp[(group, rid)]["rss_data"].append(thres * 10.0)
+                        data_tmp[(group, rid)]["raw_flux_data"].append([])
+                        data_tmp[(group, rid)]["state"].append("Failed to find initial state") #
+                #
+                # Pitch jobs to pp
+                #
+                jobs=[]
+                job_server = pp.Server(ncpus = ncpus, ppservers=ppservers, restart=True, socket_timeout=7200)
                 for (group_temp, rid_temp, fixed_flux, flux_opt) in temp_array_initial_fluxes:
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
                     self.update()
-                    if self.configuration['callbacklevel'] >= 3:
-                        print("Fixed for fitting:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+
+                    if callbacklevel >= 3:
+                        print("Fixed for fitting:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
+
                     parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
                     functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
-                    jobs.append([(group, rid),fixed_flux , job_server.submit(optimize.fit_r_mdv_scipy, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
-                    if self.configuration['callbacklevel'] >= 2:
-                        print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i)
+                    jobs.append([(group, rid),fixed_flux, flux_opt, job_server.submit(optimize.fit_r_mdv_deep, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
+                    if callbacklevel >= 2:
+                        print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
                 #
                 # Return to original position [need modificaton]
                 #
                 self.set_constrain(group, rid, temp_type, temp_value, temp_stdev)
                 self.update()
 
-            #
-            #
-            # Retrive results
-            #
-            for (group, rid), flux_value, job in jobs:
-                results = job()
-                if results == None:
-                    #continue
-                    #
-                    # Large value is used when falied
-                    #
-                    rss = thres * 10.0
-                    opt_flux = []
-                    state = "failed"
-                else:
-                    state, rss, opt_flux, Rm_ind_sol = results
-                #
-                #  Large value is used when falied
-                #
-                if len(opt_flux) == 0:
-                    #continue
-                    rss = thres * 10.0
-                    opt_flux = []
 
-                if self.configuration['callbacklevel'] >= 2:
-                    print("Finished:", rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower,", ub ",flux_upper, ",n ", n)
+                #
+                # Retrieve results
+                #
+                for (group, rid), flux_value, flux_opt, job in jobs:
+                    print(group, rid)
+                    results = job()
+                    if results == None:
+                        #continue
+                        #
+                        # Large value is used when falied
+                        #
+                        rss = 1000000000000 #★200317追加　落ちてないのかfialしたのか判断できないので固定値にした
+                        #rss = thres * 10.0 + abs(flux_value-flux_opt) * 0.00001
+                        #opt_flux = []
+                        state = "Failed in optimization"
+                    else:
+                        state, rss, opt_flux, Rm_ind_sol = results
+                        state =  "Finished successfully "
+                    #
+                    #  Large value is used when falied
+                    #
+                    if len(opt_flux) == 0:
+                        #continue
+                        rss = 1000000000000 #★200317追加　落ちてないのかfialしたのか判断できないので固定値にした
+                        #rss = thres * 10.0 + abs(flux_value-flux_opt) * 0.00001
+                        opt_flux = []
+                        state = "Failed in optimization"
+                    #
+                    #  Store data
+                    #
+                    data_tmp[(group, rid)]["flux_data"].append(flux_value)
+                    data_tmp[(group, rid)]["rss_data"].append(rss)
+                    data_tmp[(group, rid)]["raw_flux_data"].append(opt_flux)
+                    data_tmp[(group, rid)]["state"].append(state) #★200517追加　落ちてないのかfialしたのか判断できないので固定値にした
 
-                data_tmp[(group, rid)]["flux_data"].append(flux_value)
-                data_tmp[(group, rid)]["rss_data"].append(rss)
-                data_tmp[(group, rid)]["raw_flux_data"].append(opt_flux)
-            if self.configuration['callbacklevel'] >= 1:
+                    if callbacklevel >= 2:
+                        print("Finished:", group, rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower,", ub ",flux_upper, "flux_fixed", flux_value, "rss", rss, "state", state)
+                job_server.destroy()
+
+            if callbacklevel >= 1:
                 print("Data collection was finished")
 
-            for group, rid in ci['data'].keys():
-                if ci['data'][(group, rid)]['use'] != 'on': continue
-                forward_id = ci['data'][(group, rid)]['forward']
-                reverse_id = ci['data'][(group, rid)]['reverse']
+            for (group, rid) in ci['data'].keys():
+                if ci['data'][(group, rid)]['use'] != 'on':
+                    continue
                 #
                 # Retirieve results
                 #
+
+                flux_upper = ci['data'][(group, rid)]['upper_boundary']
+                flux_lower = ci['data'][(group, rid)]['lower_boundary']
+
                 flux_values_array_tmp = data_tmp[(group, rid)]['flux_data']
                 rss_values_array_tmp = data_tmp[(group, rid)]['rss_data']
                 raw_flux_array_tmp = data_tmp[(group, rid)]['raw_flux_data']
+                state_array_tmp = data_tmp[(group, rid)]['state']
 
+                data_sorted = sorted([(x, rss_values_array_tmp[i]) for i, x in enumerate(flux_values_array_tmp)], key = lambda s: s[0])
+
+                interval = flux_upper - flux_lower # Added at 200517 to exactly detect edges
+                data_sorted.append((flux_upper + interval * 0.0001, thres * 10.0))
+                data_sorted.insert(0, (flux_lower - (interval * 0.0001), thres * 10.0))
+
+                #data_sorted.append((flux_upper, thres * 10.0))
+                #data_sorted.insert(0, (flux_lower, thres * 10.0))
+                below_threshold  = [x for x in data_sorted if x[1] < thres]
+                # Detect just before the lower boundary
+                flux_previous_left = below_threshold[0][0]
+                rss_previous_left = below_threshold[0][1]
+                # Detect just before the upper boundary
+                flux_previous_right = below_threshold[-1][0]
+                rss_previous_right = below_threshold[-1][1]
+                # Detect just sfter the lower boundary
+                left_group  = sorted([x for x in data_sorted if x[0] < flux_previous_left], key = lambda s: s[1])
+                right_group  = sorted([x for x in data_sorted if x[0] > flux_previous_right], key = lambda s: s[1])
+
+
+                #rss_next_left = left_group[-1][1]
+                #flux_next_left = left_group[-1][0]
+                rss_next_left = left_group[0][1]
+                flux_next_left = left_group[0][0]
+                rss_next_right = right_group[0][1]
+                flux_next_right = right_group[0][0]
+
+
+                flux_lower = flux_previous_left - (flux_previous_left - flux_next_left) * (thres - rss_previous_left)/(rss_next_left - rss_previous_left)
+                state_lower = "Determined"
+                #
+                # Check
+                #
+                if flux_next_left < ci['data'][(group, rid)]['lower_boundary']:
+                    state_lower = "Not determined. Rearched to lower boundary"
+                if flux_lower < ci['data'][(group, rid)]['lower_boundary']:
+                    flux_lower = ci['data'][(group, rid)]['lower_boundary']
+
+                flux_upper = flux_previous_right + (flux_next_right - flux_previous_right) * (thres - rss_previous_right)/(rss_next_right - rss_previous_right)
+                state_upper = "Determined"
+                if flux_next_right > ci['data'][(group, rid)]['upper_boundary']:
+                    state_upper = "Not determined. Rearched to upper boundary"
+                if flux_upper > ci['data'][(group, rid)]['upper_boundary']:
+                    flux_upper = ci['data'][(group, rid)]['upper_boundary']
+
+                if callbacklevel >= 3:
+                    print(flux_lower, flux_previous_left, rss_previous_left,flux_next_left,rss_next_left)
+                    print(flux_upper, flux_previous_right, rss_previous_right,flux_next_right,rss_next_right)
                 #
                 # Detect lower bounary of confidence interval
                 #
-                state_lower = "not determined"
-                flux_lower = ci['data'][(group, rid)]['lower_boundary']
-                data_sorted = sorted([(x, rss_values_array_tmp[i]) for i, x in enumerate(flux_values_array_tmp)], key = lambda s: s[1])
-                for i, tuples in enumerate(data_sorted):
-                    rss = tuples[1]
-                    flux_temp = tuples[0]
-                    if i == 0:
-                        rss_previous = rss * 1.0
-                        flux_previous = flux_temp * 1.0
-                        continue
-                    if flux_temp >= flux_previous-0.01:
-                        continue
-                    if rss > thres:
-                        flux_lower = flux_previous - (flux_previous - flux_temp) * (thres - rss_previous)/(rss - rss_previous)
-                        state_lower = "determined"
-                        break
-                    rss_previous = rss * 1.0
-                    flux_previous = flux_temp * 1.0
-                #
-                # Detect upper bounary of confidence interval
-                #
-                state_upper = "not determined"
-                flux_upper = ci['data'][(group, rid)]['upper_boundary']
-                data_sorted = sorted([(x, rss_values_array_tmp[i]) for i, x in enumerate(flux_values_array_tmp)], key = lambda s: s[1])
-                for i, tuples in enumerate(data_sorted):
-                    rss = tuples[1]
-                    flux_temp = tuples[0]
-                    if i == 0:
-                        rss_previous = rss * 1.0
-                        flux_previous = flux_temp * 1.0
-                        continue
-                    if flux_temp <= flux_previous+0.01:
-                        continue
-                    if rss > thres:
-                        flux_upper = flux_previous + (flux_temp - flux_previous) * (thres - rss_previous)/(rss - rss_previous)
-                        state_upper = "determined"
-                        break
-                    rss_previous = rss * 1.0
-                    flux_previous = flux_temp * 1.0
-                if self.configuration['callbacklevel'] >= 1:
+                data_tmp[(group, rid)]["log"]["2nd previous_left"] = flux_previous_left
+                data_tmp[(group, rid)]["log"]["2nd previous_right"] = flux_previous_right
+                data_tmp[(group, rid)]["log"]["2nd next_left"] = flux_next_left
+                data_tmp[(group, rid)]["log"]["2nd next_right"] = flux_next_right
+
+
+                if callbacklevel >= 1:
                     print(rid, 'Grid search maeda method. Lower boundary:', flux_lower, 'Upper boundery' ,flux_upper)
+
                 ci['data'][(group, rid)]['upper_boundary'] = flux_upper
                 ci['data'][(group, rid)]['lower_boundary'] = flux_lower
                 ci['data'][(group, rid)]['upper_boundary_state'] = state_upper
                 ci['data'][(group, rid)]['lower_boundary_state'] = state_lower
+
+                data_tmp[(group, rid)]["log"]["upper_boundary"] = flux_upper
+                data_tmp[(group, rid)]["log"]["lower_boundary"] = flux_lower
+
                 #
                 # Grids with too large rss are removed
                 #
-                flux_values_array = [flux_values_array_tmp[i] for (i, rsst) in enumerate(rss_values_array_tmp) if rsst < (thres * 2) ]
-                raw_flux_array = [raw_flux_array_tmp[i] for (i, rsst) in enumerate(rss_values_array_tmp) if rsst < thres * 2 ]
-                rss_values_array = [rss_values_array_tmp[i] for (i, rsst)  in enumerate(rss_values_array_tmp) if rsst < thres * 2 ]
+                folds = outputthres #
+                flux_values_array = [flux_values_array_tmp[i] for (i, rsst) in enumerate(rss_values_array_tmp) if rsst < (thres * folds) ]
+                raw_flux_array = [raw_flux_array_tmp[i] for (i, rsst) in enumerate(rss_values_array_tmp) if rsst < thres * folds ]
+                rss_values_array = [rss_values_array_tmp[i] for (i, rsst)  in enumerate(rss_values_array_tmp) if rsst < thres * folds ]
+                state_array = [state_array_tmp[i] for (i, rsst)  in enumerate(rss_values_array_tmp) if rsst < thres * folds ]
 
                 ci['data'][(group, rid)]['flux_data'] = flux_values_array
                 ci['data'][(group, rid)]['rss_data'] = rss_values_array
                 ci['data'][(group, rid)]['raw_flux_data'] = raw_flux_array
+                ci['data'][(group, rid)]['state'] = state_array
+                #Add upper boundary point
+                ci['data'][(group, rid)]['flux_data'].append(flux_upper)
+                ci['data'][(group, rid)]['rss_data'].append(thres)
+                ci['data'][(group, rid)]['raw_flux_data'].append({})
+                ci['data'][(group, rid)]['state'].append(state_lower)
+                #Add lower boundary point
+                ci['data'][(group, rid)]['flux_data'].append(flux_lower)
+                ci['data'][(group, rid)]['rss_data'].append(thres)
+                ci['data'][(group, rid)]['raw_flux_data'].append({})
+                ci['data'][(group, rid)]['state'].append(state_lower)
 
-
-
-            #"
+                ci['data'][(group, rid)]['log'] = data_tmp[(group, rid)]["log"]
+            #
             # Show calc time
             #
-            if self.configuration['callbacklevel'] >= 1:
+            if callbacklevel >= 1:
                 endtime=time.perf_counter()
                 print("time elapsed ", endtime-starttime,"s")
 
+
+
+
+        #######################################################
+        #
+        # Grid search joblib
+        #
+        ########################################################
+        if method == "grid":
+            #
+            # Check Parallel python
+            #
+            try:
+                from joblib import Parallel, delayed
+                #job_server = pp.Server(ncpus = ncpus, ppservers=ppservers, restart=True, socket_timeout=7200)
+            except:
+                print("This function requires joblib!")
+                return False
+
+            starttime=time.perf_counter()
+            step = 0.0
+            data_tmp={}
+            job_number = self.configuration["grid_search_iterations"]
+            initial_search_repeats_in_grid_search = self.configuration["initial_search_repeats_in_grid_search"]
+            #
+            # confidence interval
+            #
+            rss_bestfit = self.calc_rss(flux)
+
+            for group, rid in sorted(ci['data'].keys()):
+                if ci['data'][(group, rid)]['use'] != 'on': continue
+                flux_opt_rid = flux[group][rid]['value']
+
+
+                data={(group, rid):{"flux_data":[flux_opt_rid],"rss_data":[rss_bestfit],"state":["Best fit"],"log":{},"raw_flux_data":[[flux["reaction"][i]["value"] for i in self.reaction_ids]]}}
+                data_tmp.update(data)
+
+                flux_lower =ci['data'][(group, rid)]["lower_boundary"]
+                flux_upper =ci['data'][(group, rid)]["upper_boundary"]
+
+
+
+                # Grid number is 20
+                if (flux_upper-flux_lower)>=100:
+                    n=15
+                else:
+                    n=10
+
+                if callbacklevel >= 1:
+                    print("Setting:", rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower," ub ",flux_upper, "n=", n)
+                #
+                # Store original metabolic constrains
+                #
+                temp_type, temp_value, temp_stdev = self.get_constrain(group, rid)
+                #
+                # Set initial search to upward
+                #
+                temp_array_initial_fluxes = []
+                counter_of_missed_initial_state = 0
+                #
+                for i in range(int(n+1)):
+                    if  counter_of_missed_initial_state > 5:
+                        break
+                    step = (flux_upper-flux_opt_rid) * (0.5**(n-i))
+                    fixed_flux = flux_opt_rid + step
+                    if fixed_flux >= flux_upper:
+                        fixed_flux = flux_upper
+                    if fixed_flux <= flux_lower:
+                        fixed_flux = flux_lower
+                    #
+                    # Fix reaction
+                    #
+                    self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
+                    self.update()
+                    if callbacklevel >= 3:
+                        print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux,flux_lower,flux_upper, "interation", i)
+
+                    initial_state_flag = 0
+
+                    for job_n in range(job_number):
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
+                        if len(flux_opt) == 0:
+                            if callbacklevel >= 3:
+                                print("Can't find initial state using template:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i, "job", job_n)
+                            state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, method = "parallel")
+                        #
+                        # When initial flux could not be found
+                        #
+                        if len(flux_opt) == 0:
+                            if callbacklevel >= 2:
+                                print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i, "job", job_n)
+                            continue
+                        temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
+                        initial_state_flag = initial_state_flag + 1
+                    #
+                    # if initial state was found
+                    #
+                    if initial_state_flag > 0:
+                        counter_of_missed_initial_state = 0
+                    else:
+                        counter_of_missed_initial_state = counter_of_missed_initial_state + 1
+                        #
+                        # Set large data
+                        #
+                        data_tmp[(group, rid)]["flux_data"].append(fixed_flux)
+                        data_tmp[(group, rid)]["rss_data"].append(thres * 10.0)
+                        data_tmp[(group, rid)]["raw_flux_data"].append([])
+                        data_tmp[(group, rid)]["state"].append("Failed to find initial state") #
+                #
+                # Set initial search to upward
+                #
+                counter_of_missed_initial_state = 0
+                #
+                for i in range(int(n+1)):
+                    if  counter_of_missed_initial_state > 5:
+                        break
+                    step = (flux_opt_rid - flux_lower) * (0.5**(n-i))
+                    fixed_flux = flux_opt_rid - step
+                    if fixed_flux >= flux_upper:
+                        fixed_flux = flux_upper
+                    if fixed_flux <= flux_lower:
+                        fixed_flux = flux_lower
+                    #
+                    # Fix reaction
+                    #
+                    self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
+                    self.update()
+                    if callbacklevel >= 3:
+                        print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux,flux_lower,flux_upper, "interation", i)
+
+                    initial_state_flag = 0
+
+                    for job_n in range(job_number):
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
+                        if len(flux_opt) == 0:
+                            if callbacklevel >= 3:
+                                print("Can't find initial state using template:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i, "job", job_n)
+                            state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, method = "parallel")
+                        #
+                        # When initial flux could not be found
+                        #
+                        if len(flux_opt) == 0:
+                            if callbacklevel >= 2:
+                                print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i, "job", job_n)
+                            continue
+                        temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
+                        initial_state_flag = initial_state_flag + 1
+                    #
+                    # if initial state was found
+                    #
+                    if initial_state_flag > 0:
+                        counter_of_missed_initial_state = 0
+                    else:
+                        counter_of_missed_initial_state = counter_of_missed_initial_state + 1
+                        #
+                        # Set large data
+                        #
+                        data_tmp[(group, rid)]["flux_data"].append(fixed_flux)
+                        data_tmp[(group, rid)]["rss_data"].append(thres * 10.0)
+                        data_tmp[(group, rid)]["raw_flux_data"].append([])
+                        data_tmp[(group, rid)]["state"].append("Failed to find initial state") #
+                #
+                # Pitch jobs to pp
+                #
+                jobs=[]
+                jobsparameters=[]
+                #job_server = pp.Server(ncpus = ncpus, ppservers=ppservers, restart=True, socket_timeout=7200)
+                for (group_temp, rid_temp, fixed_flux, flux_opt) in reversed(temp_array_initial_fluxes):
+                    self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
+                    self.update()
+                    try:
+                        rss = self.calc_rss(flux_opt)
+                    except:
+                        print("Skipped:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
+                        continue
+
+                    if callbacklevel >= 3:
+                        print("Fixed for fitting:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
+
+                    parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
+                    jobs.append(parameters)
+                    jobsparameters.append(((group, rid),fixed_flux, flux_opt))
+                    #functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
+                    #jobs.append([(group, rid),fixed_flux, flux_opt, job_server.submit(optimize.fit_r_mdv_deep, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
+                    if callbacklevel >= 2:
+                        print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
+
+
+                #
+                #
+                #
+                result = Parallel(n_jobs=ncpus)([delayed(optimize.fit_r_mdv_deep)(configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp) for (configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp) in jobs])
+
+                #
+                # Return to original position
+                #
+                self.set_constrain(group, rid, temp_type, temp_value, temp_stdev)
+                self.update()
+
+                if callbacklevel >= 2:
+                    print("Waiting for joblib response", rid, "flux_opt ")
+                #
+                # Retrive results
+                #
+                #for (group, rid), flux_value, flux_opt, job in jobs:
+                for i in range(len(result)):
+                    job = result[i]
+                    ((group, rid), flux_value, flux_opt) = jobsparameters[i]
+
+                    results = job
+                    if results == None:
+                        #continue
+                        #
+                        # Large value is used when falied
+                        #
+                        rss = 1000000000000 #★200317追加　落ちてないのかfialしたのか判断できないので固定値にした
+                        #rss = thres * 10.0 + abs(flux_value-flux_opt) * 0.00001
+                        #opt_flux = []
+                        state = "Failed in optimization"
+                    else:
+                        state, rss, opt_flux, Rm_ind_sol = results
+                        state =  "Finished successfully "
+                    #
+                    #  Large value is used when falied
+                    #
+                    if len(opt_flux) == 0:
+                        #continue
+                        rss = 1000000000000 #★200317追加　落ちてないのかfialしたのか判断できないので固定値にした
+                        #rss = thres * 10.0 + abs(flux_value-flux_opt) * 0.00001
+                        opt_flux = []
+                        state = "Failed in optimization"
+                    #
+                    #  Store data
+                    #
+                    data_tmp[(group, rid)]["flux_data"].append(flux_value)
+                    data_tmp[(group, rid)]["rss_data"].append(rss)
+                    data_tmp[(group, rid)]["raw_flux_data"].append(opt_flux)
+                    data_tmp[(group, rid)]["state"].append(state) #★200517追加　落ちてないのかfialしたのか判断できないので固定値にした
+
+                    if callbacklevel >= 2:
+                        print("Finished:", group, rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower,", ub ",flux_upper, "flux_fixed", flux_value, "rss", rss, "state", state)
+                #job_server.destroy()
+
+
+            #
+            # Cals again around thres
+            #
+            for group, rid in sorted(ci['data'].keys()):
+                if ci['data'][(group, rid)]['use'] != 'on': continue
+                print(group, rid)
+
+                flux_upper = ci['data'][(group, rid)]['upper_boundary']
+                flux_lower = ci['data'][(group, rid)]['lower_boundary']
+
+                flux_values_array_tmp = data_tmp[(group, rid)]['flux_data']
+                rss_values_array_tmp = data_tmp[(group, rid)]['rss_data']
+                raw_flux_array_tmp = data_tmp[(group, rid)]['raw_flux_data']
+
+                data_sorted = sorted([(x, rss_values_array_tmp[i]) for i, x in enumerate(flux_values_array_tmp)], key = lambda s: s[0])
+                #
+                # Add right and left end points
+                #
+                interval = flux_upper - flux_lower # Added at 200517 to exactly detect edges
+                data_sorted.append((flux_upper + interval * 0.0001, thres * 11.0))
+                data_sorted.insert(0, (flux_lower - (interval * 0.0001), thres * 11.0))
+                #
+                # points under the threshold
+                #
+                below_threshold  = [x for x in data_sorted if x[1] < thres]
+                # Detect just before the lower boundary
+                flux_previous_left = below_threshold[0][0]
+                # Detect just before the upper boundary
+                flux_previous_right = below_threshold[-1][0]
+
+                # Detect just next to the boundary
+                #print(data_sorted, flux_previous_left, flux_previous_right)
+                flux_next_left  = max([x[0] for x in data_sorted if x[0] < flux_previous_left])
+                flux_next_right  = min([x[0] for x in data_sorted if x[0] > flux_previous_right])
+                #print("flux_next_left ",flux_next_left,", flux_next_right ",flux_next_right)
+                data_tmp[(group, rid)]["log"]["1st previous_left"] = flux_previous_left
+                data_tmp[(group, rid)]["log"]["1st previous_right"] = flux_previous_right
+                data_tmp[(group, rid)]["log"]["1st next_left"] = flux_next_left
+                data_tmp[(group, rid)]["log"]["1st next_right"] = flux_next_right
+
+                if callbacklevel >= 2:
+                    print("flux_previous_left ",flux_previous_left,", flux_previous_right ",flux_previous_right)
+                    print("flux_next_left ",flux_next_left,", flux_next_right ",flux_next_right)
+                #
+                # This part should be reconsiderd 200517
+                #
+                if (flux_next_right-flux_next_left)>=40:
+                    n=20
+                elif (flux_next_right-flux_next_left)>=5:
+                    n=10
+                else:
+                    n=5
+                #
+                # Store original metabolic constrains
+                #
+                temp_type, temp_value, temp_stdev = self.get_constrain(group, rid)
+                #
+                temp_array_initial_fluxes = []
+                for e in range (1,n):
+                    #
+                    #
+                    # right direcition
+                    step = abs(flux_previous_right - flux_next_right)/n
+                    fixed_flux = flux_previous_right +step*e
+                    if fixed_flux > flux_upper:
+                        fixed_flux = flux_upper
+                    if fixed_flux < flux_lower:
+                        fixed_flux = flux_lower
+                    #
+                    # Fix reaction
+                    #
+                    self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
+                    self.update()
+                    if callbacklevel >= 3:
+                        print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e)
+
+                    initial_state_flag = 0
+
+                    for job_n in range(job_number):
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
+                        if len(flux_opt) == 0:
+                            if callbacklevel >= 3:
+                                print("Can't find initial state using template:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e, "job", job_n)
+                            state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, method = "parallel")
+                        #
+                        # When initial flux could not be found
+                        #
+                        if len(flux_opt) == 0:
+                            if callbacklevel >= 2:
+                                print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e, "job", job_n)
+                            continue
+                        temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
+                        initial_state_flag = initial_state_flag + 1
+                    #
+                    # if initial state was found
+                    #
+                    if initial_state_flag == 0:
+                        #
+                        # Set large data
+                        #
+                        data_tmp[(group, rid)]["flux_data"].append(fixed_flux)
+                        data_tmp[(group, rid)]["rss_data"].append(thres * 10.0)
+                        data_tmp[(group, rid)]["raw_flux_data"].append([])
+                        data_tmp[(group, rid)]["state"].append("Failed to find initial state") #
+                    #
+                    # left reaction
+                    #
+                    step = abs(flux_previous_left - flux_next_left)/n
+                    fixed_flux = flux_previous_left - step*e
+                    if fixed_flux > flux_upper:
+                        fixed_flux = flux_upper
+                    if fixed_flux < flux_lower:
+                        fixed_flux = flux_lower
+                    #
+                    # Fix reaction
+                    #
+                    self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
+                    self.update()
+                    if callbacklevel >= 3:
+                        print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e)
+
+                    initial_state_flag = 0
+
+                    for job_n in range(job_number):
+                        state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
+                        if len(flux_opt) == 0:
+                            if callbacklevel >= 3:
+                                print("Can't find initial state using template:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e, "job", job_n)
+                            state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, method = "parallel")
+                        #
+                        # When initial flux could not be found
+                        #
+                        if len(flux_opt) == 0:
+                            if callbacklevel >= 2:
+                                print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e, "job", job_n)
+                            continue
+                        temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
+                        initial_state_flag = initial_state_flag + 1
+                    #
+                    # if initial state was found
+                    #
+                    if initial_state_flag == 0:
+                        #
+                        # Set large data
+                        #
+                        data_tmp[(group, rid)]["flux_data"].append(fixed_flux)
+                        data_tmp[(group, rid)]["rss_data"].append(thres * 10.0)
+                        data_tmp[(group, rid)]["raw_flux_data"].append([])
+                        data_tmp[(group, rid)]["state"].append("Failed to find initial state") #
+                #
+                # Pitch jobs to pp
+                #
+                jobs=[]
+                jobsparameters=[]
+                #job_server = pp.Server(ncpus = ncpus, ppservers=ppservers, restart=True, socket_timeout=7200)
+                for (group_temp, rid_temp, fixed_flux, flux_opt) in temp_array_initial_fluxes:
+                    self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
+                    print("Fixed for fitting:", group, rid, fixed_flux)
+                    self.update()
+
+                    if callbacklevel >= 3:
+                        print("Fixed for fitting:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
+
+                    parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
+                    jobs.append(copy.deepcopy(parameters))
+                    jobsparameters.append(((group, rid),fixed_flux, flux_opt))
+                    #functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
+                    #jobs.append([(group, rid),fixed_flux, flux_opt, job_server.submit(optimize.fit_r_mdv_deep, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
+                    if callbacklevel >= 2:
+                        print("New job was added to joblib:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
+
+
+                result = Parallel(n_jobs=ncpus)([delayed(optimize.fit_r_mdv_deep)(configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp) for (configurationx, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp) in jobs])
+                #
+                # Return to original position [need modificaton]
+                #
+                self.set_constrain(group, rid, temp_type, temp_value, temp_stdev)
+                self.update()
+                #
+                # Retrive results
+                #
+                #for (group, rid), flux_value, flux_opt, job in jobs:
+                for i in range(len(result)):
+                    results = result[i]
+                    ((group, rid), flux_value, flux_opt) = jobsparameters[i]
+                    if results == None:
+                        #continue
+                        #
+                        # Large value is used when falied
+                        #
+                        rss = 1000000000000 #★200317追加　落ちてないのかfialしたのか判断できないので固定値にした
+                        #rss = thres * 10.0 + abs(flux_value-flux_opt) * 0.00001
+                        #opt_flux = []
+                        state = "Failed in optimization"
+                    else:
+                        state, rss, opt_flux, Rm_ind_sol = results
+                        state =  "Finished successfully "
+                    #
+                    #  Large value is used when falied
+                    #
+                    if len(opt_flux) == 0:
+                        #continue
+                        rss = 1000000000000 #★200317追加　落ちてないのかfialしたのか判断できないので固定値にした
+                        #rss = thres * 10.0 + abs(flux_value-flux_opt) * 0.00001
+                        opt_flux = []
+                        state = "Failed in optimization"
+                    #
+                    #  Store data
+                    #
+                    data_tmp[(group, rid)]["flux_data"].append(flux_value)
+                    data_tmp[(group, rid)]["rss_data"].append(rss)
+                    data_tmp[(group, rid)]["raw_flux_data"].append(opt_flux)
+                    data_tmp[(group, rid)]["state"].append(state) #★200517追加　落ちてないのかfialしたのか判断できないので固定値にした
+
+                    if callbacklevel >= 2:
+                        print("Finished:", group, rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower,", ub ",flux_upper, "flux_fixed", flux_value, "rss", rss, "state", state)
+                #job_server.destroy()
+
+            if callbacklevel >= 1:
+                print("Data collection was finished")
+
+            for (group, rid) in ci['data'].keys():
+                if ci['data'][(group, rid)]['use'] != 'on':
+                    continue
+                #
+                # Retirieve results
+                #
+
+                flux_upper = ci['data'][(group, rid)]['upper_boundary']
+                flux_lower = ci['data'][(group, rid)]['lower_boundary']
+
+                flux_values_array_tmp = data_tmp[(group, rid)]['flux_data']
+                rss_values_array_tmp = data_tmp[(group, rid)]['rss_data']
+                raw_flux_array_tmp = data_tmp[(group, rid)]['raw_flux_data']
+                state_array_tmp = data_tmp[(group, rid)]['state']
+
+                data_sorted = sorted([(x, rss_values_array_tmp[i]) for i, x in enumerate(flux_values_array_tmp)], key = lambda s: s[0])
+
+                interval = flux_upper - flux_lower # Added at 200517 to exactly detect edges
+                data_sorted.append((flux_upper + interval * 0.0001, thres * 10.0))
+                data_sorted.insert(0, (flux_lower - (interval * 0.0001), thres * 10.0))
+
+                #data_sorted.append((flux_upper, thres * 10.0))
+                #data_sorted.insert(0, (flux_lower, thres * 10.0))
+                below_threshold  = [x for x in data_sorted if x[1] < thres]
+                # Detect just before the lower boundary
+                flux_previous_left = below_threshold[0][0]
+                rss_previous_left = below_threshold[0][1]
+                # Detect just before the upper boundary
+                flux_previous_right = below_threshold[-1][0]
+                rss_previous_right = below_threshold[-1][1]
+                # Detect just sfter the lower boundary
+                left_group  = sorted([x for x in data_sorted if x[0] < flux_previous_left], key = lambda s: s[1])
+                right_group  = sorted([x for x in data_sorted if x[0] > flux_previous_right], key = lambda s: s[1])
+
+
+                #rss_next_left = left_group[-1][1]
+                #flux_next_left = left_group[-1][0]
+                rss_next_left = left_group[0][1]
+                flux_next_left = left_group[0][0]
+                rss_next_right = right_group[0][1]
+                flux_next_right = right_group[0][0]
+
+
+                flux_lower = flux_previous_left - (flux_previous_left - flux_next_left) * (thres - rss_previous_left)/(rss_next_left - rss_previous_left)
+                state_lower = "Determined"
+                #
+                # Check
+                #
+                if flux_next_left < ci['data'][(group, rid)]['lower_boundary']:
+                    state_lower = "Not determined. Rearched to lower boundary"
+                if flux_lower < ci['data'][(group, rid)]['lower_boundary']:
+                    flux_lower = ci['data'][(group, rid)]['lower_boundary']
+
+                flux_upper = flux_previous_right + (flux_next_right - flux_previous_right) * (thres - rss_previous_right)/(rss_next_right - rss_previous_right)
+                state_upper = "Determined"
+                if flux_next_right > ci['data'][(group, rid)]['upper_boundary']:
+                    state_upper = "Not determined. Rearched to upper boundary"
+                if flux_upper > ci['data'][(group, rid)]['upper_boundary']:
+                    flux_upper = ci['data'][(group, rid)]['upper_boundary']
+
+                if callbacklevel >= 3:
+                    print(flux_lower, flux_previous_left, rss_previous_left,flux_next_left,rss_next_left)
+                    print(flux_upper, flux_previous_right, rss_previous_right,flux_next_right,rss_next_right)
+                #
+                # Detect lower bounary of confidence interval
+                #
+                data_tmp[(group, rid)]["log"]["2nd previous_left"] = flux_previous_left
+                data_tmp[(group, rid)]["log"]["2nd previous_right"] = flux_previous_right
+                data_tmp[(group, rid)]["log"]["2nd next_left"] = flux_next_left
+                data_tmp[(group, rid)]["log"]["2nd next_right"] = flux_next_right
+
+
+                if callbacklevel >= 1:
+                    print(rid, 'Grid search maeda method. Lower boundary:', flux_lower, 'Upper boundery' ,flux_upper)
+
+                ci['data'][(group, rid)]['upper_boundary'] = flux_upper
+                ci['data'][(group, rid)]['lower_boundary'] = flux_lower
+                ci['data'][(group, rid)]['upper_boundary_state'] = state_upper
+                ci['data'][(group, rid)]['lower_boundary_state'] = state_lower
+
+                data_tmp[(group, rid)]["log"]["upper_boundary"] = flux_upper
+                data_tmp[(group, rid)]["log"]["lower_boundary"] = flux_lower
+
+                #
+                # Grids with too large rss are removed
+                #
+                folds = outputthres #
+                flux_values_array = [flux_values_array_tmp[i] for (i, rsst) in enumerate(rss_values_array_tmp) if rsst < (thres * folds) ]
+                raw_flux_array = [raw_flux_array_tmp[i] for (i, rsst) in enumerate(rss_values_array_tmp) if rsst < thres * folds ]
+                rss_values_array = [rss_values_array_tmp[i] for (i, rsst)  in enumerate(rss_values_array_tmp) if rsst < thres * folds ]
+                state_array = [state_array_tmp[i] for (i, rsst)  in enumerate(rss_values_array_tmp) if rsst < thres * folds ]
+
+                ci['data'][(group, rid)]['flux_data'] = flux_values_array
+                ci['data'][(group, rid)]['rss_data'] = rss_values_array
+                ci['data'][(group, rid)]['raw_flux_data'] = raw_flux_array
+                ci['data'][(group, rid)]['state'] = state_array
+                #Add upper boundary point
+                ci['data'][(group, rid)]['flux_data'].append(flux_upper)
+                ci['data'][(group, rid)]['rss_data'].append(thres)
+                ci['data'][(group, rid)]['raw_flux_data'].append({})
+                ci['data'][(group, rid)]['state'].append(state_lower)
+                #Add lower boundary point
+                ci['data'][(group, rid)]['flux_data'].append(flux_lower)
+                ci['data'][(group, rid)]['rss_data'].append(thres)
+                ci['data'][(group, rid)]['raw_flux_data'].append({})
+                ci['data'][(group, rid)]['state'].append(state_lower)
+
+                ci['data'][(group, rid)]['log'] = data_tmp[(group, rid)]["log"]
+            #
+            # Show calc time
+            #
+            if callbacklevel >= 1:
+                endtime=time.perf_counter()
+                print("time elapsed ", endtime-starttime,"s")
+
+
             #return flux_lb
         if (callbacklevel >= 0):
-            job_server.print_stats()
+            pass
+            #job_server.print_stats()
 
-        job_server.destroy()
+        #job_server.destroy()
         return ci
     def load_states(self, filename, format = 'text'):
         """
@@ -4869,7 +5640,7 @@ class MetabolicModel:
 
         Parameters
         ----------
-        model : a instance of mfapy.model for templete
+
         filename : filename of flux data with following format.
 
         type	Id	type	flux_calue	flux_std	lb	ub
@@ -4973,9 +5744,8 @@ class MetabolicModel:
 
         Parameters
         ----------
-        model : a instance of mfapy.model for templete
         filename : filename of MDV data with the format.
-
+        dict : a dictinary of flux
         format:
             'csv' : CSV.
             'text' : tab-deliminated text.
@@ -4986,7 +5756,7 @@ class MetabolicModel:
 
         Examples
         --------
-        >>> model.save_states(model,  "test.csv", flux_dict, format = 'csv')
+        >>> model.save_states(flux_dict, "test.csv", format = 'csv')
 
         See Also
         --------

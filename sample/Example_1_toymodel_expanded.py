@@ -8,7 +8,7 @@
 # Licence:     MIT license
 #-------------------------------------------------------------------------------
 import numpy as numpy
-import mfapy
+import mfapy as mfapy
 from matplotlib.pyplot import figure, show
 import os, sys, time
 
@@ -134,6 +134,8 @@ if __name__ == '__main__':
     # Test self.calc_rss()
     #
     print("Initial metabolic states were successfully obtained. RSS:", model.calc_rss(flux_opt))
+    print("Cal RSS single flux data", model.calc_rss(flux_opt))
+    print("Cal RSS multiple flux data", model.calc_rss([flux_opt, flux_initial1]))
     #
     # Find best fitted metabolic state by SLSQP (scipy)
     #

@@ -27,7 +27,7 @@ if __name__ == '__main__':
     model.set_configuration(callbacklevel = 0)
     model.set_configuration(iteration_max = 20000) # Maximal iternations in optimization
     model.set_configuration(number_of_repeat = 5) #Iteration in self.fitting_flux(method = 'deep') [SLSQP => LN_PRAXIS] * n
-    model.set_configuration(ncpus = 2) #Number of local CPUs for Parallel python
+    model.set_configuration(ncpus = 3) #Number of local CPUs for Parallel python
 
     stdev = 0.015
     #
@@ -93,17 +93,16 @@ if __name__ == '__main__':
     #
     # Fitting by various solvers
     #
-    model.set_configuration(callbacklevel = 3)
+    model.set_configuration(callbacklevel = 0)
     #
     # Generate initial metabolic state for fitting
     #
-    state, flux_opt1 = model.generate_initial_states(50, 1)
+    state, flux_opt1 = model.generate_initial_states(500, 1, method ="parallel")
     print("RSS:",model.calc_rss(flux_opt1))
     results = [('template', flux_opt1)]
     #
     # Fitting by global optimizer
     #
-
     method = "GN_CRS2_LM"
     start = time.time()
     state, RSS_bestfit, flux_opt1 = model.fitting_flux(method = method, flux = flux_opt1)

@@ -8,7 +8,7 @@
 # Licence:     MIT license
 #-------------------------------------------------------------------------------
 import numpy as numpy
-import mfapy
+import mfapy as mfapy
 from matplotlib.pyplot import figure, show
 import os, sys, time
 
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     model.set_configuration(initial_search_iteration_max = 1000) #
     model.set_configuration(grid_search_iterations = 1) #
     model.set_configuration(number_of_repeat = 3) #Iteration in self.fitting_flux(method = 'deep') [SLSQP => LN_PRAXIS] * n
-    model.set_configuration(ncpus = 3) #Number of local CPUs for Parallel python
+    model.set_configuration(ncpus = 1) #Number of local CPUs for Parallel python
     #model.set_configuration(ppservers = ("172.16.0.149","172.16.0.133")) #IP address of PPworkers for Parallel python
     #
     # Load metabolite state from text file
@@ -76,6 +76,27 @@ if __name__ == '__main__':
     #
     cs.set_each_isotopomer('Asp', {'#0000':1.0}, correction = "yes")
     cs2.set_each_isotopomer('Asp', {'#0000':0.5, '#1111':0.5})
+    #
+    # Chekck calcrss
+    #
+    mdv1 = model.generate_mdv(flux_opt, cs)
+    mdv2 = model.generate_mdv(flux_opt, cs2)
+    mdv1.set_std(0.01)
+    mdv2.set_std(0.01)
+    model.set_experiment('ex1', mdv1, cs)
+    model.set_experiment('ex2', mdv2, cs2)
+    print("Check calc rss if RRS is zero, RSS:", model.calc_rss(flux_opt))
+    #
+    # Set v8 and FUM as free
+    #
+    model.set_constrain('reaction','v8','fitting', value = 49, stdev = 0.1)
+    #
+    # Update model
+    #
+    model.update()
+    print("Check calc rss of fitting flux if RRS is 100, RSS:", model.calc_rss(flux_opt))
+
+    model.clear_experiment()
     #
     # Generate MDVs from metabolic state and carbon source.
     #
@@ -128,12 +149,15 @@ if __name__ == '__main__':
     #
     # Generate initial metabolic state for fitting
     # Initial metabolic states were generate by 50 trials (sometimes failed), then return 1 initial metabolic state with smallest RSSs.
-    state, flux_initial1 = model.generate_initial_states(50, 1)
+    state, flux_initial1 = model.generate_initial_states(50, 1, method = "parallel")
     results.append(("Initial", flux_initial1))
     #
     # Test self.calc_rss()
     #
     print("Initial metabolic states were successfully obtained. RSS:", model.calc_rss(flux_opt))
+    print("Cal RSS single flux data", model.calc_rss(flux_opt))
+    print("Cal RSS multiple flux data", model.calc_rss([flux_opt, flux_initial1]))
+
     #
     # Find best fitted metabolic state by SLSQP (scipy)
     #
@@ -151,6 +175,7 @@ if __name__ == '__main__':
     #
     thres, number_of_measurements, degree_of_freedom  =\
     model.get_thres_confidence_interval(flux_opt_slsqp, alpha = 0.05)
+
 
     print("Results: Threshold:",thres," Number of measurements:", number_of_measurements," Degree of freedom", degree_of_freedom)
 
@@ -178,7 +203,7 @@ if __name__ == '__main__':
     # model.set_configuration(ncpus = 3) #Number of local CPUs for Parallel python
     #
     #
-    state, flux_initial2 = model.generate_initial_states(50, 4)
+    state, flux_initial2 = model.generate_initial_states(50, 4, method ="parallel")
     start = time.time()
     #
     # Find best fitted metabolic state by SLSQP using parallel mode
@@ -186,9 +211,13 @@ if __name__ == '__main__':
     state, RSS_bestfit, flux_opt_slsqp2 = model.fitting_flux(method = 'SLSQP', flux = flux_initial2)
     print("Fitting_flux(SLSQP scipy integrate, parallel python): State", "RSS:{0:>8.2f} Time:{1:>8.2f}".format(RSS_bestfit[0], time.time()-start))
     #
+    # Output results
+    #
+    model.show_results(results, filename = "Example_1_toymodel_resultoutput.csv",  checkrss = "on")
+    #
     # Show results
     #
-    model.show_results(results)
+    model.show_results(results,  checkrss = "on")
     #
     # MDV comparison
     #
@@ -214,7 +243,7 @@ if __name__ == '__main__':
     # model.set_configuration(grid_search_iterations = 1) # Fitting interations at each grid.
     #
     print("Test: Searching confidencial interval by grid search method.")
-    model.set_configuration(callbacklevel = 1)
+    model.set_configuration(callbacklevel = 2)
     ci = model.search_ci(ci_edge, flux_opt_slsqp, method = 'grid')
 
     for rid in ci['data'].keys():
@@ -225,3 +254,5 @@ if __name__ == '__main__':
     axR.scatter(ci['data'][('reversible', "FUM")]['flux_data'], ci['data'][('reversible', "FUM")]['rss_data'], c = 'r')
     axR.scatter(ci['data'][("reaction", "v6")]['flux_data'], ci['data'][("reaction", "v6")]['rss_data'], c = 'b')
     show()
+
+
