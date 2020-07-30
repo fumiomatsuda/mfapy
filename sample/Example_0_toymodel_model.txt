@@ -88,7 +88,7 @@ Asp	4	no	carbonsource	no	(kegg:C00049)	0.0	300
 # 6. Upper boundary of metabolic flux level, float
 #	Value must be more than zero
 //Reversible_reactions
-FUM	v6	v7	(kegg:R01082)	0.0	300
+FUM	v6	v7	(kegg:R01082)	-300	300
 #
 # Definition of Target fragments
 # Target fragments are metabolite out side of the metabolic model whose MDV are generarted by the calmdv function.
