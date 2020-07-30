@@ -88,6 +88,7 @@ Version 057
 ----------------------------------------
 20/7/12
 initializing_Rm_fitting, fit_r_mdv_scipy, fit_r_mdv_nlopt in optimizaton: Expection is newly raised to avoid error in  paralell proceccing.
+
 20/7/13
 joblib instead of pp is employed for paralell proceccing.
 20/7/30
