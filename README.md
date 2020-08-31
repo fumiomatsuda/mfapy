@@ -62,6 +62,8 @@ Detailed explanations are available from docstrings
 2. Example_1_toymodel_INST.py 
 3. Example_2_MCF7_taxol.py 
 4. Example_3_Coryne.py 
+5. Example_4_MonteCalro.py 
+6. Example_5_Batch mode.py 
 
 Learn more <https://github.com/fumiomatsuda/mfapy>
 
