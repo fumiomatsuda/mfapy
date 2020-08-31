@@ -184,14 +184,14 @@ GAPDH	r9_gapdh	r10_gapdh	(kegg:R01061)	-1000	1000
 PEPH	r11_peph	r12_peph	(kegg:R01512)	-1000	1000		
 IDH	r18_idh	r19_idh	(kegg:R00709)	-1000	1000		
 SDH	r21_sdh	r22_sdh	(kegg:R02164)	-1000	1000		
-MDH	r25_mdh	r26_mdh	(kegg:R00343)	-1000	1000		
+MDH	r25_mdh	r26_mdh	(kegg:R00342)	-1000	1000		
 RPI	r31_ri	r32_ri	(kegg:R01056)	-1000	1000		
 RBE	r33_rbe	r34_rbe	(kegg:R01529)	-1000	1000		
 TKT1	r35_tkt	r36_tkt	(kegg:R01641)	-1000	1000		
 TAL	r37_tal	r38_tal	(kegg:R08575)	-1000	1000		
 TKT2	r39_tkt	r40_tkt	(kegg:R01067)	-1000	1000		
 FH	r23_fh	r24_fh	(kegg:R01082)	-1000	1000		
-MDHcyt	r106_mdh_cyt	r107_mdh_cyt	(kegg:R00343)	-1000	1000		
+MDHcyt	r106_mdh_cyt	r107_mdh_cyt	(kegg:MDHcyt)	-1000	1000		
 GLUDH	r49_gludh	r50_gludh	(kegg:R00243)	-1000	1000		
 #							
 #List of Target compound whose MDV are generarted by the calmdv function.							

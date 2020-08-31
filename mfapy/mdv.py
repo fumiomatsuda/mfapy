@@ -568,7 +568,7 @@ class MdvData:
                 used_fragments.add(fragment)
         return counter-len(used_fragments)
 
-    def compare_mdv(self, mdv):
+    def comparison_with_another_mdv(self, mdv):
         """
         Comparison of two MDV data
 

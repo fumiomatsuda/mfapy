@@ -55,7 +55,7 @@ class CarbonSource:
 
     def show(self):
         """
-        Show concents of CarbonSource instance
+        Method to display contents of CarbonSource instance
 
         Parameters
         ----------
@@ -157,6 +157,67 @@ class CarbonSource:
             return False
         self.cs[compound]['IDV'] = list[:]
         self.generate_carbonsource_MDV(carbonsource = [compound], correction = correction)
+        return True
+
+    def set_set_carbonsources(self, filename, correction = 'no', format = 'text',output = "normal"):
+        """
+        To set isotopomer data of multiple carbon sourses from text file.
+
+        Parameters
+        ----------
+        filename : filename of MDV data with following format.
+        Name	Isotopomer	Ratio
+        Asp	#0000	0.5
+        Asp	#1111	0.5
+        AcCoA	#00	0.5
+        AcCoA	#11	0.5
+        correction : (yes/no) Correction of isotopomer distribution considering natural 13C occurence
+        format : "text" (defalut) or "csv"
+        output : "normal" (defalut) or "debug"
+
+        Reterns
+        ----------
+        Boolean: True/False
+
+        Examples
+        --------
+        >>> cs2.set_isotopomers_from_file('Example_1_carbonsource2.txt', correction = "yes")
+
+        See Also
+        --------
+
+        """
+        #
+        #
+        observed_fragments_set = set()
+        with open(filename, 'r') as f:
+            import csv
+            if format == "text":
+                reader = csv.reader(f, delimiter='\t')
+            elif format == "csv":
+                reader = csv.reader(f, dialect='excel')
+            else:
+                print("Unknown format!")
+                return False
+            dict = {}
+
+            for i, row in enumerate(reader):
+                if output == "debug":
+                    print(row)
+                if i == 0: continue
+                if len(row) != 3:
+                    continue
+                fragment, isotopomer, ratio, *over = row
+                if ratio == "":
+                    ratio = 0
+
+                if fragment not in self.cs:
+                    continue
+                if fragment not in dict:
+                    dict[fragment] = {}
+                dict[fragment][isotopomer] = float(ratio)
+        for fragment in dict:
+            self.set_each_isotopomer(fragment, dict[fragment], correction = correction)
         return True
 
     def set_each_isotopomer(self, compound, dict, correction = 'no'):
@@ -327,7 +388,7 @@ class CarbonSource:
 
     def generate_carbonsource_MDV(self, carbonsource = [], correction = 'no'):
         """
-        Generate MDVs of all EMUs of each carbon source.
+        Generator of MDVs of all EMUs of each carbon source.
         This function is called in the mfapy.metabolicmodel.MetabolicModel
 
         Parameters

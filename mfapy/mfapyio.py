@@ -16,7 +16,7 @@ import re, csv
 
 def load_metabolic_model_reactions(filename, format = "text", output = "normal"):
     """
-    Load metabolic reaction information from a text or CSV file with following format.
+    A function to load metabolic reaction information from a text or CSV file with following format.
 
     //Reactions
     v1	AcCoA + OAC --> Cit	AcCoA + OAC --> Cit	AB + CDEF --> FEDBAC	(kegg:R00351)	0.0	300
@@ -121,7 +121,7 @@ def load_metabolic_model_reactions(filename, format = "text", output = "normal")
 
 def load_metabolic_model_metabolites(filename, format = "text", output = "normal"):
     """
-    Load Metabolite information from a file with following format.
+    A function to oad Metabolite information from a file with following format.
 
     //Metabolites
     CO2ex	1	no	no	excreted	(kegg:C00011)	0.0	300
@@ -224,7 +224,7 @@ def load_metabolic_model_metabolites(filename, format = "text", output = "normal
 
 def load_metabolic_model_reversibles(filename, format = "text", output = "normal"):
     """
-    Load definitions of reversible reactions from a metabolic model file with following format.
+    A function to oad definitions of reversible reactions from a metabolic model file with following format.
 
     //Reversible_reactions
     FUM	v6	v7	(kegg:R01082)	0.0	300
@@ -310,7 +310,7 @@ def load_metabolic_model_reversibles(filename, format = "text", output = "normal
 
 def load_metabolic_model_fragments(filename, format = "text", output = "normal"):
     """
-    Load mass fragment information from a metabolic model file with following format.
+    A function to Load mass fragment information from a metabolic model file with following format.
 
     //Target_fragments
     Glue	gcms	Glu_1:2:3:4:5	use	C5H10N2O3
@@ -395,7 +395,7 @@ def load_metabolic_model_fragments(filename, format = "text", output = "normal")
 
 def load_metabolic_model(filename, format = "text",output = "normal"):
     """
-    Read metabolic model information from a text file with following format.
+    A function to read metabolic model information from a text file with following format.
 
     CAUTION: Now this function has no error checking.
 

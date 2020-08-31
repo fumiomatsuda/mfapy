@@ -17,7 +17,6 @@ from . import optimize
 from . import carbonsource
 import copy,time
 #from numba import jit
-
 #from assimulo.problem import Explicit_Problem
 #from assimulo.solvers import CVode
 
@@ -25,8 +24,8 @@ class MetabolicModel:
     """
     Class of Metabolic model
 
-    Instances of this class have fuctions to analyze mass spec. data derived from 13C metabolic flux analysis.
-    Other classes including MDVData, CarbonSouece are constructed from a instances of this class
+    Instances of this class have fuctions to analyze mass spectrometry based 13C MFA data.
+    MetabolicModel instances are able to generate other classes including MDVData and CarbonSouece
 
 
     Parameters
@@ -47,8 +46,8 @@ class MetabolicModel:
 
     Examples
     --------
-    >>> reactions, reversible, metabolites, target_fragments = LoadMetabolicModel("filename.txt')
-    >>> model = MetabolicModel(reactions, reversible, metabolites, target_fragments)
+    >>> reactions, reversible, metabolites, target_fragments = mfapy.mfapyio.load_metabolic_model("example_1_toymodel_model.txt", format = "text")
+    >>> model = mfapy.metabolicmodel.MetabolicModel(reactions, reversible, metabolites, target_fragments)
 
     Attributes
     --------
@@ -101,16 +100,7 @@ class MetabolicModel:
         'odesolver': "scipy" # or "sundials"
         }
         #
-        # Class configuration data
-        # 0: No call back
-        # 1: Simple report for grid search
-        # 2: Detailed report for grid search
-        # 3: Simple report for fitting_flux using parallel python
-        # 4: Detailed report for fitting_flux using parallel python
-        # 5: Simple report report for single analysis
-        # 6: Detailed report for single analysis
-        # 7: Detailed report for model constrution
-        # 8: Debug
+
         # Symmetry metabolites
         #
         for id in self.metabolites:
@@ -214,11 +204,8 @@ class MetabolicModel:
 
     def update(self):
         """
-        Update the metabolic model to generate stoichiometry matrix. The metabolic model
-        have to be updated when reaction types (fixed, free, fitting, etc) in the metabolic model
-        are modified.
-        When total number of metabolic reactions were changed, please perform self.reconstruction()
-
+        Method to generate stoichiometry matrix. A metabolic model have to be updated when any types (fixed, free, fitting, pseudo)
+        of reactions, metabolites, and reversible reactions are modified.
 
         Parameters
         ----------
@@ -304,6 +291,10 @@ class MetabolicModel:
             # Order of the reaction in self.reaction_ids is stored
             #
             self.reactions[id]["position_in_tmp_r"] = counter
+            #
+            # stoichiometry substrate, key => coefficient
+            #
+            self.reactions[id]["stoichiometry_metabolite_list"] = {}
             #
             # Reaction id is appended to self.reaction_ids
             #
@@ -402,6 +393,7 @@ class MetabolicModel:
                 elif len(metabolite.split("}")) == 2:
                     # coefficient data
                     stnum, metabolite_name = metabolite.split("}")
+
                 #
                 # Ignore if carbon source metabolites
                 #
@@ -457,6 +449,7 @@ class MetabolicModel:
                 elif len(metabolite.split("}")) == 2:
                     stnum, metabolite_name = metabolite.split("}")
                     stnum = float(stnum.replace("{",""))
+                self.reactions[id]["stoichiometry_metabolite_list"][metabolite_name] = float(stnum) * -1.0
                 #
                 # Ignore if carbon source metabolites
                 #
@@ -484,6 +477,7 @@ class MetabolicModel:
                 elif len(metabolite.split("}")) == 2:
                     stnum, metabolite_name = metabolite.split("}")
                     stnum = stnum.replace("{","")
+                self.reactions[id]["stoichiometry_metabolite_list"][metabolite_name] = float(stnum) * 1.0
                 if self.metabolites[metabolite_name]['carbonsource'] == 'carbonsource':
                     continue
                 if self.metabolites[metabolite_name]['excreted'] == 'excreted':
@@ -753,30 +747,22 @@ class MetabolicModel:
 
     def reconstruct(self, mode = "no"):
         """
-        Reconstruct the metabolic model to generate new stoichiometry matrix and a function to
-        calculate MDV data. The metabolic model have to be reconstructed when total number of metabolic
-        reactions were changed.
-        function_text = model.reconstruct()
-
+        Method to reconstruct the metabolic model to generate new stoichiometry matrix and a function to
+        calculate MDV data.
 
         Parameters
         ----------
-        mode: experimental "no"
+        mode: experimental
 
 
         Examples
         --------
-        >>> function_text = model.reconstruct()
-        >>> exec(function_text)
-        >>> fitting_flux(calmdv, flux)
-        >>> f = open('calmdv.py', 'w')
-        >>> f.write(function_text)
-        >>> f.close()
-        >>> from calmdv import calmdv
+        >>> model.reconstruct()
 
         Returns
         ----------
-        test : "calmdv" and "diffmdv" str data describing a python script to determine MDV from metabolic flux.
+        calmdv_text : A dictionary has two keys. "calmdv" and "diffmdv" are instance of functions for
+        13C-MFA and INST-13C-MFA to generate MDV from a given metabolic flux, respectively.
 
         See Also
         --------
@@ -787,7 +773,6 @@ class MetabolicModel:
         self.update()
         calmdv_text, ccalmdv_text = self.generate_calmdv(mode)
         self.calmdv_text = calmdv_text
-        #print(calmdv_text)
         #
         # local_dic was added for Python 3
         #
@@ -813,11 +798,11 @@ class MetabolicModel:
 
         Returns
         --------
-        thres: a threshold level of RSS for searching confidence interval
+        string, cython_string: Texts of python code describing calmdv and diffmdv functions for python 3 and Cython (Experimental)
 
         Examples
         --------
-        >>> calmdv = model.generate_calmdv()
+        >>> calmdv_text, ccalmdv_text = self.generate_calmdv(mode)
 
         """
         def generate_iterative_list(list):
@@ -1503,7 +1488,7 @@ class MetabolicModel:
                                     cell.append(reaction_id)
                             cell_string = "-1.0 * (" + ' + '.join(cell) + ")"
                             string += "\tA_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_i + emu_intermediate_of_this_layer.index(substrate))+"] = " + cell_string + "\n"
-                            if self.configuration['callbacklevel'] == 8:
+                            if self.configuration['callbacklevel'] == 7:
                                 print(product,'\t',substrate, "\tA_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_i + emu_intermediate_of_this_layer.index(substrate))+"] = " + cell_string)
 
                         else:
@@ -1514,7 +1499,7 @@ class MetabolicModel:
                                     cell.append(reaction_id)
                             cell_string = ' + '.join(cell)
                             string += "\tA_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_i + emu_intermediate_of_this_layer.index(substrate))+"] = " + cell_string + "\n"
-                            if self.configuration['callbacklevel'] == 8:
+                            if self.configuration['callbacklevel'] == 7:
                                 print(product,'\t',substrate, "\tA_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_i + emu_intermediate_of_this_layer.index(substrate))+"] = " + cell_string)
 
             string += "\tA_" + str(emu_size) + ".resize(("+str(size_i)+","+ str(size_i)+"))\n"
@@ -1524,7 +1509,7 @@ class MetabolicModel:
             for product in emu_intermediate_of_this_layer:
                 for substrate in emu_sourse_of_this_layer:
                     cell = []
-                    if self.configuration['callbacklevel'] == 8:
+                    if self.configuration['callbacklevel'] == 7:
                         print(emu_size, product, substrate, matrix[product])
                     if substrate in matrix[product]:
                         if substrate == product:
@@ -1541,7 +1526,7 @@ class MetabolicModel:
                                     cell.append("-1.0 * " + reaction_id)
                     if len(cell) != 0:
                         cell_string = ' + '.join(cell)
-                        if self.configuration['callbacklevel'] == 8:
+                        if self.configuration['callbacklevel'] == 7:
                             print(product,'\t',substrate,"\tB_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_s + emu_sourse_of_this_layer.index(substrate))+"] = " + cell_string)
 
                         string += "\tB_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_s + emu_sourse_of_this_layer.index(substrate))+"] = " + cell_string + "\n"
@@ -1578,7 +1563,7 @@ class MetabolicModel:
                        equation[sum(conbination)].extend([("*").join([str(subs_matrix[i][conbination[i]]) for i in range(len(conbination))])])
 
                     for numberofisotope in range (len(equation)-n+1):
-                        if self.configuration['callbacklevel'] == 8:
+                        if self.configuration['callbacklevel'] == 7:
                             print(substrate ,'\t','',"\tY_" + str(emu_size) + "["+str(emu_sourse_of_this_layer.index(substrate)*(emu_size + 1) + numberofisotope)+"] = " + '+'.join(equation[numberofisotope]))
                         string += "\tY_" + str(emu_size) + "["+str(emu_sourse_of_this_layer.index(substrate)*(emu_size + 1) + numberofisotope)+"] = " + '+'.join(equation[numberofisotope]) + "\n"
 
@@ -1586,7 +1571,7 @@ class MetabolicModel:
                     compound = compound_of_EMU(substrate)
                     size = size_of_EMU(substrate);
                     for numberofisotope in range(size+1):
-                        if self.configuration['callbacklevel'] == 8:
+                        if self.configuration['callbacklevel'] == 7:
                             print(substrate ,'\t','',"\tY_" + str(emu_size) + "["+str(emu_sourse_of_this_layer.index(substrate)*(emu_size + 1) + numberofisotope)+"] = " + "mdv_carbon_sources[\"" + substrate + "\"][" + str(numberofisotope) + "]")
                         string += "\tY_" + str(emu_size) + "["+str(emu_sourse_of_this_layer.index(substrate)*(emu_size + 1) + numberofisotope)+"] = " + "mdv_carbon_sources[\"" + substrate + "\"][" + str(numberofisotope) + "]" + "\n"
 
@@ -1972,7 +1957,7 @@ class MetabolicModel:
                             string += "\t\tA_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_i + emu_intermediate_of_this_layer.index(substrate))+"] = " + cell_string + "\n"
                             cython_string += "\t\tA_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_i + emu_intermediate_of_this_layer.index(substrate))+"] = " + cell_string + "\n"
 
-                            if self.configuration['callbacklevel'] == 8:
+                            if self.configuration['callbacklevel'] == 7:
                                 print(product,'\t',substrate, "\tA_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_i + emu_intermediate_of_this_layer.index(substrate))+"] = " + cell_string)
 
                         else:
@@ -1985,7 +1970,7 @@ class MetabolicModel:
                             string += "\t\tA_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_i + emu_intermediate_of_this_layer.index(substrate))+"] = " + cell_string + "\n"
                             cython_string += "\t\tA_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_i + emu_intermediate_of_this_layer.index(substrate))+"] = " + cell_string + "\n"
 
-                            if self.configuration['callbacklevel'] == 8:
+                            if self.configuration['callbacklevel'] == 7:
                                 print(product,'\t',substrate, "\tA_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_i + emu_intermediate_of_this_layer.index(substrate))+"] = " + cell_string)
             #
             # Risize A A_1.resize((10,5))
@@ -2017,7 +2002,7 @@ class MetabolicModel:
                             string += "\t\tC_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_i + emu_intermediate_of_this_layer.index(substrate))+"] = " + cell_string + "\n"
                             cython_string += "\t\tC_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_i + emu_intermediate_of_this_layer.index(substrate))+"] = " + cell_string + "\n"
 
-                            if self.configuration['callbacklevel'] == 8:
+                            if self.configuration['callbacklevel'] == 7:
                                 print(product,'\t',substrate, "\tA_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_i + emu_intermediate_of_this_layer.index(substrate))+"] = " + cell_string )
 
                         else:
@@ -2047,7 +2032,7 @@ class MetabolicModel:
                                     cell.append("-1.0 * " + reaction_id)
                     if len(cell) != 0:
                         cell_string = ' + '.join(cell)
-                        if self.configuration['callbacklevel'] == 8:
+                        if self.configuration['callbacklevel'] == 7:
                             print(product,'\t',substrate,"\tB_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_s + emu_sourse_of_this_layer.index(substrate))+"] = " + cell_string)
 
                         string += "\t\tB_" + str(emu_size) + "["+str(emu_intermediate_of_this_layer.index(product) * size_s + emu_sourse_of_this_layer.index(substrate))+"] = " + cell_string + "\n"
@@ -2099,7 +2084,7 @@ class MetabolicModel:
                        equation_forfunc[sum(conbination)].extend([("*").join([str(subs_matrix_forfunc[i][conbination[i]]) for i in range(len(conbination))])])
 
                     for numberofisotope in range (len(equation)-n+1):
-                        if self.configuration['callbacklevel'] == 8:
+                        if self.configuration['callbacklevel'] == 7:
                             print(substrate ,'\t','',"\tY_" + str(emu_size) + "["+str(emu_sourse_of_this_layer.index(substrate)*(emu_size + 1) + numberofisotope)+"] = " + '+'.join(equation[numberofisotope]))
                         string += "\t\tY_" + str(emu_size) + "["+str(emu_sourse_of_this_layer.index(substrate)*(emu_size + 1) + numberofisotope)+"] = " + '+'.join(equation[numberofisotope]) + "\n"
                         cython_string += "\t\tY_" + str(emu_size) + "["+str(emu_sourse_of_this_layer.index(substrate)*(emu_size + 1) + numberofisotope)+"] = " + '+'.join(equation[numberofisotope]) + "\n"
@@ -2109,7 +2094,7 @@ class MetabolicModel:
                     compound = compound_of_EMU(substrate)
                     size = size_of_EMU(substrate);
                     for numberofisotope in range(size+1):
-                        if self.configuration['callbacklevel'] == 8:
+                        if self.configuration['callbacklevel'] == 7:
                             print(substrate ,'\t','',"\tY_" + str(emu_size) + "["+str(emu_sourse_of_this_layer.index(substrate)*(emu_size + 1) + numberofisotope)+"] = " + "mdv_carbon_sources[\"" + substrate + "\"][" + str(numberofisotope) + "]" )
                         string += "\t\tY_" + str(emu_size) + "["+str(emu_sourse_of_this_layer.index(substrate)*(emu_size + 1) + numberofisotope)+"] = " + "mdv_carbon_sources[\"" + substrate + "\"][" + str(numberofisotope) + "]" + "\n"
                         cython_string += "\t\tY_" + str(emu_size) + "["+str(emu_sourse_of_this_layer.index(substrate)*(emu_size + 1) + numberofisotope)+"] = " + "mdv_carbon_sources[\"" + substrate + "\"][" + str(numberofisotope) + "]" + "\n"
@@ -2270,7 +2255,7 @@ class MetabolicModel:
         #
         # Save diff_mdv
         #
-        if self.configuration['callbacklevel'] >= 3:
+        if self.configuration['callbacklevel'] == 7:
             string += "\tf = open('diffmdv_func.py', 'w')\n"
             string += "\tf.write(diffmdv_func)\n"
             string += "\tf.close()\n"
@@ -2495,17 +2480,47 @@ class MetabolicModel:
 
     def set_configuration(self, *args, **kwargs):
         """
-        Set configurations of model parameters.
+        Setter of a configuration of model parameters.
 
         Parameters
         ----------
-        callbacklevel:
-            'callbacklevel' determines details of callbacks from metabolic model. default: 0
-            It is useful for error shooting.
-            0: none, 1: important things, 2: detailed
-        iteration_max = 100,
-            Maximal number of interations in model fitting. default: 100
 
+        'callbacklevel': default = 0,
+            'callbacklevel' determines a frequency level of callbacks from metabolic model.
+            # 0: No call back
+            # 1: Error report
+            # 2: Simple pregress report for grid search
+            # 3: Detailed pregress report for grid search
+            # 4: Simple pregress report for flux fitting
+            # 5: Detailed pregress report for flux fitting
+            # 7: Detailed report for model constrution
+            # 8: Debug
+        'iteration_max': default = 1000,
+            Maximal number of interations (steps) in each fitting task.
+        'default_reaction_lb': default = 0.001,
+        'default_reaction_ub': default = 5000.0,
+        'default_metabolite_lb': default = 0.001,
+        'default_metabolite_ub': default = 500.0,
+        'default_reversible_lb': default = -300,
+        'default_reversible_ub': default = 300.0,
+            Default lower and upper boundaries used only when there is no data in the model definition file.
+        'grid_search_iterations': default = 1,
+            Number of trials for model fitting at each point in grid search.
+        'initial_search_repeats_in_grid_search': default = 50,
+            Number of initial metabolic flux disributions generated for each trial in grid search.
+            Best initial metabolic flux disribution with smallest RSS is employed.
+        'initial_search_iteration_max': default = 1000,
+            Maximal number of interations (steps) allowed in each task to find feasible initial metabolic flux distribution.
+        'add_naturalisotope_in_calmdv':default = "no"
+            For INST-13C MFA. Natural isotope is added to MDVs of all intermediate at time = 0.
+        'number_of_repeat':default = 3,
+            For "deep" function of self.fitting flux. "Global" => "Local" optimization methods are repeated for n times.
+        'ncpus':default = 3,
+            Number of CPUs used in parallel processing
+        'ppservers': default = ("",),
+            Obsolete: For parallel processing using pp.
+        'odesolver': default = "scipy" # or "sundials"
+            Only "scipy" is avaliable due to memory leak problem of sundials
 
         Examples
         --------
@@ -2521,7 +2536,7 @@ class MetabolicModel:
         for word in kwargs:
             #if word in self.configuration:
             self.configuration[word] = kwargs[word]
-            if self.configuration['callbacklevel'] >= 6:
+            if self.configuration['callbacklevel'] >= 4:
                 print(word,'is set at',kwargs[word])
 
     def set_constrain(self, group, id, type, value = 0.1, stdev = 1.0):
@@ -2531,24 +2546,24 @@ class MetabolicModel:
 
         Parameters
         ----------
-        group :group of parameters in "reaction", "reversible", "metabolite"
-        id : reaction id to be fixed (str)
-        type: type of constrain "fitting", "fixed", "free", "pseudo"
+        group :group of parameters ("reaction", "reversible", "metabolite") (str)
+        id : id in model definition (str)
+        type: type of constrain "fitting", "fixed", "free", "pseudo" (str)
             "fitting" : For the calclation of RSS by using "value" and stdev
             "fixed"   : Fixed to "value". Not used for the calculation of RSS.
             "free"    : Free between lower and upper boundary. Not used for the calculation of RSS.
             "pseudo"  : Pseudo reaction is a special "free" reaction to consider G-index.
-            The reaction is ignored in a flux stoichiometry. However, the reaction is considered
+            The reaction is ignored in a stoichiometry matrix. However, the reaction is considered
             in the MDV calculation.
 
 
-        value : flixed level of metabolic flux (float)
-        stdev : standard deviation of metabolic flux level (optional the information will be used when the reaction is 'fitting' type)
+        value : Level of metabolic flux (float)
+        stdev : Standard deviation of metabolic flux level used for 'fitting' type reactions. (float)
 
         Examples
         --------
-        >>> model.set_fixed_reaction("reaction", 'pgi',"fixed", 100.0,1)
-        Glucuse intake reaction rate is fixed to 100.0
+        >>> model.set_fixed_reaction("reaction", 'pgi', "fixed", 100.0,1)
+
 
         See Also
         --------
@@ -2562,12 +2577,12 @@ class MetabolicModel:
         elif group == "reversible":
             dic_temp = self.reversible
         else:
-            if self.configuration['callbacklevel'] >= 0:
+            if self.configuration['callbacklevel'] >= 1:
                 print('ERROR:', group,' is wrong group')
                 return False
 
         if type not in ["fitting", "fixed", "free", "pseudo"]:
-            if self.configuration['callbacklevel'] >= 0:
+            if self.configuration['callbacklevel'] >= 1:
                 print('ERROR:', type, ' is wrong type')
                 return False
 
@@ -2576,10 +2591,10 @@ class MetabolicModel:
             dic_temp[id]['value'] = float(value)
             if float(stdev) >= 0:
                 dic_temp[id]['stdev'] = float(stdev)
-            if self.configuration['callbacklevel'] >= 6:
+            if self.configuration['callbacklevel'] >= 5:
                 print(id,' is set as ',type, group, ' with value at ',value, ' and stdev at ', stdev, '.')
             return True
-        if self.configuration['callbacklevel'] >= 0:
+        if self.configuration['callbacklevel'] >= 1:
             print('ERROR:', id,' not existed in the model')
         return False
 
@@ -2589,22 +2604,20 @@ class MetabolicModel:
 
         Examples
         --------
-        >>> type, value, stdev = model.set_fixed_reaction('HEX1', 100.0,1)
+        >>> type, value, stdev = model.get_constrain("reaction","pgi")
 
 
         Parameters
         ----------
-        group :group of parameters in "reaction", "reversible", "metabolite"
-        id : reaction id to be fixed (str)
+        group :group of parameters ("reaction", "reversible", "metabolite") (str)
+        id : id in model definition (str)
 
 
         Reterns
         ----------
         type: type of constrain "fitting", "fixed", "free", "pseudo"
-        value : flixed level of metabolic flux (float)
-        stdev : standard deviation of metabolic flux level (optional the information will be used when the reaction is 'fitting' type)
-
-
+        value : Level of metabolic flux (float)
+        stdev : Standard deviation of metabolic flux level used for 'fitting' type reactions.
 
         See Also
         --------
@@ -2618,7 +2631,7 @@ class MetabolicModel:
         elif group == "reversible":
             dic_temp = self.reversible
         else:
-            if self.configuration['callbacklevel'] >= 0:
+            if self.configuration['callbacklevel'] >= 1:
                 print('ERROR:', group,' is wrong group')
                 return False, False, False
 
@@ -2627,14 +2640,13 @@ class MetabolicModel:
             value = float(dic_temp[id]['value'])
             stdev = float(dic_temp[id]['stdev'])
             return types, value, stdev
-        if self.configuration['callbacklevel'] >= 0:
+        if self.configuration['callbacklevel'] >= 1:
             print('ERROR:', id,' not existed in the model')
         return False, False, False
 
     def set_boundary(self, group, id, lb, ub):
         """
-        Set a lower and upper boundaries of metablic states
-        Please perform update() after model modification.
+        Setter of a lower and upper boundaries of metablic states
 
         Parameters
         ----------
@@ -2659,7 +2671,7 @@ class MetabolicModel:
         elif group == "reversible":
             dic_temp = self.reversible
         else:
-            if self.configuration['callbacklevel'] >= 0:
+            if self.configuration['callbacklevel'] >= 1:
                 print('ERROR:', group,' is wrong group')
                 return False
 
@@ -2667,56 +2679,21 @@ class MetabolicModel:
         if id in dic_temp:
             dic_temp[id]['lb'] = float(lb)
             dic_temp[id]['ub'] = float(ub)
-            if self.configuration['callbacklevel'] >= 6:
+            if self.configuration['callbacklevel'] >= 5:
                 print("lower and upper boundaries of", id,' are set to be ', lb, "and", ub)
             return True
-        if self.configuration['callbacklevel'] >= 0:
-            print('ERROR:', id,' not existed in the model')
-        return False
-
-
-    def set_active_reaction(self, id, type = "use"):
-        """
-        Set a metabolic reaction as "unuse" type. The reaction is completely ignored during the model construction.
-        This is an experimental function.
-        Please perform reconstruct() after model modification.
-
-        Parameters
-        ----------
-        id : reaction id to be activated or inactivated (str)
-
-        Examples
-        --------
-        >>> model.set_active_reaction('r2')
-
-        See Also
-        --------
-
-
-        """
-        if id in self.reactions:
-            if type == "use":
-                self.reactions[id]['use'] = 'use'
-                if self.configuration['callbacklevel'] >= 6:
-                    print(id,' was activated in the model.')
-                return True
-            else:
-                self.reactions[id]['use'] = 'no'
-                if self.configuration['callbacklevel'] >= 6:
-                    print(id,' was inactivated in the model.')
-                return True
-        if self.configuration['callbacklevel'] >= 0:
+        if self.configuration['callbacklevel'] >= 1:
             print('ERROR:', id,' not existed in the model')
         return False
 
 
     def set_constraints_from_state_dict(self, dict):
         """
-        Reaction types, value, stdev, lb, and ub are set from the state dict data
+        Reaction types, value, stdev, lb, and ub are set from the state dict data at once
 
         Parameters
         ----------
-        flux_dict: Dictionary of flux. Information in 'value', 'stdev', 'lb', 'ub' and 'type' field was used.
+        flux_dict: Dictionary of flux. Data in 'value', 'stdev', 'lb', 'ub' and 'type' fields are used.
 
         Reterns
         ----------
@@ -2733,7 +2710,7 @@ class MetabolicModel:
         #
         # preparation of data
         #
-
+        counter = 0
         for i, (group, id) in enumerate(self.vector["ids"]):
             if id in dict[group]:
                 type = dict[group][id]['type']
@@ -2743,14 +2720,19 @@ class MetabolicModel:
                 ub = dict[group][id]['ub']
                 self.set_constrain(group, id, type, value = value, stdev = stdev)
                 self.set_boundary(group, id, lb, ub)
-
+                counter = counter   + 1
+                if self.configuration['callbacklevel'] >= 5:
+                    print(id,' is set as ',type, group, ' with value at ',value, ' and stdev at ', stdev, " and boundaries", lb, ub,'.')
         self.update()
+        if self.configuration['callbacklevel'] >= 3:
+            print("Batch setting of", counter, "constrains.")
         return True
 
 
     def generate_state_dict(self, tmp_r):
         """
-        Generage state dict from given vector.
+        Generator of a state dict from a given vector.
+
         Parameters
         ----------
         tmp_r: tmp_r = numpy.dot(matrixinv, Rm_intial)
@@ -2808,8 +2790,8 @@ class MetabolicModel:
 
     def generate_carbon_source_templete(self):
         """
-        Generate a templete instance for storing a labelling information of carbon source.
-        Carbon source information is derived from the metabolic model (//Metabolites)
+        Generator of a templete of CarbonSourse instance. Labeling information of carbon sources will be added to the instance.
+        Carbon source compounds are derived from the metabolic model (//Metabolites)
 
         Parameters
         ----------
@@ -2842,15 +2824,14 @@ class MetabolicModel:
 
     def generate_mdv(self, flux, carbon_sources, timepoint = [], startidv = []):
         """
-        Generate a MdvData instance including a mass distribution vector (MDV) data
-        under 'flux' and 'carbon_sources' condiction.
+        Generator of a MdvData instance including MDV data generated from given flux and carbon sources.
 
         Parameters
         ----------
         flux: Dictionary of metabolic flux distribution
-        carbon_sources: Instance of carbon source object
-        timepoint: Array of time points of measurement in IDV
-        startidv:
+        carbon_sources: Instance of CarbonSource
+        timepoint: For INST-13C MFA. An array of time points of measurement in MDV
+        startidv: array of idv as starting isotope distribution for INST
 
         Returns
         ----------
@@ -2902,7 +2883,7 @@ class MetabolicModel:
 
     def set_experiment(self, name, mdv, carbon_sources, startidv = []):
         """
-        Set an 'experiment' to metabolic model. Here an 'experiment' indicated
+        Setter of an 'experiment' to metabolic model. Here an 'experiment' indicated
         a set of a carbon source labeling pattern and a measured MDV data.
         Parallel labeling experiment can be performed by setting multiple sets of 'experiment'.
 
@@ -2963,7 +2944,7 @@ class MetabolicModel:
                         self.experiments[name]["y0"][position + 1] = (H0ratio**(number_of_carbons-1.0))*H1ratio*number_of_carbons
                         if number_of_carbons > 2:
                             self.experiments[name]["y0"][position + 2] = 1.0- H0ratio**number_of_carbons - (H0ratio**(number_of_carbons-1.0))*H1ratio*number_of_carbons
-        if self.configuration['callbacklevel'] >= 5:
+        if self.configuration['callbacklevel'] >= 3:
             print("Set experiment: ", name,' was added to the metabolic model.')
         return True
 
@@ -3048,15 +3029,14 @@ class MetabolicModel:
         """
         names = list(self.experiments.keys())
         self.experiments = {}
-        if self.configuration['callbacklevel'] >= 5:
+        if self.configuration['callbacklevel'] >= 3:
             print("Clear experiment: ", names,' are removed from the metabolic model.')
 
         return True
 
-    def generate_flux_distribution(self, template = []):
+    def generate_state(self, template = []):
         """
-        Metabolic flux distribution is randomly generated.
-        The metabolic flux distribution can be a initial flux data for model fitting.
+        Generator of a random metabolic flux distribution.
 
         Parameters
         ----------
@@ -3105,7 +3085,7 @@ class MetabolicModel:
         ----------
         method:
             'normal' : Sequencial generation of flux distributions.
-            'parallel' : Parallel generation of flux distributions using parallel python.
+            'parallel' : Parallel generation of flux distributions using parallel processing.
         iterations:
             Number of trials to generate initial metabolic state. A trial sometimes failed due to a bad optimization state.
         initial_states:
@@ -3116,8 +3096,9 @@ class MetabolicModel:
 
         Returns
         ----------
-        flux list : List of dists of metabolic state data (number_of_initial_states > 1) .
-        flux : Dist of metabolic state data (number_of_initial_states == 1) .
+        flux (list or dict) :
+            [number_of_initial_states > 1 ] List of dictionaris of multiple metabolic state data.
+            [number_of_initial_states == 1 ] Dictionaly of single metabolic state data.
         state : State of generation results
 
         Examples
@@ -3136,7 +3117,7 @@ class MetabolicModel:
         # Check experiment
         #
         if len(self.experiments.keys()) == 0:
-            if self.configuration['callbacklevel'] >= 0:
+            if self.configuration['callbacklevel'] >= 1:
                 print('No experiment was set to the modelnames.')
             return False
         #
@@ -3146,7 +3127,7 @@ class MetabolicModel:
             import mkl
             mkl.set_num_threads(1)
         except:
-            if self.configuration['callbacklevel'] > 2:
+            if self.configuration['callbacklevel'] >= 1:
                 print("mkl-service is not installed this python!")
         #
         # Set parameters
@@ -3165,6 +3146,10 @@ class MetabolicModel:
 
         if len(template) > 0:
             template = [template[type][id]["value"] for (type, id) in self.vector["ids"]]
+
+        if self.configuration['callbacklevel'] >= 3:
+            print("Generation of initial state(s) was started by",method,"method.")
+
         if method == "parallelpp":
             #for i in range(iterations):
             #    tmp_r, Rm_temp, Rm_ind, state = optimize.initializing_Rm_fitting(numbers, vectors, matrixinv, template ,initial_search_iteration_max)
@@ -3222,12 +3207,6 @@ class MetabolicModel:
         # joblib
         #
         elif method == "parallel":
-            #for i in range(iterations):
-            #    tmp_r, Rm_temp, Rm_ind, state = optimize.initializing_Rm_fitting(numbers, vectors, matrixinv, template ,initial_search_iteration_max)
-            #    if state == "Determined":
-            #        flux_temp_r = self.generate_state_dict(tmp_r)
-            #        fluxes.append(flux_temp_r)
-            #        rsses.append(self.calc_rss(flux_temp_r))
             #Set ncpus
             if 'ncpus' in self.configuration:
                 ncpus = self.configuration['ncpus']
@@ -3239,20 +3218,13 @@ class MetabolicModel:
             try:
                 from joblib import Parallel, delayed
             except:
-                print("This function requires joblib!")
+                if self.configuration['callbacklevel'] >= 1:
+                    print("This function requires joblib!")
                 return False
-
-
-
             jobs = []
-
-
             for i in range(iterations):
                 parameters = (numbers, vectors, matrixinv, template ,initial_search_iteration_max)
                 jobs.append(parameters)
-                #jobs.append([i, job_server.submit(optimize.initializing_Rm_fitting, parameters,
-                # (optimize.calc_protrude_scipy,),
-                # ("numpy","scipy.optimize","mkl"))])
             result = Parallel(n_jobs=ncpus)([delayed(optimize.initializing_Rm_fitting)(numbers, vectors, matrixinv, template ,initial_search_iteration_max) for (numbers, vectors, matrixinv, template ,initial_search_iteration_max) in jobs])
 
 
@@ -3275,18 +3247,22 @@ class MetabolicModel:
                     rsses.append(self.calc_rss(flux_temp_r))
                     #print(self.calc_rss(flux_temp_r))
         order = sorted(list(range(len(fluxes))), key=lambda x: rsses[x])
-        if self.configuration['callbacklevel'] >= 6:
-            print("initial states were generated.", rsses)
-        fluxes = [fluxes[x] for x in order]
 
+
+        fluxes = [fluxes[x] for x in order]
+        rsses = [rsses[x] for x in order]
         state = int(len(fluxes))
-        if self.configuration['callbacklevel'] >= 6:
-            print(state, "initial states were generated.")
+
+        if self.configuration['callbacklevel'] == 4:
+            print(state, "initial state(s) was generated.")
+        if self.configuration['callbacklevel'] >= 5:
+            print(state, "initial state(s) was generated. RSS of best one is: ", rsses[0])
+
+
         if len(fluxes) == 0:
             return state, fluxes
         else:
             fluxes = fluxes[:initial_states]
-
         if initial_states == 1:
             return state, fluxes[0]
         else:
@@ -3295,7 +3271,7 @@ class MetabolicModel:
 
     def fitting_flux(self, method = 'SLSQP', flux = [], output = 'result'):
         """
-        Fitting the metabolic model to multiple experiments
+        Method for fitting a metabolic model to multiple experiments
 
         Parameters
         ----------
@@ -3306,12 +3282,12 @@ class MetabolicModel:
             'deep': Repeated execution of SLSQP & LN_PRAXIS
         flux: Initial flux distribution generated by self.generate_initial_states().
         When flux is a dict of one state, single fitting trial is exected.
-        When flux is a array of multiple dists of states, muptiple fitting trial is exected by using the parallel python.
+        When flux is a array of multiple dists of states, muptiple fitting trial is exected by using the parallel processing.
 
         output: Output method. (default, output = 'result')
             'result': Fitting problem is solved inside of the function.
             'for_parallel': Fitting problems is NOT solved inside of the function. In this mode, a tupple of
-            parameters for fit_r_mdv_pyopt() functions are generated for parallel computing.
+            parameters for fit_r_mdv_pyopt() functions are generated for parallel processinng.
 
         Parameters in self.configuration:
             iteration_max: Maximal number of interation in the optimizers. Example: self.set_configuration(iteration_max = 1000)
@@ -3334,7 +3310,7 @@ class MetabolicModel:
         >>> results= [("deep", flux_opt[0])]
         >>> model.show_results(results, pool_size = "off")
         #
-        # Generating parameters for parallel python
+        # Generating parameters for parallel processing
         #
         >>> parameters = model.fitting_flux(method = "SLSQP", flux = flux_initial, output = "for_parallel")
 
@@ -3348,11 +3324,11 @@ class MetabolicModel:
         # Check experiment
         #
         if len(self.experiments.keys()) == 0:
-            if self.configuration['callbacklevel'] >= 0:
+            if self.configuration['callbacklevel'] >= 1:
                 print('No experiment was set to the modelnames.')
             return False
         if flux == []:
-            if self.configuration['callbacklevel'] >= 0:
+            if self.configuration['callbacklevel'] >= 1:
                 print('Metabolic state data is required.')
             return False
         #
@@ -3385,6 +3361,8 @@ class MetabolicModel:
 
 
         if isinstance(flux, dict):
+            if self.configuration['callbacklevel'] >= 3:
+                print("Trying to start fitting task using",method,"method in single mode")
             if method == "SLSQP":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_scipy(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "SLSQP")
             elif method == "COBYLA":
@@ -3415,6 +3393,18 @@ class MetabolicModel:
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_deep(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux)
             else:
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_scipy(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "SLSQP")
+
+
+            if self.configuration['callbacklevel'] == 3:
+                print("Fitting task in single mode was finished.")
+            if self.configuration['callbacklevel'] == 4:
+                print("Fitting task in single mode was finished with finishing state",state,".")
+            if self.configuration['callbacklevel'] >= 5:
+                print("Fitting task in single mode was finished with finishing state",state," RSS is: ", kai)
+
+
+
+
             return state, kai, self.generate_state_dict(opt_flux)
 
         else:
@@ -3439,6 +3429,9 @@ class MetabolicModel:
                 return False
 
             jobs = []
+
+            if self.configuration['callbacklevel'] >= 3:
+                print("Trying to start fitting task using", method, "method using parallel processing")
 
             if method == "SLSQP":
                 for i, flux_temp in enumerate(flux):
@@ -3503,13 +3496,22 @@ class MetabolicModel:
                 flux_list.append(self.generate_state_dict(flux))
                 Rm_ind_sol_list.append(Rm_ind_sol)
                 if (self.configuration['callbacklevel'] >= 3):
-                    print('RSS', j,':', rss, state)
+                    print('RSS',':', rss, state)
 
             order = list(range(len(state_list)))
             order.sort(key = lambda x: kai_list[x])
             states = [state_list[x] for x in order]
             kais = [kai_list[x] for x in order]
             fluxes = [flux_list[x] for x in order]
+
+
+            if self.configuration['callbacklevel'] == 3:
+                print(len(fluxes), "fitting tasks in paralell processing mode were finished.")
+            if self.configuration['callbacklevel'] == 4:
+                print(len(fluxes), "fitting tasks in paralell processing mode were finished with finishing state",states[0],".")
+            if self.configuration['callbacklevel'] >= 5:
+                print(len(fluxes), "fitting tasks in paralell processing mode were finished with finishing state",states[0]," RSS of best one is: ", kais[0])
+
             return states, kais, fluxes
 
         """
@@ -3599,14 +3601,108 @@ class MetabolicModel:
             return states, kais, fluxes
         """
 
-
-    def show_results(self, input, flux = "on", rss = "on", mdv = "on", pool_size = "on", checkrss= "off", filename = "", format = "csv"):
+    def show_results_in_map(self, flux, mapfilename, outputfilename, formattext = ".1f"):
         """
-        List of reactions in the model with metabolic flux data.
+        Method to project metabolic state data into metabolic file (.GML).
 
         Examples
         --------
-        >>> free_reversible_reations = get_free_reversible_reactions()
+        >>> model.show_results_in_map(flux_opt1, "Example_2_cancer_map_new.gml", "Example_2_cancer_map_mapped.gml")
+        >>> model.show_results_in_map(flux_opt1, "Example_2_cancer_map_new.gml", "Example_2_cancer_map_mapped.gml", formattext = ".2f")
+
+
+        Parameters
+        ----------
+        flux: dic of metabolic state
+        mapfilename: name of blank GML file
+        outputfilename: name of uutput GML file
+        format: format string of "format" method of string
+
+        Returns
+        --------
+
+
+
+        """
+        kegg_id=[]
+        Id2value={}
+        def idsep(ids):
+            idsori = ids
+            ids = re.sub("\)\s*\(",")(",ids)
+            ids = re.sub("^\(","((",ids)
+            ids = re.sub("\)\(","))((",ids)
+            ids = re.sub("\)$","))",ids)
+            #idlist = re.findall("\(\([^:]*?:[^:]*?\)\)", ids)
+            idlist = []
+            for idtemp in re.findall("\(\(.*?\)\)", ids):
+                idtemp = re.sub("\(\(", "(", idtemp)
+                idtemp = re.sub("\)\)", ")", idtemp)
+                idlist.append(idtemp)
+            return(idlist)
+
+
+        for rid in self.reaction_ids:
+            ids = self.reactions[rid]['externalids']
+            for id in idsep(ids):
+                kegg_id.append(id)
+                Id2value[id]=flux['reaction'][rid]['value']
+        for rid in self.reversible_ids:
+            ids = self.reversible[rid]['externalids']
+            for id in idsep(ids):
+                kegg_id.append(id)
+                Id2value[id]=flux['reversible'][rid]['value']
+        for rid in self.metabolite_ids:
+            ids = self.metabolites[rid]['externalids']
+            for id in idsep(ids):
+                kegg_id.append(id)
+                Id2value[id]=flux['metabolite'][rid]['value']
+
+
+        node="off"
+        text=""
+        replace="off"
+        memo_off=[]
+        memo=""
+        kegg=[]
+        label=[]
+
+        with open(mapfilename,'r') as f:
+            for line in f:
+                if "  node [\n" in line:
+                    node="on"
+
+                if node=="off":
+                    text=text+line
+                if node=="on":
+                    memo=memo+line
+                    if line=="  ]\n":
+                        for id in kegg_id:
+                            if id in memo:
+                                temp = "{:"+formattext+"}"
+                                templine = temp.format(Id2value[id])
+                                memo_mod=re.sub('label "\d+(\.\d+)?"',"label "+'''"'''+templine+'''"''',memo)
+                                text=text+memo_mod
+                                replace="on"
+                        if replace=="off":
+                            text=text+memo
+                        node='off'
+                        replace="off"
+                        memo=''
+
+
+
+        with open(outputfilename, mode='w') as f:
+            f.write(text)
+        f.close()
+
+    def show_results(self, input, flux = "on", rss = "on", mdv = "on", pool_size = "off", checkrss= "off", filename = "", format = "csv"):
+        """
+        Method to output metabolic state data.
+
+        Examples
+        --------
+        >>> model.show_results(results, flux = "on", rss = "on", mdv = "on", pool_size = "off",  checkrss = "on")# Output to console
+        >>> model.show_results(results, filename = "show_results.csv", format = "csv")# Output to .csv file
 
         Parameters
         ----------
@@ -4035,16 +4131,132 @@ class MetabolicModel:
                     text = text + "\n"
             print(text)
 
+
+
+    def show_flux_balance(self, results, metabolite, filename = "", format = "csv"):
+        """
+        List of metabolic flux levels of reactions related to given metabolite.
+
+        Examples
+        --------
+        >>> model.show_metabolite_balance(results, "Fum")
+        >>> model.show_metabolite_balance(results, "Fum", filename = "metabolite_balance.csv", format = "csv")
+
+        Parameters
+        ----------
+        input: Tuple of ("name", dic of metabolic statet) [('name1', state1),('name2', state2),('name3', state3),]
+        metabolite: ID of metabolite of interest
+        filename: Results are saved when file name is not ""/
+        format: "csv" or "text"
+
+        Returns
+        --------
+
+        """
+
+        used_reaction = {}
+        result_hash = {}
+        result_hash_for_screen = {}
+        for id in self.reversible:
+            for text, flux in results:
+                forward = self.reversible[id]['forward']
+                reverse = self.reversible[id]['reverse']
+                string = forward+"+"+reverse
+                sumtemp = 0
+                check = 0
+                for reaction_id in string.split("+"):
+                    if not reaction_id in self.reaction_ids:
+                        continue
+                    if metabolite in self.reactions[reaction_id]['stoichiometry_metabolite_list']:
+                        check = check + 1
+                        used_reaction[reaction_id] = 1
+                        coefficient= self.reactions[reaction_id]['stoichiometry_metabolite_list'][metabolite]
+                        #print(metabolite, id, reaction_id, coefficient, text, flux['reaction'][reaction_id]['value'])
+                        sumtemp = sumtemp + coefficient * flux['reaction'][reaction_id]['value']
+                if check > 0:
+                    if not id in result_hash:
+                        result_hash[id] = []
+                        result_hash_for_screen[id]=[]
+                    if sumtemp > 0:
+                        result_hash[id].extend([sumtemp, 0])
+                    else:
+                        result_hash[id].extend([0, sumtemp*-1])
+                    result_hash_for_screen[id].append(sumtemp)
+
+        for id in self.reactions:
+            if id in used_reaction:
+                continue
+            if not id in self.reaction_ids:
+                continue
+            if self.reactions[id]["type"] == "pseudo":
+                continue
+            #used_reaction[reaction_id] = 1
+            if metabolite in self.reactions[id]['stoichiometry_metabolite_list']:
+                if not id in result_hash:
+                    result_hash[id] = []
+                    result_hash_for_screen[id] = []
+                coefficient= self.reactions[id]['stoichiometry_metabolite_list'][metabolite]
+                for text, flux in results:
+                    tempvalue = coefficient * flux['reaction'][id]['value']
+                    #print(metabolite, id, coefficient, text, tempvalue)
+                    if tempvalue > 0:
+                        result_hash[id].extend([tempvalue, 0])
+                    else:
+                        result_hash[id].extend([0, tempvalue*-1])
+                    result_hash_for_screen[id].append(tempvalue)
+        if filename == "":
+
+            text = ""
+            text = text + "{0:10.10s}".format("Reaction")
+            for texttemp, flux in results:
+                text = text + "{0:10.10s}".format(texttemp)
+            text = text + "\n"
+
+            for id, values in result_hash_for_screen.items():
+                text = text+ "{0:10.10s}".format(id)
+                for value in values:
+                    text = text+ "{0:>10.2f}".format(value)
+                text = text + "\n"
+            print(text)
+        else:
+
+            output = []
+            header = ["Reaction"]
+            for text, flux in results:
+                header.append(text+"_production")
+                header.append(text+"_consumption")
+            output.append(header)
+            for id, value in result_hash.items():
+                output.append([id] +value)
+
+            try:
+                with open(filename, 'w', newline='') as f:
+                    import csv
+                    if format == "text":
+                        writer = csv.writer(f, delimiter='\t')
+                        writer.writerows(output)
+                    else:
+                        writer = csv.writer(f, dialect='excel')
+                        writer.writerows(output)
+                return True
+            except:
+                return False
+
+
+
+
+
     def calc_rss(self, fluxes, mode = "flux"):
         """
-        Determine a residual sum of square (RSS) between estimated MDVs of 'flux' and measured MDVs in 'experiment(s)'
+        Getter to obtain a residual sum of square (RSS) between estimated MDVs of 'flux' and measured MDVs in 'experiment(s)'
 
         Parameters
         ----------
         flux: Dictionary of metabolic flux distribution or independent flux vector
 
-        mode: "independent" Calculation of RSS from independent flux vector
-
+        mode:
+            "independent":Calculation of RSS from independent flux vector
+            "flux":Calculation of RSS from state dictionary
 
         Returns
         ----------
@@ -4070,11 +4282,11 @@ class MetabolicModel:
         # Check experiment
         #
         if len(self.experiments.keys()) == 0:
-            if self.configuration['callbacklevel'] >= 0:
+            if self.configuration['callbacklevel'] >= 1:
                 print('No experiment was set to the modelnames.')
             return False
         if fluxes == []:
-            if self.configuration['callbacklevel'] >= 0:
+            if self.configuration['callbacklevel'] >= 1:
                 print('Metabolic state data is required.')
             return False
 
@@ -4129,9 +4341,12 @@ class MetabolicModel:
                 ub = copy.copy(self.vector["ub"]),
                 reac_met_number = self.numbers['reac_met_number'],
                 calmdv = self.func["calmdv"],
-                diffmdv = self.func["diffmdv"]
+                diffmdv = self.func["diffmdv"],
+                callbacklevel = self.configuration['callbacklevel']
                 )
             rss_list.append(rss)
+            if self.configuration['callbacklevel'] >= 5:
+                print("RSS of given state(s): ",rss_list)
         if type(fluxes) == list:
             return rss_list
         else:
@@ -4139,7 +4354,7 @@ class MetabolicModel:
 
     def goodness_of_fit(self, flux, alpha = 0.05):
         """
-        Calculate goodness-of-fit of a given flux distribution
+        Getter to calculate goodness-of-fit of a given flux distribution
 
         Examples
         --------
@@ -4181,7 +4396,7 @@ class MetabolicModel:
         thres = chi2.ppf(1.0-alpha, number_of_measurement - degree_of_freedom)
         pvalue = chi2.sf(RSS, number_of_measurement - degree_of_freedom)
 
-        if self.configuration["callbacklevel"] >= 8:
+        if self.configuration["callbacklevel"] >= 4:
             print("number_of_measurement", number_of_measurement)
             print("degree_of_freedom", degree_of_freedom)
             print("RSS", RSS)
@@ -4195,7 +4410,7 @@ class MetabolicModel:
 
     def get_thres_confidence_interval(self, flux, alpha = 0.05, dist = 'F_dist'):
         """
-        Determine a threshold level of RSS for searching confidence interval
+        Getter to obtain a threshold level of RSS for searching confidence interval
 
         Parameters
         ----------
@@ -4293,8 +4508,8 @@ class MetabolicModel:
 
     def generate_ci_templete(self, targets = "normal"):
         """
-        Generate a blank dictionary to keep confidence interval search results.
-        A dictionaty generated by the
+        Generator of a blank dictionary to keep confidence interval search results.
+        A dictionaty generated by the method is used in self.search_ci
 
 
         Parameters
@@ -4407,7 +4622,7 @@ class MetabolicModel:
 
     def search_ci(self, ci, flux, method = 'grid', alpha = 0.05, dist = 'F_dist', outputthres = 2.0):
         """
-        Confidence intervals were determined based on information in 'ci'
+        Method to estimate confidence intervals using information in a 'ci' dictionary.
 
         Parameters
         ----------
@@ -4656,7 +4871,8 @@ class MetabolicModel:
                     try:
                         rss = self.calc_rss(flux_opt)
                     except:
-                        print("Skipped:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
+                        if callbacklevel >= 3:
+                            print("Skipped:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
                         continue
 
                     if callbacklevel >= 3:
@@ -4710,7 +4926,7 @@ class MetabolicModel:
                     data_tmp[(group, rid)]["raw_flux_data"].append(opt_flux)
                     data_tmp[(group, rid)]["state"].append(state) #★200517追加　落ちてないのかfialしたのか判断できないので固定値にした
 
-                    if callbacklevel >= 2:
+                    if callbacklevel >= 3:
                         print("Finished:", group, rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower,", ub ",flux_upper, "flux_fixed", flux_value, "rss", rss, "state", state)
                 job_server.destroy()
 
@@ -4924,7 +5140,7 @@ class MetabolicModel:
                     data_tmp[(group, rid)]["raw_flux_data"].append(opt_flux)
                     data_tmp[(group, rid)]["state"].append(state) #★200517追加　落ちてないのかfialしたのか判断できないので固定値にした
 
-                    if callbacklevel >= 2:
+                    if callbacklevel >= 3:
                         print("Finished:", group, rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower,", ub ",flux_upper, "flux_fixed", flux_value, "rss", rss, "state", state)
                 job_server.destroy()
 
@@ -5062,7 +5278,8 @@ class MetabolicModel:
                 from joblib import Parallel, delayed
                 #job_server = pp.Server(ncpus = ncpus, ppservers=ppservers, restart=True, socket_timeout=7200)
             except:
-                print("This function requires joblib!")
+                if callbacklevel >= 1:
+                    print("This function requires joblib!")
                 return False
 
             starttime=time.perf_counter()
@@ -5094,8 +5311,8 @@ class MetabolicModel:
                 else:
                     n=10
 
-                if callbacklevel >= 1:
-                    print("Setting:", rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower," ub ",flux_upper, "n=", n)
+                if callbacklevel >= 2:
+                    print("Searching:", rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower," ub ",flux_upper, "n=", n)
                 #
                 # Store original metabolic constrains
                 #
@@ -5135,7 +5352,7 @@ class MetabolicModel:
                         # When initial flux could not be found
                         #
                         if len(flux_opt) == 0:
-                            if callbacklevel >= 2:
+                            if callbacklevel >= 3:
                                 print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i, "job", job_n)
                             continue
                         temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
@@ -5172,9 +5389,9 @@ class MetabolicModel:
                     # Fix reaction
                     #
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
-                    self.update()
                     if callbacklevel >= 3:
                         print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux,flux_lower,flux_upper, "interation", i)
+                    self.update()
 
                     initial_state_flag = 0
 
@@ -5188,7 +5405,7 @@ class MetabolicModel:
                         # When initial flux could not be found
                         #
                         if len(flux_opt) == 0:
-                            if callbacklevel >= 2:
+                            if callbacklevel >= 3:
                                 print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", i, "job", job_n)
                             continue
                         temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
@@ -5219,7 +5436,8 @@ class MetabolicModel:
                     try:
                         rss = self.calc_rss(flux_opt)
                     except:
-                        print("Skipped:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
+                        if callbacklevel >= 3:
+                            print("Skipped:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
                         continue
 
                     if callbacklevel >= 3:
@@ -5228,14 +5446,11 @@ class MetabolicModel:
                     parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
                     jobs.append(parameters)
                     jobsparameters.append(((group, rid),fixed_flux, flux_opt))
-                    #functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
-                    #jobs.append([(group, rid),fixed_flux, flux_opt, job_server.submit(optimize.fit_r_mdv_deep, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
-                    if callbacklevel >= 2:
-                        print("New job was added to pp:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
+                    if callbacklevel >= 3:
+                        print("New job was added to joblib:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
 
-
-                #
-                #
+                if callbacklevel >= 3:
+                    print("Waiting for joblib response")
                 #
                 result = Parallel(n_jobs=ncpus)([delayed(optimize.fit_r_mdv_deep)(configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp) for (configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp) in jobs])
 
@@ -5245,7 +5460,7 @@ class MetabolicModel:
                 self.set_constrain(group, rid, temp_type, temp_value, temp_stdev)
                 self.update()
 
-                if callbacklevel >= 2:
+                if callbacklevel >= 3:
                     print("Waiting for joblib response", rid, "flux_opt ")
                 #
                 # Retrive results
@@ -5285,17 +5500,14 @@ class MetabolicModel:
                     data_tmp[(group, rid)]["raw_flux_data"].append(opt_flux)
                     data_tmp[(group, rid)]["state"].append(state) #★200517追加　落ちてないのかfialしたのか判断できないので固定値にした
 
-                    if callbacklevel >= 2:
+                    if callbacklevel >= 3:
                         print("Finished:", group, rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower,", ub ",flux_upper, "flux_fixed", flux_value, "rss", rss, "state", state)
-                #job_server.destroy()
-
-
             #
             # Cals again around thres
             #
             for group, rid in sorted(ci['data'].keys()):
                 if ci['data'][(group, rid)]['use'] != 'on': continue
-                print(group, rid)
+
 
                 flux_upper = ci['data'][(group, rid)]['upper_boundary']
                 flux_lower = ci['data'][(group, rid)]['lower_boundary']
@@ -5321,18 +5533,13 @@ class MetabolicModel:
                 flux_previous_right = below_threshold[-1][0]
 
                 # Detect just next to the boundary
-                #print(data_sorted, flux_previous_left, flux_previous_right)
                 flux_next_left  = max([x[0] for x in data_sorted if x[0] < flux_previous_left])
                 flux_next_right  = min([x[0] for x in data_sorted if x[0] > flux_previous_right])
-                #print("flux_next_left ",flux_next_left,", flux_next_right ",flux_next_right)
                 data_tmp[(group, rid)]["log"]["1st previous_left"] = flux_previous_left
                 data_tmp[(group, rid)]["log"]["1st previous_right"] = flux_previous_right
                 data_tmp[(group, rid)]["log"]["1st next_left"] = flux_next_left
                 data_tmp[(group, rid)]["log"]["1st next_right"] = flux_next_right
 
-                if callbacklevel >= 2:
-                    print("flux_previous_left ",flux_previous_left,", flux_previous_right ",flux_previous_right)
-                    print("flux_next_left ",flux_next_left,", flux_next_right ",flux_next_right)
                 #
                 # This part should be reconsiderd 200517
                 #
@@ -5342,6 +5549,13 @@ class MetabolicModel:
                     n=10
                 else:
                     n=5
+                #
+                #
+                #
+                if callbacklevel == 2:
+                    print("Searching again:", rid, "lb ", flux_next_right," ub ",flux_next_left, "n=", n)
+                if callbacklevel >= 3:
+                    print("Searching again:", rid,"previous_left ",flux_previous_left,", previous_right ",flux_previous_right, "next_left ",flux_next_left,", flux_next_right ",flux_next_right, "n=", n)
                 #
                 # Store original metabolic constrains
                 #
@@ -5362,9 +5576,9 @@ class MetabolicModel:
                     # Fix reaction
                     #
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
-                    self.update()
                     if callbacklevel >= 3:
                         print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e)
+                    self.update()
 
                     initial_state_flag = 0
 
@@ -5378,7 +5592,7 @@ class MetabolicModel:
                         # When initial flux could not be found
                         #
                         if len(flux_opt) == 0:
-                            if callbacklevel >= 2:
+                            if callbacklevel >= 3:
                                 print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e, "job", job_n)
                             continue
                         temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
@@ -5407,12 +5621,10 @@ class MetabolicModel:
                     # Fix reaction
                     #
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
-                    self.update()
                     if callbacklevel >= 3:
                         print("Fixed for initial search:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e)
-
+                    self.update()
                     initial_state_flag = 0
-
                     for job_n in range(job_number):
                         state, flux_opt = self.generate_initial_states(initial_search_repeats_in_grid_search, 1, template = flux, method = "parallel")
                         if len(flux_opt) == 0:
@@ -5423,7 +5635,7 @@ class MetabolicModel:
                         # When initial flux could not be found
                         #
                         if len(flux_opt) == 0:
-                            if callbacklevel >= 2:
+                            if callbacklevel >= 3:
                                 print("Can't find initial state:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux, "interation", e, "job", job_n)
                             continue
                         temp_array_initial_fluxes.append((group, rid, fixed_flux, flux_opt))
@@ -5447,20 +5659,16 @@ class MetabolicModel:
                 #job_server = pp.Server(ncpus = ncpus, ppservers=ppservers, restart=True, socket_timeout=7200)
                 for (group_temp, rid_temp, fixed_flux, flux_opt) in temp_array_initial_fluxes:
                     self.set_constrain(group, rid, "fixed", value = fixed_flux, stdev = 1.0)
-                    print("Fixed for fitting:", group, rid, fixed_flux)
-                    self.update()
-
                     if callbacklevel >= 3:
                         print("Fixed for fitting:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
-
+                    self.update()
                     parameters = self.fitting_flux(method = 'deep', flux = flux_opt, output = 'for_parallel')
                     jobs.append(copy.deepcopy(parameters))
                     jobsparameters.append(((group, rid),fixed_flux, flux_opt))
-                    #functions = (optimize.calc_MDV_residue_scipy, optimize.fit_r_mdv_scipy,optimize.calc_MDV_residue_nlopt, optimize.fit_r_mdv_nlopt)
-                    #jobs.append([(group, rid),fixed_flux, flux_opt, job_server.submit(optimize.fit_r_mdv_deep, parameters, functions,("numpy","nlopt","scipy","scipy.integrate"))])
-                    if callbacklevel >= 2:
+                    if callbacklevel >= 3:
                         print("New job was added to joblib:", rid, "flux_opt ",flux_opt_rid, "value", fixed_flux)
-
+                if callbacklevel >= 3:
+                    print("Waiting for joblib response")
 
                 result = Parallel(n_jobs=ncpus)([delayed(optimize.fit_r_mdv_deep)(configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp) for (configurationx, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp) in jobs])
                 #
@@ -5504,12 +5712,8 @@ class MetabolicModel:
                     data_tmp[(group, rid)]["raw_flux_data"].append(opt_flux)
                     data_tmp[(group, rid)]["state"].append(state) #★200517追加　落ちてないのかfialしたのか判断できないので固定値にした
 
-                    if callbacklevel >= 2:
+                    if callbacklevel >= 3:
                         print("Finished:", group, rid, "flux_opt ",flux_opt_rid, "lb ", flux_lower,", ub ",flux_upper, "flux_fixed", flux_value, "rss", rss, "state", state)
-                #job_server.destroy()
-
-            if callbacklevel >= 1:
-                print("Data collection was finished")
 
             for (group, rid) in ci['data'].keys():
                 if ci['data'][(group, rid)]['use'] != 'on':
@@ -5532,8 +5736,6 @@ class MetabolicModel:
                 data_sorted.append((flux_upper + interval * 0.0001, thres * 10.0))
                 data_sorted.insert(0, (flux_lower - (interval * 0.0001), thres * 10.0))
 
-                #data_sorted.append((flux_upper, thres * 10.0))
-                #data_sorted.insert(0, (flux_lower, thres * 10.0))
                 below_threshold  = [x for x in data_sorted if x[1] < thres]
                 # Detect just before the lower boundary
                 flux_previous_left = below_threshold[0][0]
@@ -5545,9 +5747,6 @@ class MetabolicModel:
                 left_group  = sorted([x for x in data_sorted if x[0] < flux_previous_left], key = lambda s: s[1])
                 right_group  = sorted([x for x in data_sorted if x[0] > flux_previous_right], key = lambda s: s[1])
 
-
-                #rss_next_left = left_group[-1][1]
-                #flux_next_left = left_group[-1][0]
                 rss_next_left = left_group[0][1]
                 flux_next_left = left_group[0][0]
                 rss_next_right = right_group[0][1]
@@ -5570,10 +5769,6 @@ class MetabolicModel:
                     state_upper = "Not determined. Rearched to upper boundary"
                 if flux_upper > ci['data'][(group, rid)]['upper_boundary']:
                     flux_upper = ci['data'][(group, rid)]['upper_boundary']
-
-                if callbacklevel >= 3:
-                    print(flux_lower, flux_previous_left, rss_previous_left,flux_next_left,rss_next_left)
-                    print(flux_upper, flux_previous_right, rss_previous_right,flux_next_right,rss_next_right)
                 #
                 # Detect lower bounary of confidence interval
                 #
@@ -5583,8 +5778,8 @@ class MetabolicModel:
                 data_tmp[(group, rid)]["log"]["2nd next_right"] = flux_next_right
 
 
-                if callbacklevel >= 1:
-                    print(rid, 'Grid search maeda method. Lower boundary:', flux_lower, 'Upper boundery' ,flux_upper)
+                if callbacklevel >= 2:
+                    print("Finished:", rid, 'Lower boundary:', flux_lower, 'Upper boundery' ,flux_upper)
 
                 ci['data'][(group, rid)]['upper_boundary'] = flux_upper
                 ci['data'][(group, rid)]['lower_boundary'] = flux_lower
@@ -5622,18 +5817,13 @@ class MetabolicModel:
             #
             # Show calc time
             #
-            if callbacklevel >= 1:
+            if callbacklevel >= 2:
                 endtime=time.perf_counter()
                 print("time elapsed ", endtime-starttime,"s")
 
-
-            #return flux_lb
-        if (callbacklevel >= 0):
-            pass
-            #job_server.print_stats()
-
-        #job_server.destroy()
         return ci
+
+
     def load_states(self, filename, format = 'text'):
         """
         Load a text/csv file with 'reacton type' information to generate new states dict.

@@ -82,13 +82,13 @@ Version 055
 ----------------------------------------
 19/12/27  
 Support Python 3.8
-Example_1_toymodel_INST.py is updated to explain a method to construct time course mdv data from mdv files.
+Example_1_toymodel_INST.py is updated to explain a method to construct time course mdv data from mdv files.  
 
 Version 057
 ----------------------------------------
-20/7/12 initializing_Rm_fitting, fit_r_mdv_scipy, fit_r_mdv_nlopt in optimizaton: Expection is newly raised to avoid error in  paralell processing.
+20/7/12 initializing_Rm_fitting, fit_r_mdv_scipy, fit_r_mdv_nlopt in optimizaton: Expection is newly raised to avoid error in  paralell processing.  
 
-20/7/13 joblib instead of pp is employed for paralell proceccing.
+20/7/13 joblib instead of pp is employed for paralell proceccing.  
 
 20/7/30 Format of model definition file was updated to support external with a backward compatibility.
 
@@ -100,15 +100,23 @@ Version 057
 
 20/7/30 load_metabolic_model_fragments in mfapyio: Support external id.
 
-20/7/30 External id data was added to Example_0_toymodel_model.txt.
+20/7/30 External id data was added to Example_0_toymodel_model.txt, 
 
 20/7/30 External id data was added to Example_1_toymodel_model.txt.
+
+20/7/30 External id data was added to Example_2_MCF7_taxol_model.txt.
 
 20/7/30 show_results in metablicmodel: Output format was modified for more beautiful alignment.
 
 20/7/30 show_results in metablicmodel: "checkrss" option was added to check RSS levels of each fragment and "fitting" reactions and metabolites.
 
 20/8/19 Files for Example 4 (the Metropolis-Hastings algorithm reported in Scientific Reports volume 10, Article number: 286 (2020)) were newly included in sample folder.
+
+20/8/19 mfapy.carbonsource.set_carbonsources method is newly developed for batch loading of labelling pattern information of carbon sources.
+
+20/8/31 Files for Example 5 were newly included in sample folder to demonstrate the functions of mfapy.carbonsource.set_carbonsources
+
+20/8/31 mfapy.metabolicmodel.show_results_in_map is newly developed to project flux data on the metabolic map (.GML) available in Vanted. Files of Example 2 were updated to generate "Example_2_cancer_map_mapped.gml" from a blank map "Example_2_cancer_map_new.gml".
 
 If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>
 
