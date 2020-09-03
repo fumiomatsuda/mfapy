@@ -20,7 +20,7 @@ with open('LICENSE') as f:
 
 setup(
     name='mfapy',
-    version='0.5.7',
+    version='0.5.8',
     #package_dir = {'': pkgdir},
     py_modules =  ["mfapy", "metabolicmodel", "carbonsource", "mfapyio", "mdv", "optimize"],
     description = "Parallel and distributed programming for Python",

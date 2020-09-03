@@ -4289,11 +4289,13 @@ class MetabolicModel:
             if self.configuration['callbacklevel'] >= 1:
                 print('Metabolic state data is required.')
             return False
-
-        if type(fluxes) == list:
-            fluxlist = fluxes
-        else:
+        if mode == "independent":
             fluxlist = [fluxes]
+        else:
+            if type(fluxes) == list:
+                fluxlist = fluxes
+            else:
+                fluxlist = [fluxes]
 
         rss_list = []
 

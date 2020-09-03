@@ -1,7 +1,8 @@
 #
-#Okahashi p53KOT model
-#150117.txt
-#181009 modified	pyrŠO”²‚¯
+# Simplefied metabolic model of cancer cells 
+# 20/9/2 
+#
+# Please modify //Target_fragments to suit your experiment
 #
 //Reactions
 r1_SubsGlc	SubsGlc --> G6P	SubsGlc --> G6P	ABCDEF --> ABCDEF	use	0	1000
@@ -165,18 +166,18 @@ GLUDH	r49_gludh	r50_gludh	free
 #List of Target compound whose MDV are generarted by the calmdv function.
 #
 //Target_fragments
-GC_Lac	gcms	Lac_1:2:3	no
-GC_Suc_15	gcms	Suc_1:2:3:4	no
+GC_Lac_261	gcms	Lac_1:2:3	use
+GC_Suc_289	gcms	Suc_1:2:3:4	use
 GC_Fum_15	gcms	Fum_1:2:3:4	no
 GC_Mal_15	gcms	Mal_1:2:3:4	use
 GC_Mal_117	gcms	Mal_2:3:4	no
 GC_Cit_117	gcms	Cit_1:2:3:4:5	no
 GC_Cit_207	gcms	Cit_1:2:3:4:5	no
-GC_Cit_15	gcms	Cit_1:2:3:4:5:6	no
+GC_Cit_15	gcms	Cit_1:2:3:4:5:6	use
 GC_aKG_15	gcms	aKG_1:2:3:4:5	no
 GC_aKG_31	gcms	aKG_1:2:3:4:5	no
 GC_PEP_15	gcms	PEP_1:2:3	no
-GC_PGA_15	gcms	PGA_1:2:3	use
+GC_PGA_15	gcms	PGA_1:2:3	no
 GC_PGA_117	gcms	PGA_2:3	no
 GC_DHAP_15	gcms	DHAP_1:2:3	no
 GC_E4P357a	gcms	E4P_1:2:3:4	no
