@@ -118,11 +118,13 @@ Version 057
 
 20/8/31 mfapy.metabolicmodel.show_results_in_map is newly developed to project flux data on the metabolic map (.GML) available in Vanted. Files of Example 2 were updated to generate "Example_2_cancer_map_mapped.gml" from a blank map "Example_2_cancer_map_new.gml".
 
-Version 057
+Version 058
 ----------------------------------------
 20/9/3 Files for Example 4 (the Metropolis-Hastings algorithm reported in Scientific Reports volume 10, Article number: 286 (2020)) were updated to reproduce MCF-7 example.
 
 20/9/3 A bug in mfapy.metabolicmodel.calc_rss was fixed.
+
+20/9/6 test_metabolicmodel.py was updated to support mfapy.metabolicmodel.generarate_flux_distribution => mfapy.metabolicmodel.generarate_state
 
 If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>
 

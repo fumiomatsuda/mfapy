@@ -337,8 +337,8 @@ class Testmfapy(unittest.TestCase):
         actual = self.model.metabolites['AKG']['ub']
         self.assertEqual(expected, actual)
 
-    def test_generate_flux_distribution(self):
-        flux_opt, state = self.model.generate_flux_distribution()
+    def test_generate_state(self):
+        flux_opt, state = self.model.generate_state()
         expected = "Determined"
         actual = state
         self.assertEqual(expected, actual)
@@ -379,7 +379,7 @@ class Testmfapy(unittest.TestCase):
         self.assertAlmostEqual(expected, actual)
     """
     def test_save_states(self):
-        flux_opt, state = self.model.generate_flux_distribution()
+        flux_opt, state = self.model.generate_state()
         actual = self.model.save_states(flux_opt, "Example_1_test.csv", format = 'csv')
         expected = True
         self.assertEqual(expected, actual)
@@ -392,7 +392,7 @@ class Testmfapy(unittest.TestCase):
         self.model.update()
 
         cs = self.model.generate_carbon_source_templete()
-        flux_opt, state = self.model.generate_flux_distribution()
+        flux_opt, state = self.model.generate_state()
         mdv1 = self.model.generate_mdv(flux_opt, cs)
 
         self.model.set_experiment('ex1', mdv1, cs)
@@ -406,7 +406,7 @@ class Testmfapy(unittest.TestCase):
         self.model.update()
 
         cs = self.model.generate_carbon_source_templete()
-        flux_opt, state = self.model.generate_flux_distribution()
+        flux_opt, state = self.model.generate_state()
         mdv1 = self.model.generate_mdv(flux_opt, cs)
         self.model.set_experiment('ex1', mdv1, cs)
         rss = self.model.calc_rss(flux_opt)
@@ -422,7 +422,7 @@ class Testmfapy(unittest.TestCase):
         self.model.set_constrain('reversible','FUM','free')
         self.model.update()
         cs = self.model.generate_carbon_source_templete()
-        flux_opt, state = self.model.generate_flux_distribution()
+        flux_opt, state = self.model.generate_state()
         mdv1 = self.model.generate_mdv(flux_opt, cs)
         self.model.set_experiment('ex1', mdv1, cs)
 
@@ -439,7 +439,7 @@ class Testmfapy(unittest.TestCase):
         self.model.set_constrain('reversible','FUM','free')
         self.model.update()
         cs = self.model.generate_carbon_source_templete()
-        flux_opt, state = self.model.generate_flux_distribution()
+        flux_opt, state = self.model.generate_state()
         mdv1 = self.model.generate_mdv(flux_opt, cs)
         self.model.set_experiment('ex1', mdv1, cs)
 
@@ -447,7 +447,7 @@ class Testmfapy(unittest.TestCase):
         # call scipy
         state, RSS_bestfit, flux_opt_slsqp = self.model.fitting_flux(method = 'SLSQP', flux = flux_initial1)
         actual = state
-        expected = "Optimization terminated successfully"
+        expected = "Optimization terminated successfully."
         self.assertEqual(expected, actual)
         # call nlopt
         state, RSS_bestfit, flux_opt_slsqp = self.model.fitting_flux(method = 'LN_PRAXIS', flux = flux_initial1)
@@ -463,7 +463,7 @@ class Testmfapy(unittest.TestCase):
         self.model.set_constrain('reversible','FUM','free')
         self.model.update()
         cs = self.model.generate_carbon_source_templete()
-        flux_opt, state = self.model.generate_flux_distribution()
+        flux_opt, state = self.model.generate_state()
         mdv1 = self.model.generate_mdv(flux_opt, cs)
         self.model.set_experiment('ex1', mdv1, cs)
 
@@ -487,7 +487,7 @@ class Testmfapy(unittest.TestCase):
         self.model.update()
 
         cs = self.model.generate_carbon_source_templete()
-        flux_opt, state = self.model.generate_flux_distribution()
+        flux_opt, state = self.model.generate_state()
         mdv1 = self.model.generate_mdv(flux_opt, cs)
         self.model.set_experiment('ex1', mdv1, cs)
         thres, number_of_measurements, degree_of_freedom  = self.model.get_thres_confidence_interval(flux_opt, alpha = 0.05)
@@ -507,7 +507,7 @@ class Testmfapy(unittest.TestCase):
         self.model.update()
 
         cs = self.model.generate_carbon_source_templete()
-        flux_opt, state = self.model.generate_flux_distribution()
+        flux_opt, state = self.model.generate_state()
         mdv1 = self.model.generate_mdv(flux_opt, cs)
         self.model.set_experiment('ex1', mdv1, cs)
         number_of_independent_measurements  = self.model.get_number_of_independent_measurements()
@@ -520,7 +520,7 @@ class Testmfapy(unittest.TestCase):
         self.model.update()
 
         cs = self.model.generate_carbon_source_templete()
-        flux_opt, state = self.model.generate_flux_distribution()
+        flux_opt, state = self.model.generate_state()
         mdv1 = self.model.generate_mdv(flux_opt, cs)
         self.model.set_experiment('ex1', mdv1, cs)
         result  = self.model.get_degree_of_freedom()
@@ -534,7 +534,7 @@ class Testmfapy(unittest.TestCase):
         self.model.update()
 
         cs = self.model.generate_carbon_source_templete()
-        flux_opt, state = self.model.generate_flux_distribution()
+        flux_opt, state = self.model.generate_state()
         mdv1 = self.model.generate_mdv(flux_opt, cs)
         self.model.set_experiment('ex1', mdv1, cs)
         pvalue, rss_thres= self.model.goodness_of_fit(flux_opt, alpha =0.05)
