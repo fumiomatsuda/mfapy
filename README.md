@@ -8,7 +8,7 @@ mfapy supports:
 2. Isotopically nonstationary 13C metabolic flux analysis (INST-MFA)
 3. Parallel labeling experiment without limitation of number of experiments.
 4. Metabolic flux, net metabolic flux of reversible reaction, and metabolite concentration could be considered as fitting parameters.
-5. G-G-value by introducing the "pseudo" reaction
+5. G-value by introducing the "pseudo" reaction
 6. Goodness-of-fit analysis
 7. Parallel performing non-linear optimization jobs using parallel python.
 8. Automated model construction from model description file
@@ -21,10 +21,15 @@ This software is released under the MIT License, see LICENSE.txt.
 Requirement
 ----------------------------------------
 Python 3.6
+
 mfapy requires the packages:
+
 NumPy and SciPy (van der Walt, Colbert & Varoquaux, 2011)
+
 nlopt https://nlopt.readthedocs.io/en/latest/
+
 joblib
+
 mkl-service
 
 mfapy was developed and tested using the PyScripter IDE, and was tested in 64 bit version of Anaconda3 distribution in Windows 10.
@@ -55,7 +60,7 @@ Test
 
 How to use
 ----------------------------------------
-Sample python code in 'Explanation_1_13CMFA_toymodel.py' explains how to used mfapy.
+Sample python code in 'Explanation_1_13CMFA_toymodel.py' explains how to use mfapy.
 Detailed explanations are available from docstrings
 Example python codes are also available.
 
@@ -63,22 +68,17 @@ Learn more <https://github.com/fumiomatsuda/mfapy>
 
 Version 054
 ----------------------------------------
-19/06/28  
-class MetabolicModel: search_ci  
-Grid search procedure is updated.  
-19/06/28  
-class MdvData: add_gaussian_noise  
-"normalize" option is newly added.  
-19/07/01  
-optimize: def fit_r_mdv_deep  
-add global optimization by "GN_CRS2_LM" before iteration  
+19/06/28  class MetabolicModel: search_ci Grid search procedure is updated. 
 
+19/06/28  class MdvData: add_gaussian_noise  "normalize" option is newly added. 
+ 
+19/07/01  optimize: def fit_r_mdv_deep add global optimization by "GN_CRS2_LM" before iteration  
 
 Version 055
 ----------------------------------------
-19/12/27  
-Support Python 3.8
-Example_1_toymodel_INST.py is updated to explain a method to construct time course mdv data from mdv files.  
+19/12/27 Support Python 3.8
+
+19/12/27 Example_1_toymodel_INST.py is updated to explain a method to construct time course mdv data from mdv files.  
 
 Version 057
 ----------------------------------------
