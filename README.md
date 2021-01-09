@@ -8,7 +8,7 @@ mfapy supports:
 2. Isotopically nonstationary 13C metabolic flux analysis (INST-MFA)
 3. Parallel labeling experiment without limitation of number of experiments.
 4. Metabolic flux, net metabolic flux of reversible reaction, and metabolite concentration could be considered as fitting parameters.
-5. G-index by introducing the "pseudo" reaction
+5. G-G-value by introducing the "pseudo" reaction
 6. Goodness-of-fit analysis
 7. Parallel performing non-linear optimization jobs using parallel python.
 8. Automated model construction from model description file
@@ -55,13 +55,9 @@ Test
 
 How to use
 ----------------------------------------
-Sample scripts in 'sample' explain how to used mfapy. 
+Sample python code in 'Explanation_1_13CMFA_toymodel.py' explains how to used mfapy.
 Detailed explanations are available from docstrings
-
-1. Example_1_toymodel.py  
-2. Example_1_toymodel_INST.py 
-3. Example_2_MCF7_taxol.py 
-4. Example_3_Coryne.py 
+Example python codes are also available.
 
 Learn more <https://github.com/fumiomatsuda/mfapy>
 
@@ -110,21 +106,30 @@ Version 057
 
 20/7/30 show_results in metablicmodel: "checkrss" option was added to check RSS levels of each fragment and "fitting" reactions and metabolites.
 
-20/8/19 Files for Example 4 (the Metropolis-Hastings algorithm reported in Scientific Reports volume 10, Article number: 286 (2020)) were newly included in sample folder.
+20/8/19 Files for Example 6 (the Metropolis-Hastings algorithm reported in Scientific Reports volume 10, Article number: 286 (2020)) were newly included in sample folder.
 
 20/8/19 mfapy.carbonsource.set_carbonsources method is newly developed for batch loading of labelling pattern information of carbon sources.
 
-20/8/31 Files for Example 5 were newly included in sample folder to demonstrate the functions of mfapy.carbonsource.set_carbonsources
+20/8/31 Files for Explanation 1 were newly included in sample folder to demonstrate the functions of mfapy.carbonsource.set_carbonsources
 
 20/8/31 mfapy.metabolicmodel.show_results_in_map is newly developed to project flux data on the metabolic map (.GML) available in Vanted. Files of Example 2 were updated to generate "Example_2_cancer_map_mapped.gml" from a blank map "Example_2_cancer_map_new.gml".
 
 Version 058
 ----------------------------------------
-20/9/3 Files for Example 4 (the Metropolis-Hastings algorithm reported in Scientific Reports volume 10, Article number: 286 (2020)) were updated to reproduce MCF-7 example.
+20/9/3 Files for Example 6 (the Metropolis-Hastings algorithm reported in Scientific Reports volume 10, Article number: 286 (2020)) were updated to reproduce MCF-7 example.
 
 20/9/3 A bug in mfapy.metabolicmodel.calc_rss was fixed.
 
 20/9/6 test_metabolicmodel.py was updated to support mfapy.metabolicmodel.generarate_flux_distribution => mfapy.metabolicmodel.generarate_state
+
+Version 059
+----------------------------------------
+20/12/24 Model check functions were added to MetabolicModel.
+
+21/1/9 Example files were totally reorganized.
+
+21/1/9 Exlanation 1 files were newly added to explain mfapy functions.
+
 
 If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>
 

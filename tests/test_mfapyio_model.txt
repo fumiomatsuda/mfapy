@@ -1,72 +1,71 @@
 #						
-#toy model						
-#toymodel140331.txt						
+#toy model											
 #						
 #						
-//Reactions						
-v1	AcCoA + OAC --> Cit	AcCoA + OAC --> Cit	AB + CDEF --> FEDBAC	use	0.1	300
-v2	Cit --> AKG + CO2ex	Cit --> AKG + CO2ex	ABCDEF --> ABCDE + F	use	0.1	300
-v3	AKG --> Glu	AKG --> Glu	ABCDE --> ABCDE 	use	0.1	300
-v4	AKG --> Suc + CO2ex	AKG --> Suc + CO2ex	ABCDE --> BCDE + A	use	0.1	300
-v5	Suc --> Fum	Suc --> Fum	ABCD --> ABCD	use	0.1	300
-v6	Fum --> OAC	Fum --> OAC	ABCD --> ABCD	use	0.1	300
-v7	OAC --> Fum	OAC --> Fum	ABCD --> ABCD	use	0.1	300
-v8	Asp --> OAC	Asp --> OAC	ABCD --> ABCD	use	0.1	300
-v9	Suc --> Sucex	nd	nd	use	0.1	300
-e1	Glu --> Gluex	nd	nd 	use	0.1	300
-v10	OAC --> OACx	OAC --> OACx	ABCD --> ABCD	use	0.1	300
-v11	OACs --> OACx	OACs --> OACx	ABCD --> ABCD	use	0.001	300
-v12	OACx --> OACe	nd	nd	use	0.1	300
-v13	OAC+OAC --> Fumx	OAC+OAC --> Fumx	ABCD+EFGH --> EFAB	use	0.1	300
-v14	OA --> Fume	nd	nd	use	0.1	300
-v15	OAC+Fum+Suc --> Tx	OAC+Fum+Suc --> Tx	ABCD+EFGH+IJKL --> CDHL	use	0.1	300
-v16	Tx --> Te	nd	nd	use	0.1	300
-v17	Fumx --> {2}OA	Fumx --> OA+OA	ABCD --> AB+CD	use	0.1	300
+//Reactions
+v1	AcCoA + OAC --> Cit	AcCoA + OAC --> Cit	AB + CDEF --> FEDBAC	(kegg:R00351)	0.1	300
+v2	Cit --> AKG + CO2ex	Cit --> AKG + CO2ex	ABCDEF --> ABCDE + F	(kegg:R00709)	0.1	300
+v3	AKG --> Glu	AKG --> Glu	ABCDE --> ABCDE 	(kegg:R00243)	0.1	300
+v4	AKG --> Suc + CO2ex	AKG --> Suc + CO2ex	ABCDE --> BCDE + A	(kegg:R01197)	0.1	300
+v5	Suc --> Fum	Suc --> Fum	ABCD --> ABCD	(kegg:R02164)	0.1	300
+v6	Fum --> OAC	Fum --> OAC	ABCD --> ABCD	(kegg:R01082)	0.1	300
+v7	OAC --> Fum	OAC --> Fum	ABCD --> ABCD	(kegg:R01082)	0.1	300
+v8	Asp --> OAC	Asp --> OAC	ABCD --> ABCD	(kegg:R00355)	0.1	300
+v9	Suc --> Sucex	nd	nd	noid	0.1	300
+e1	Glu --> Gluex	nd	nd 	noid	0.1	300
+v10	OAC --> OACx	OAC --> OACx	ABCD --> ABCD	noid	0.1	300
+v11	OACs --> OACx	OACs --> OACx	ABCD --> ABCD	noid	0.001	300
+v12	OACx --> OACe	nd	nd	noid	0.1	300
+v13	OAC+OAC --> Fumx	OAC+OAC --> Fumx	ABCD+EFGH --> EFAB	noid	0.1	300
+v14	OA --> Fume	nd	nd	noid	0.1	300
+v15	OAC+Fum+Suc --> Tx	OAC+Fum+Suc --> Tx	ABCD+EFGH+IJKL --> CDHL	noid	0.1	300
+v16	Tx --> Te	nd	nd	noid	0.1	300
+v17	Fumx --> {2}OA	Fumx --> OA+OA	ABCD --> AB+CD	noid	0.1	300
 #						
 #Definition of carbon numbers of intermediates						
 #						
 #Name_of_intermediate{\t}carbon_number						
 #						
-//Metabolites						
-CO2ex	1	no	no	excreted		
-AcCoA	2	no	carbonsource	no		
-OAC	4	no	no	no		
-OACs	4	no	carbonsource	no		
-OACx	4	no	no	no		
-OACe	4	no	no	excreted		
-Fumx	4	no	no	no		
-OA	2	no	no	no		
-Fume	4	no	no	excreted		
-Tx	4	no	no	no		
-Te	4	no	no	excreted		
-Cit	6	no	no	no		
-AKG	5	no	no	no		
-Suc	4	symmetry	no	no		
-Fum	4	symmetry	no	no		
-Glu	5	no	no	no		
-Gluex	5	no	no	excreted		
-Sucex	4	no	no	excreted		
-Asp	4	no	carbonsource	no		
+//Metabolites
+CO2ex	1	no	no	excreted	(kegg:C00011)	0.0	300
+AcCoA	2	no	carbonsource	no	(kegg:C00024)	0.0	300
+OAC	4	no	no	no	(kegg:C00036)	0.0	300
+OACs	4	no	carbonsource	no	noid	0.0	300
+OACx	4	no	no	no	noid	0.0	300
+OACe	4	no	no	excreted	noid	0.0	300
+Fumx	4	no	no	no	noid	0.0	300
+OA	2	no	no	no	noid	0.0	300
+Fume	4	no	no	excreted	noid	0.0	300
+Tx	4	no	no	no	noid	0.0	300
+Te	4	no	no	excreted	noid	0.0	300
+Cit	6	no	no	no	(kegg:C00158)	0.0	300
+AKG	5	no	no	no	(kegg:C00026)	0.0	300
+Suc	4	symmetry	no	no	(kegg:C00042)	0.0	300
+Fum	4	symmetry	no	no	(kegg:C00122)	0.0	300
+Glu	5	no	no	no	(kegg:C00025)	0.0	300
+Gluex	5	no	no	excreted	noid	0.0	300
+Sucex	4	no	no	excreted	noid	0.0	300
+Asp	4	no	carbonsource	no	(kegg:C00049)	0.0	300	
 #						
 #List of reversible ractions, ID, forward,reverse						
 #						
-//Reversible_reactions						
-FUM	v6	v7
-Input	v9+e1	nothing					
+//Reversible_reactions
+FUM	v6	v7	(kegg:R01082)	-300	300
+Input	v9+e1	nothing	(kegg:R01082)	-300	300				
 #						
 #List of Target compound whose MDV are generarted by the calmdv function.						
 #						
-//Target_fragments						
-Glue	gcms	Glu_1:2:3:4:5	use			
-AKGe	gcms	AKG_1:2:3:4:5	use			
-OACo	gcms	OACx_1:2:3:4	use			
-OACi	gcms	OAC_1:2:3:4	use			
-OACt	gcms	Fumx_1:2:3:4	use			
-OACc	gcms	OAC_1:2+OAC_1:2	use			
-Txt	gcms	Tx_1:2:3:4	use			
-Txc	gcms	OAC_3:4+Fum_4+Suc_4	use			
-Gluf	gcms	Glu_1:2+Glu_3:4:5	no			
-AKGmsms	msms	AKG_1:2:3:4:5+AKG_1+AKG_2:3:4:5	no			
-AKGms	gcms	AKG_1:2:3:4:5	no			
-AKGc	gcms	AKG_1:2+AKG_3:4:5	no			
-//End						
+//Target_fragments
+Glue	gcms	Glu_1:2:3:4:5	use	C5H10N2O3
+AKGe	gcms	AKG_1:2:3:4:5	use	C5H10N2O3
+OACo	gcms	OACx_1:2:3:4	use	C5H10N2O3
+OACi	gcms	OAC_1:2:3:4	use	C5H10N2O3
+OACt	gcms	Fumx_1:2:3:4	use	C5H10N2O3
+OACc	gcms	OAC_1:2+OAC_1:2	use	C5H10N2O3
+Txt	gcms	Tx_1:2:3:4	use	C5H10N2O3
+Txc	gcms	OAC_3:4+Fum_4+Suc_4	use	C5H10N2O3
+Gluf	gcms	Glu_1:2+Glu_3:4:5	no	C5H10N2O3
+AKGmsms	msms	AKG_1:2:3:4:5+AKG_1+AKG_2:3:4:5	no	C5H10N2O3
+AKGms	gcms	AKG_1:2:3:4:5	no
+AKGc	gcms	AKG_1:2+AKG_3:4:5	no	C5H10N2O3
+//End					

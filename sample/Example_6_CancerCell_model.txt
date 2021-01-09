@@ -1,9 +1,15 @@
+#-------------------------------------------------------------------------------
+# Name:        Example_6_CancerCell_model.txt
+#              Model definition file for Example 6 of mfapy
+#              Simplefied metabolic model of cancer cells
+#              Please modify //Target_fragments to suit your experiment
 #
-# Simplefied metabolic model of cancer cells 
-# 20/9/2 
+# Author:      Fumio_Matsuda
 #
-# Please modify //Target_fragments to suit your experiment
-#
+# Created:     12/06/2018
+# Copyright:   (c) Fumio_Matsuda 2021
+# Licence:     MIT license
+#-------------------------------------------------------------------------------
 //Reactions
 r1_SubsGlc	SubsGlc --> G6P	SubsGlc --> G6P	ABCDEF --> ABCDEF	use	0	1000
 r2_pgi	G6P --> F6P	G6P --> F6P	ABCDEF --> ABCDEF	use	0	1000
@@ -57,7 +63,7 @@ r83_AcCOA_BIO	AcCOAcyt --> AcCOABiomass	nd	nd	use	0	1000
 r100_CO2	CO2in --> CO2Ex	CO2in --> CO2Ex	A --> A	use	0	1000
 r101_CO2	SubsCO2 --> CO2in	SubsCO2 --> CO2in	A --> A	use	0	1000
 #
-#Name_of_intermediate{\t}carbon_number
+#Metabolites
 #
 //Metabolites
 SubsGlc	6	no	carbonsource	no
@@ -69,7 +75,6 @@ GAP	3	no	no	no
 PGA	3	no	no	no
 PEP	3	no	no	no
 Pyr	3	no	no	no
-PyrEx	3	no	no	excreted
 AcCOAmit	2	no	no	no
 Oxa	4	no	no	no
 Cit	6	no	no	no
@@ -87,62 +92,15 @@ E4P	4	no	no	no
 Lac	3	no	no	no
 LacEx	3	no	no	excreted
 AcCOAcyt	2	no	no	no
-Acetate	2	no	no	no
-AceEx	2	no	no	excreted
 SubsGln	5	no	carbonsource	no
 Gln	5	no	no	no
 Glu	5	no	no	no
-GluEx	5	no	no	excreted
-Pro	5	no	no	no
-ProEx	5	no	no	excreted
-Asp	4	no	no	no
-AspEx	4	no	no	excreted
-Asn	4	no	no	no
-AsnEx	4	no	no	excreted
-Ala	3	no	no	no
-AlaEx	3	no	no	excreted
-SubsSer	3	no	carbonsource	no
-Ser	3	no	no	no
-SerEx	3	no	no	excreted
-SubsGly	2	no	carbonsource	no
-Gly	2	no	no	no
-GlyDeg	2	no	no	excreted
-GlyEx	2	no	no	excreted
-SubsLeu	6	no	carbonsource	no
-Leu	6	no	no	no
-preAcCOA	4	no	no	no
-AcCOAmit2	2	no	no	no
-SubsIle	6	no	carbonsource	no
-Ile	6	no	no	no
-SucDummy	4	no	no	no
-SubsVal	5	no	carbonsource	no
-Val	5	no	no	no
-SubsArg	6	no	carbonsource	no
-Arg	6	no	no	no
-SubsCys	3	no	carbonsource	no
-Cys	3	no	no	no
 SubsCO2	1	no	carbonsource	no
 CO2in	1	no	no	no
 CO2Ex	1	no	no	excreted
 AcCOABiomass	2	no	no	excreted
-G6PBiomass	6	no	no	excreted
-R5PBiomass	5	no	no	excreted
-DHAPBiomass	3	no	no	excreted
-SerBiomass	3	no	no	excreted
-GlyBiomass	2	no	no	excreted
-AlaBiomass	3	no	no	excreted
-AspBiomass	4	no	no	excreted
-AsnBiomass	4	no	no	excreted
-GluBiomass	5	no	no	excreted
-GlnBiomass	5	no	no	excreted
-ProBiomass	5	no	no	excreted
-ArgBiomass	6	no	no	excreted
-LeuBiomass	6	no	no	excreted
-IleBiomass	6	no	no	excreted
-ValBiomass	5	no	no	excreted
-CysBiomass	3	no	no	excreted
 #
-"#List of reversible ractions, ID, forward,reverse"""
+#Reversible reactions
 #
 //Reversible_reactions
 PGI	r2_pgi	r3_pgi	free
@@ -161,7 +119,6 @@ TAL	r37_tal	r38_tal	free
 TKT2	r39_tkt	r40_tkt	free
 GLS	r47_gls	r48_gls	free
 GLUDH	r49_gludh	r50_gludh	free
-#CO2e	r100_CO2	r101_CO2	free
 #
 #List of Target compound whose MDV are generarted by the calmdv function.
 #
@@ -196,5 +153,4 @@ GC_S7P	gcms	S7P_1:2:3:4:5:6:7	no
 GC_FBP357a	gcms	FBP_5:6	no
 GC_FBP414a	gcms	FBP_1:2:3	no
 GC_FBP459a	gcms	FBP_4:5:6	no
-GC_Acetate	gcms	Acetate_1:2	no
 //End

@@ -1,0 +1,226 @@
+#-------------------------------------------------------------------------------
+# Name:        Example_2_Ecoli_model.txt
+#              Model definition file for Example 2 of mfapy
+#
+# Author:      Fumio_Matsuda
+#
+# Created:     12/06/2018
+# Copyright:   (c) Fumio_Matsuda 2021
+# Licence:     MIT license
+#-------------------------------------------------------------------------------
+//Reactions
+r1	SubsGlc --> G6P	SubsGlc --> G6P	ABCDEF --> ABCDEF	(kegg:R02848)	0	1000
+r2	G6P --> F6P	G6P --> F6P	ABCDEF --> ABCDEF	(kegg:R00771f)	0	1000
+r3	F6P --> G6P	F6P --> G6P	ABCDEF --> ABCDEF	(kegg:R00771r)	0	1000
+r4	F6P --> FBP	F6P --> FBP	ABCDEF --> ABCDEF	(kegg:R00756)	0	1000
+r5	FBP --> F6P	FBP --> F6P	ABCDEF --> ABCDEF	(kegg:R01068f)	0	1000
+r6	FBP --> DHAP + GAP	FBP --> DHAP + GAP	ABCDEF --> CBA + DEF	(kegg:R01068r)	0	1000
+r7	DHAP + GAP --> FBP	DHAP + GAP --> FBP	CBA + DEF --> ABCDEF	(kegg:R01015f)	0	1000
+r8	DHAP --> GAP	DHAP --> GAP	ABC --> ABC	(kegg:R01015r)	0	1000
+r9	GAP --> DHAP	GAP --> DHAP	ABC --> ABC	(kegg:R01061f)	0	1000
+r10	GAP --> PGA	GAP --> PGA	ABC --> ABC	(kegg:R01061r)	0	1000
+r11	PGA --> GAP	PGA --> GAP	ABC --> ABC	(kegg:R01512f)	0	1000
+r12	PGA --> PEP	PGA --> PEP	ABC --> ABC	(kegg:R01512r)	0	1000
+r13	PEP --> PGA	PEP --> PGA	ABC --> ABC	(kegg:R00200)	0	1000
+r14	PEP --> Pyr	PEP --> Pyr	ABC --> ABC	(kegg:R01196)	0	1000
+r15	Pyr --> PEP	Pyr --> PEP	ABC --> ABC	(kegg:R00351)	0	1000
+r16	Pyr --> AcCOA + CO2in	Pyr --> AcCOA + CO2in	ABC --> BC + A	(kegg:R00709f)	0	1000
+r17	AcCOA + Oxa --> IsoCit	AcCOA + Oxa --> IsoCit	AB + CDEF --> FEDBAC	(kegg:R00709r)	0	1000
+r18	IsoCit --> aKG + CO2in	IsoCit --> aKG + CO2in	ABCDEF --> ABCDE + F	(kegg:R01197)	0	1000
+r19	aKG --> Suc + CO2in	aKG --> Suc + CO2in	ABCDE --> BCDE + A	(kegg:R02164f)	0	1000
+r20	Suc --> Fum	Suc --> Fum	ABCD --> ABCD	(kegg:R02164r)	0	1000
+r21	Fum --> Suc	Fum --> Suc	ABCD --> ABCD	(kegg:R01082f)	0	1000
+r22	Fum --> Mal	Fum --> Mal	ABCD --> ABCD	(kegg:R01082r)	0	1000
+r23	Mal --> Fum	Mal --> Fum	ABCD --> ABCD	(kegg:R00343f)	0	1000
+r24	Mal --> Oxa	Mal --> Oxa	ABCD --> ABCD	(kegg:R00343r)	0	1000
+r25	Oxa --> Mal	Oxa --> Mal	ABCD --> ABCD	(kegg:R00344)	0	1000
+r26	IsoCit + AcCOA --> Mal + Suc	IsoCit + AcCOA --> Mal + Suc	ABCDEF + GH --> ABHG + FCDE	(kegg:R00216)	0	1000
+r27	G6P --> m6PG	G6P --> m6PG	ABCDEF --> ABCDEF	(kegg:R00835)	0	1000
+r28	m6PG --> Ru5P + CO2in	m6PG --> Ru5P + CO2in	ABCDEF --> BCDEF + A	(kegg:R01528)	0	1000
+r29	Ru5P --> R5P	Ru5P --> R5P	ABCDE --> ABCDE	(kegg:R01056f)	0	1000
+r30	R5P --> Ru5P	R5P --> Ru5P	ABCDE --> ABCDE	(kegg:R01056r)	0	1000
+r31	Ru5P --> Xu5P	Ru5P --> Xu5P	ABCDE --> ABCDE	(kegg:R01529f)	0	1000
+r32	Xu5P --> Ru5P	Xu5P --> Ru5P	ABCDE --> ABCDE	(kegg:R01529r)	0	1000
+r33	R5P + Xu5P --> S7P + GAP	R5P + Xu5P --> S7P + GAP	ABCDE + FGHIJ --> FGABCDE + HIJ	(kegg:R01641f)	0	1000
+r34	GAP + S7P --> Xu5P + R5P	GAP + S7P --> Xu5P + R5P	HIJ + FGABCDE --> FGHIJ + ABCDE	(kegg:R01641r)	0	1000
+r35	GAP + S7P --> F6P + E4P	GAP + S7P --> F6P + E4P	ABC + DEFGHIJ --> DEFABC + GHIJ	(kegg:R08575f)	0	1000
+r36	E4P + F6P --> S7P + GAP	E4P + F6P --> S7P + GAP	GHIJ + DEFABC --> DEFGHIJ + ABC	(kegg:R08575r)	0	1000
+r37	E4P + Xu5P --> F6P + GAP	E4P + Xu5P --> F6P + GAP	ABCD + EFGHI --> EFABCD + GHI	(kegg:R01067f)	0	1000
+r38	GAP + F6P --> Xu5P + E4P	GAP + F6P --> Xu5P + E4P	GHI + EFABCD --> EFGHI + ABCD	(kegg:R01067r)	0	1000
+r39	m6PG --> Pyr + GAP	m6PG --> Pyr + GAP	ABCDEF --> ABC + DEF	(kegg:R00703)	0	1000
+r40	PEP + CO2in --> Oxa	PEP + CO2in --> Oxa	ABC + D --> ABCD	(kegg:Lacex)	0	1000
+r41	Oxa --> PEP + CO2in	Oxa --> PEP + CO2in	ABCD --> ABC + D	(kegg:SubsGln)	0	1000
+r42	Mal --> Pyr + CO2in	Mal --> Pyr + CO2in	ABCD --> ABC + D	(kegg:R00253)	0	1000
+r43	AcCOA + AcCOA --> AcAcCOA	AcCOA + AcCOA --> AcAcCOA	AB + CD --> ABCD	(kegg:R00243f)	0	1000
+r44	AcAcCOA + Acetate --> AcAc + AcCOA	AcAcCOA + Acetate --> AcAc + AcCOA	ABCD + EF --> ABCD + EF	(kegg:R00243r)	0	1000
+r45	AcAc --> Acetone + CO2in	AcAc --> Acetone + CO2in	ABCD --> BCD + A	(kegg:Glu1)	0	1000
+r46	Acetone --> IPA	Acetone --> IPA	ABC --> ABC	(kegg:Pro)	0	1000
+r47	Acetone --> Acetoneex	nd	nd	(kegg:Proex)	0	1000
+r48	IPA --> IPAex	nd	nd	(kegg:R00355)	0	1000
+r49	AcCOA --> Acetate	AcCOA --> Acetate	AB --> AB	(kegg:Aspex)	0	1000
+r50	Acetate --> Acetateex	nd	nd	(kegg:R00483)	0	1000
+r51	Pyr --> AcCOA + Formate	Pyr --> AcCOA + Formate	ABC --> BC + A	(kegg:Asnex)	0	1000
+r52	Formate --> Formateex	nd	nd	(kegg:R00258)	0	1000
+r53	Suc --> Succinateex	nd	nd	(kegg:Alaex)	0	1000
+r54	IsoCit --> Citrateex	nd	nd	(kegg:SubsLeu)	0	1000
+r55	aKG --> a-ketoglutarateex	nd	nd	(kegg:SubsIle)	0	1000
+r56	SubsCO2 --> CO2in	SubsCO2 --> CO2in	A --> A	(kegg:SubsVal)	0	1000
+r57	CO2in --> CO2ex	nd	nd	(kegg:Glu)	0	1000
+r58	Pyr --> Ala	Pyr --> Ala	ABC --> ABC	(kegg:Arg)	0	1000
+r59	Oxa --> Asp	Oxa --> Asp	ABCD --> ABCD	(kegg:R00352)	0	1000
+r60	Oxa --> Thr	Oxa --> Thr	ABCD --> ABCD	(kegg:BiomassAcCoA)	0	1000
+r61	aKG --> Glu	aKG --> Glu	ABCDE --> ABCDE	(kegg:BiomassG6P)	0	1000
+r62	E4P + PEP + PEP --> Phe	E4P + PEP + PEP --> Phe	ABCD + EFG + HIJ --> EFGIJABCD	(kegg:BiomassR5P)	0	1000
+r63	E4P + PEP + PEP --> Tyr	E4P + PEP + PEP --> Tyr	ABCD + EFG + HIJ --> EFGIJABCD	(kegg:BiomassDHAP)	0	1000
+r64	Oxa + Pyr --> Ile	Oxa + Pyr --> Ile	ABCD + EFG --> ABFGCD	(kegg:R01513)	0	1000
+r65	AcCOA + Pyr + Pyr --> Leu	AcCOA + Pyr + Pyr --> Leu	AB + CDE + FGH --> ABDEGH	(kegg:BiomassAla)	0	1000
+r66	Pyr + Pyr --> Val	Pyr + Pyr --> Val	ABC + DEF --> ABECF	(kegg:BiomassAsp)	0	1000
+r67	PGA --> Ser	PGA --> Ser	ABC --> ABC	(kegg:BiomassAsn)	0	1000
+r68	Ser --> Gly + MEETHF	Ser --> Gly + MEETHF	ABC --> AB + C	(kegg:Glu2)	0	1000
+r69	Gly + MEETHF --> Ser	Gly + MEETHF --> Ser	AB + C --> ABC	(kegg:BiomassGln)	0	1000
+r70	Gly --> CO2in + MEETHF	Gly --> CO2in + MEETHF	AB --> A + B	(kegg:BiomassPro)	0	1000
+r71	CO2in + MEETHF --> Gly	CO2in + MEETHF --> Gly	A + B --> AB	(kegg:BiomassArg)	0	1000
+r72	G6P --> Biomass	nd	nd	(kegg:BiomassLeu)	0	1000
+r73	F6P --> Biomass	nd	nd	(kegg:BiomassIle)	0	1000
+r74	DHAP --> Biomass	nd	nd	(kegg:BiomassVal)	0	1000
+r75	PGA --> Biomass	nd	nd	(kegg:CO2ex)	0	1000
+r76	Ser --> Biomass	nd	nd	(kegg:SubsCO2)	0	1000
+r77	Gly --> Biomass	nd	nd	(keggPGAex)	0	1000
+r78	MEETHF --> Biomass	nd	nd	(kegg:FAex)	0	1000
+r79	PEP --> Biomass	nd	nd	(kegg:MAL_cyt)	0	1000
+r80	Pyr --> Biomass	nd	nd	(kegg:MAL_cyt)	0	1000
+r81	AcCOA --> Biomass	nd	nd	(kegg:OXA_cyt)	0	1000
+r82	aKG --> Biomass	nd	nd	(kegg:OXA_cyt)	0	1000
+r83	Oxa --> Biomass	nd	nd	(kegg:ATP)	0	1000
+r84	R5P --> Biomass	nd	nd	(kegg:NADH)	0	1000
+r85	E4P --> Biomass	nd	nd	(kegg:NADPH)	0	1000
+r86	Ala --> Alaex	nd	nd	(kegg:Arg)	0	1000
+r87	Asp --> Aspex	nd	nd	(kegg:R00352)	0	1000
+r88	Thr --> Threx	nd	nd	(kegg:BiomassAcCoA)	0	1000
+r89	Glu --> Gluex	nd	nd	(kegg:BiomassG6P)	0	1000
+r90	Phe --> Pheex	nd	nd	(kegg:BiomassR5P)	0	1000
+r91	Tyr --> Tyrex	nd	nd	(kegg:BiomassDHAP)	0	1000
+r92	Ile --> Ileex	nd	nd	(kegg:R01513)	0	1000
+r93	Leu --> Leuex	nd	nd	(kegg:BiomassAla)	0	1000
+r94	Val --> Valex	nd	nd	(kegg:BiomassAsp)	0	1000
+r95	SubsAla --> Ala	SubsAla --> Ala	ABC --> ABC	(kegg:Arg)	0	1000
+r96	SubsAsp --> Asp	SubsAsp --> Asp	ABCD --> ABCD	(kegg:R00352)	0	1000
+r97	SubsThr --> Thr	SubsThr --> Thr	ABCD --> ABCD	(kegg:BiomassAcCoA)	0	1000
+r98	SubsGlu --> Glu	SubsGlu --> Glu	ABCDE --> ABCDE	(kegg:BiomassG6P)	0	1000
+r99	SubsPhe --> Phe	SubsPhe --> Phe	ABCDEFGHI --> ABCDEFGHI	(kegg:BiomassR5P)	0	1000
+r100	SubsTyr --> Tyr	SubsTyr --> Tyr	ABCDEFGHI --> ABCDEFGHI	(kegg:BiomassDHAP)	0	1000
+r101	SubsIle --> Ile	SubsIle --> Ile	ABCDEF --> ABCDEF	(kegg:R01513)	0	1000
+r102	SubsLeu --> Leu	SubsLeu --> Leu	ABCDEF --> ABCDEF	(kegg:BiomassAla)	0	1000
+r103	SubsVal --> Val	SubsVal --> Val	ABCDE --> ABCDE	(kegg:BiomassAsp)	0	1000
+//Reversible_reactions
+PGI	r2	r3	(kegg:R00771)	-1000	1000
+FBA	r4	r5	(kegg:R01068)	-1000	1000
+TPI	r8	r9	(kegg:R01015)	-1000	1000
+GAPDH	r10	r11	(kegg:R01061)	-1000	1000
+PEPH	r12	r13	(kegg:R01512)	-1000	1000
+SDH	r20	r21	(kegg:R02164)	-1000	1000
+MDH	r24	r25	(kegg:R00342)	-1000	1000
+RPI	r29	r30	(kegg:R01056)	-1000	1000
+RBE	r31	r32	(kegg:R01529)	-1000	1000
+TKT1	r33	r34	(kegg:R01641)	-1000	1000
+TAL	r35	r36	(kegg:R08575)	-1000	1000
+TKT2	r37	r38	(kegg:R01067)	-1000	1000
+FH	r22	r23	(kegg:R01082)	-1000	1000
+#
+#Name_ofintermediate{\t}carbon_number
+#
+//Metabolites
+m6PG	6	no	no	no	(kegg:C00345)	0	300
+AcAc	4	no	no	no	(dummy)	0	300
+AcAcCOA	4	no	no	no	(dummy)	0	300
+AcCOA	2	no	no	no	(kegg:C00024)	0	300
+Acetate	2	no	no	no	(dummy)	0	300
+Acetateex	2	no	no	excreted	(dummy)	0	300
+Acetone	3	no	no	no	(dummy)	0	300
+Acetoneex	3	no	no	excreted	(dummy)	0	300
+a-ketoglutarateex	5	no	no	excreted	(dummy)	0	300
+aKG	5	no	no	no	(kegg:C00026)	0	300
+Ala	3	no	no	no	(kegg:C00041)	0	300
+Asp	4	no	no	no	(kegg:C00049)	0	300
+Biomass	1	no	no	excreted	(dummy)	0	300
+Citrateex	6	no	no	excreted	(dummy)	0	300
+CO2ex	1	no	no	excreted	(dummy)	0	300
+CO2in	1	no	no	no	(dummy)	0	300
+DHAP	3	no	no	no	(kegg:C00111)	0	300
+E4P	4	no	no	no	(kegg:C00279)	0	300
+F6P	6	no	no	no	(kegg:C00085)	0	300
+FBP	6	no	no	no	(kegg:C00354)	0	300
+Formate	1	no	no	no	(dummy)	0	300
+Formateex	1	no	no	excreted	(dummy)	0	300
+G6P	6	no	no	no	(kegg:C00092)	0	300
+GAP	3	no	no	no	(kegg:C00118)	0	300
+Glu	5	no	no	no	(kegg:C00025)	0	300
+Gly	2	no	no	no	(kegg:C00037)	0	300
+Ile	6	no	no	no	(kegg:C00407)	0	300
+IPA	3	no	no	no	(dummy)	0	300
+IPAex	3	no	no	excreted	(dummy)	0	300
+IsoCit	6	no	no	no	(dummy)	0	300
+Leu	6	no	no	no	(kegg:C00123)	0	300
+Mal	4	no	no	no	(kegg:C00149)	0	300
+MEETHF	1	no	no	no	(dummy)	0	300
+Oxa	4	no	no	no	(kegg:C00036)	0	300
+PEP	3	no	no	no	(kegg:C00074)	0	300
+PGA	3	no	no	no	(kegg:C00631)(kegg:C00197)	0	300
+Phe	9	no	no	no	(dummy)	0	300
+Pyr	3	no	no	no	(kegg:C00022)	0	300
+R5P	5	no	no	no	(kegg:C00117)	0	300
+Ru5P	5	no	no	no	(kegg:C00199)	0	300
+S7P	7	no	no	no	(kegg:C05382)	0	300
+Ser	3	no	no	no	(kegg:C00065)	0	300
+SubsCO2	1	no	carbonsource	no	(dummy)	0	300
+SubsGlc	6	no	carbonsource	no	(dummy)	0	300
+Succinateex	4	no	no	excreted	(dummy)	0	300
+Fum	4	symmetry	no	no	(kegg:C00122)	0	300
+Suc	4	symmetry	no	no	(kegg:C00042)	0	300
+Thr	4	no	no	no	(dummy)	0	300
+Tyr	9	no	no	no	(dummy)	0	300
+Val	5	no	no	no	(kegg:C00183)	0	300
+Xu5P	5	no	no	no	(kegg:C00231)	0	300
+SubsAla	3	no	carbonsource	no	(dummy)	0	300
+SubsAsp	4	no	carbonsource	no	(dummy)	0	300
+SubsThr	4	no	carbonsource	no	(dummy)	0	300
+SubsGlu	5	no	carbonsource	no	(dummy)	0	300
+SubsPhe	9	no	carbonsource	no	(dummy)	0	300
+SubsTyr	9	no	carbonsource	no	(dummy)	0	300
+SubsIle	6	no	carbonsource	no	(dummy)	0	300
+SubsLeu	6	no	carbonsource	no	(dummy)	0	300
+SubsVal	5	no	carbonsource	no	(dummy)	0	300
+Alaex	3	no	no	excreted	(dummy)	0	300
+Aspex	4	no	no	excreted	(dummy)	0	300
+Threx	4	no	no	excreted	(dummy)	0	300
+Gluex	5	no	no	excreted	(dummy)	0	300
+Pheex	9	no	no	excreted	(dummy)	0	300
+Tyrex	9	no	no	excreted	(dummy)	0	300
+Ileex	6	no	no	excreted	(dummy)	0	300
+Leuex	6	no	no	excreted	(dummy)	0	300
+Valex	5	no	no	excreted	(dummy)	0	300
+//Target_fragments
+Ala[M-57]	gcms	Ala_1:2:3	use	C11H26N2O1Si2
+Ala[M-85]	gcms	Ala_2:3	use	C10H26N1O1Si2
+Asp[M-57]	gcms	Asp_1:2:3:4	use	C18H40N4O1Si3
+Asp[M-85]	gcms	Asp_2:3:4	use	C17H40N3O1Si3
+Asp[f302]	gcms	Asp_1:2	use	C14H32N2O1Si2
+Glu[M-57]	gcms	Glu_1:2:3:4:5	use	C19H42N4O1Si3
+Glu[M-85]	gcms	Glu_2:3:4:5	use	C18H42N3O1Si3
+Glu[M-159]	gcms	Glu_2:3:4:5	use	C16H36N2O1Si2
+Phe[M-57]	gcms	Phe_1:2:3:4:5:6:7:8:9	use	C17H30N2O1Si2
+Phe[M-85]	gcms	Phe_2:3:4:5:6:7:8:9	use	C16H30N1O1Si2
+Phe[M-159]	gcms	Phe_2:3:4:5:6:7:8:9	use	C14H24O1Si1
+Phe[f302]	gcms	Phe_1:2	use	C14H32N2O1Si2
+Gly[M-57]	gcms	Gly_1:2	use	C10H24N2O1Si2
+Gly[M-85]	gcms	Gly_2	use	C9H24N1O1Si2
+Ile[M-85]	gcms	Ile_2:3:4:5:6	use	C13H32N1O1Si2
+Ile[M-159]	gcms	Ile_2:3:4:5:6	use	C11H26O1Si1
+Ser[M-57]	gcms	Ser_1:2:3	use	C17H40N3O1Si3
+Ser[M-85]	gcms	Ser_2:3	use	C16H40N2O1Si3
+Ser[M-159]	gcms	Ser_2:3	use	C14H34N1O1Si2
+Val[M-57]	gcms	Val_1:2:3:4:5	use	C13H30N2O1Si2
+Val[M-85]	gcms	Val_2:3:4:5	use	C12H30N1O1Si2
+Tyr[f302]	gcms	Tyr_1:2	use	C14H32N2O1Si2
+Thr[M-57]	gcms	Thr_1:2:3:4	use	C18H42N3O1Si3
+Thr[M-85]	gcms	Thr_2:3:4	use	C17H42N2O1Si3

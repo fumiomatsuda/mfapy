@@ -1,5 +1,5 @@
 ﻿#-------------------------------------------------------------------------------
-# Name:        mfapy example 2 Taxol treated MCF-7 cells
+# Name:        mfapy example 6 Monte Carlo Simulation
 #
 # Author:      Fumio_Matsuda
 #
@@ -9,14 +9,12 @@
 #-------------------------------------------------------------------------------
 import os, sys, time
 import numpy as numpy
-import mfapy as mfapy
+import mfapy
 import scipy.stats as stats
 import copy
 from joblib import Parallel, delayed
 import mkl
 mkl.set_num_threads(1)
-
-
 
 
 def calcrsss(Rm_ind_original, rss_original, parameters, func):
@@ -149,13 +147,11 @@ def calcrsss(Rm_ind_original, rss_original, parameters, func):
 if __name__ == '__main__':
     #
     #
-    #
-    #
-    metabolicmodel = "Example_4_MCF7_model.txt"
-    metabolicstate = "Example_4_flux_dist_MCF7.csv" # This file is used to set model constraints
-    mdvfile1 = 'Example_4_C24_U_CIT.txt'
-    mdvfile2 = 'Example_4_T24_U_CIT.txt'
-    outputfilename = 'example_4_output.csv'
+    metabolicmodel = "Example_6_CancerCell_model.txt"
+    metabolicstate = "Example_6_flux_dist_CancerCell.csv" # This file is used to set model constraints
+    mdvfile1 = 'Example_6_MCF7_C24_U_CIT.txt'
+    mdvfile2 = 'Example_6_MCF7_T24_U_CIT.txt'
+    outputfilename = 'Example_6_output.csv'
     numberofchains = 4
     numberofcpus = 4
     #
@@ -320,8 +316,8 @@ if __name__ == '__main__':
     import csv
 
     with open(outputfilename, 'w') as f:
-        writer = csv.writer(f, lineterminator='\n') # 改行コード（\n）を指定しておく
-        writer.writerows(record) # 2次元配列も書き込める
+        writer = csv.writer(f, lineterminator='\n') #く
+        writer.writerows(record)
 
 
 

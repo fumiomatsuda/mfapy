@@ -159,7 +159,7 @@ class CarbonSource:
         self.generate_carbonsource_MDV(carbonsource = [compound], correction = correction)
         return True
 
-    def set_set_carbonsources(self, filename, correction = 'no', format = 'text',output = "normal"):
+    def set_carbonsources(self, filename, correction = 'no', format = 'text',output = "normal"):
         """
         To set isotopomer data of multiple carbon sourses from text file.
 
@@ -522,9 +522,10 @@ class CarbonSource:
                     for i in c:
                         filter[int(i)-1] = 1
                     for t in range((2 ** int(size))):
-                        bin = list(format (t, '08b'))#for all isotopomers
+                        bin = list(format (t, '09b'))#for all isotopomers
                         bin.reverse()
                         #Cals number of 13C in EMU
+                        #print(bin, filter)
                         number = sum([int(bin[x]) for x in range(len(filter)) if filter[x] == 1])
                         #Integraton。
                         MID[number] += IDV_array[t]

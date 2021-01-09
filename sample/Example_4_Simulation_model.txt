@@ -1,0 +1,50 @@
+#-------------------------------------------------------------------------------
+# Name:        Example_4_Simulation_model.txt
+#              Model definition file for Example 4 of mfapy
+#
+# Author:      Fumio_Matsuda
+#
+# Created:     12/06/2018
+# Copyright:   (c) Fumio_Matsuda 2021
+# Licence:     MIT license
+#-------------------------------------------------------------------------------
+//Reactions
+v1	SubsGlc --> G6P	SubsGlc --> G6P	ABCDEF --> ABCDEF	(kegg:R02848)	0	1000
+v2	G6P --> {2}PEP	G6P --> PEP + PEP	ABCDEF --> CBA + DEF	(kegg:R01068r)	0	1000
+v3	PEP --> Pyr	PEP --> Pyr	ABC --> ABC	(kegg:R01196)	0	1000
+v4	PEP + CO2in --> OAC	PEP + CO2in --> OAC	ABC + D --> ABCD	(kegg:Lacex)	0	1000
+v5	OAC --> PEP + CO2in	OAC --> PEP + CO2in	ABCD --> ABC + D	(kegg:SubsGln)	0	1000
+v6	OAC --> Pyr + CO2in	OAC --> Pyr + CO2in	ABCD --> ABC + D	(kegg:R00253)	0	1000
+v7	Pyr --> AcCoA + CO2in	Pyr --> AcCoA + CO2in	ABC --> BC + A	(kegg:R00709f)	0	1000
+v8	AcCoA + OAC --> Cit	AcCoA + OAC --> Cit	AB + CDEF --> FEDBAC	(kegg:R00351)	0.0	300
+v9	Cit --> AKG + CO2ex	Cit --> AKG + CO2ex	ABCDEF --> ABCDE + F	(kegg:R00709)	0.0	300
+v10	AKG --> Glu	AKG --> Glu	ABCDE --> ABCDE 	(kegg:R00243)	0.0	300
+v11	AKG --> Suc + CO2ex	AKG --> Suc + CO2ex	ABCDE --> BCDE + A	(kegg:R01197)	0.0	300
+v12	Suc --> Fum	Suc --> Fum	ABCD --> ABCD	(kegg:R02164)	0.0	300
+v13	Fum --> OAC	Fum --> OAC	ABCD --> ABCD	(kegg:R01082)	0.0	300
+v14	OAC --> Fum	OAC --> Fum	ABCD --> ABCD	(kegg:R01082)	0.0	300
+v15	Glu --> Gluex	nd	nd 	(kegg:R00243)	0.0	300
+v16	CO2in --> CO2ex	nd	nd	(kegg:Glu)	0	1000
+//Metabolites
+SubsGlc	6	no	carbonsource	no	(dummy)	0	300
+G6P	6	no	no	no	(kegg:C00092)	0	300
+PEP	3	no	no	no	(kegg:C00074)	0	300
+CO2in	1	no	no	no	(dummy)	0	300
+CO2ex	1	no	no	excreted	(kegg:C00011)	0.0	300
+Pyr	3	no	no	no	(kegg:C00022)	0	300
+AcCoA	2	no	no	no	(kegg:C00024)	0.0	300
+OAC	4	no	no	no	(kegg:C00036)	0.0	300
+Cit	6	no	no	no	(kegg:C00158)	0.0	300
+AKG	5	no	no	no	(kegg:C00026)	0.0	300
+Suc	4	symmetry	no	no	(kegg:C00042)	0.0	300
+Fum	4	symmetry	no	no	(kegg:C00122)	0.0	300
+Glu	5	no	no	no	(kegg:C00025)	0.0	300
+Gluex	5	no	no	excreted	(kegg:C00025)	0.0	300
+//Reversible_reactions
+FUM	v13	v14	(kegg:R01082)	-300	300
+
+//Target_fragments
+AKGe	gcms	AKG_1:2:3:4:5	use	C5H10N2O3
+OACe	gcms	OAC_1:2:3:4	use	C5H10N2O3
+PEPe	gcms	PEP_1:2:3	use	C5H10N2O3
+//End

@@ -72,6 +72,12 @@ class MetabolicModel:
         self.metabolites = copy.deepcopy(metabolites)
         self.reversible = copy.deepcopy(reversible)
         self.target_fragments = copy.deepcopy(target_fragments)
+
+        number_of_errors = self.modelcheck()
+        if number_of_errors > 0:
+            print("There are critical problem(s) in the metabolic model")
+            return
+
         self.symmetry = {}
         self.carbon_source = {}
         #
@@ -100,7 +106,6 @@ class MetabolicModel:
         'odesolver': "scipy" # or "sundials"
         }
         #
-
         # Symmetry metabolites
         #
         for id in self.metabolites:
@@ -201,6 +206,356 @@ class MetabolicModel:
         self.reconstruct()
         if mode=="debug":
             self.configuration["callbacklevel"] = 1
+    def modelcheck(self):
+        """
+        Method to check medel definition data.
+
+        Parameters
+        ----------
+        nothing
+
+
+        Examples
+        --------
+        >>> model.datacheck()
+
+        See Also
+        --------
+        reconstruct
+        """
+        import re
+        number_of_errors = 0
+        #
+        # Check metabolite names
+        # 6PG => "m6PG"
+        # CO2_in => CO2in
+        #
+        metabolitename_changed = {}
+        metabolitename_in_model = {}
+        metabolitename_in_metabolites = {}
+
+        for name in sorted(self.metabolites.keys(), key=lambda x: self.metabolites[x]['order']):
+            oldname = str(name)
+            name = name.replace("_", "")
+            if not re.match(r"^[A-Za-z]",name):
+                name = "m"+name
+            if not name == oldname:
+                print("Caution:", oldname, " was changed to", name)
+                self.metabolites[name] = self.metabolites.pop(oldname)
+
+            metabolitename_changed[oldname] = name
+            metabolitename_changed[name] = name
+            metabolitename_in_metabolites[oldname] = name
+
+
+
+        #
+        # Compare metabolite names in reactions and stoichiometry with Metabolite list
+        #
+        for id in sorted(self.reactions.keys(), key=lambda x: self.reactions[x]['order']):
+            #
+            # get reaction formula and substrate, product names
+            #
+            reaction = self.reactions[id]['stoichiometry']
+            if re.match(r".+-->.+",self.reactions[id]['reaction']):
+                reaction = reaction + "+" + self.reactions[id]['reaction']
+            reaction = re.sub(r'\{.+\}', "", reaction)
+            temps = re.split(r"-->|\+", reaction)
+            for metabolite in temps:
+                metabolitename_in_model[metabolite] = 1
+                if not metabolite in metabolitename_changed:
+                    number_of_errors = number_of_errors + 1
+                    print ("Error!:",id, metabolite, "is not listed in //Metabolites in the metabolic model")
+        #
+        # Compare metabolite names in target_fragment with Metabolite list
+        #
+        for id in sorted(self.target_fragments.keys(), key=lambda x: self.target_fragments[x]['order']):
+            #
+            # get reaction formula and substrate, product names
+            #
+
+            atommap = self.target_fragments[id]['atommap']
+            if not re.match(r".+_.+",atommap):
+                continue
+            atommap.replace(" ","")
+            fragments = atommap.split("+")
+            fragments_array = []
+            #
+            # For each fragments
+            #
+            for fragment in fragments:
+                temps = fragment.split("_")
+                metabolite = "_".join(temps[:-1])
+                if not metabolite in metabolitename_changed:
+                    number_of_errors = number_of_errors + 1
+                    print ("Error!:",id, metabolite, "is not listed in //Metabolites in the metabolic model")
+                if not metabolite in metabolitename_in_model:
+                    number_of_errors = number_of_errors + 1
+                    print ("Error!:",id, metabolite, "does not exist in metabolid network")
+        #
+        # Chenk metabolites not used in the metablic network
+        #
+        for metabolitename in metabolitename_in_metabolites:
+            if not metabolitename in metabolitename_in_model:
+                 print ("Caution:",metabolitename, "was not used in the metabolid network")
+
+            if number_of_errors > 0:
+                return(number_of_errors)
+        #
+        # Check metabolite name in stoichiometry
+        #
+        for id in sorted(self.reactions.keys(), key=lambda x: self.reactions[x]['order']):
+            #
+            # get reaction formula and substrate, product names
+            #
+            reaction = self.reactions[id]['stoichiometry']
+            reaction.replace(" ","")
+            substrate, product = reaction.split("-->")
+            #
+            # Substrate
+            #
+            new_text = ""
+            newarray = []
+            for metabolite in substrate.split("+"):
+                #
+                # Check coefficient: {0.5}Pyr
+                #
+                if len(metabolite.split("}")) == 1:
+                    # no coefficient
+                    metabolite_name = metabolite
+                    newarray.append(metabolitename_changed[metabolite_name])
+                elif len(metabolite.split("}")) == 2:
+                    # coefficient data
+                    stnum, metabolite_name = metabolite.split("}")
+                    newarray.append(stnum+"}"+metabolitename_changed[metabolite_name])
+            new_text = "+".join(newarray)
+            new_text = new_text+"-->"
+
+            #
+            # Product
+            #
+            newarray = []
+            for metabolite in product.split("+"):
+                if len(metabolite.split("}")) == 1:
+                    metabolite_name = metabolite
+                    newarray.append(metabolitename_changed[metabolite_name])
+                elif len(metabolite.split("}")) == 2:
+                    stnum, metabolite_name = metabolite.split("}")
+                    newarray.append(stnum+"}"+metabolitename_changed[metabolite_name])
+            new_text = new_text+"+".join(newarray)
+            if not reaction == new_text:
+                print("Caution!:",id, 'stoichiometry', reaction, "was changed to" , new_text)
+                self.reactions[id]['stoichiometry'] = new_text
+
+        #
+        # Check metabolite name in reaction
+        #
+        for id in sorted(self.reactions.keys(), key=lambda x: self.reactions[x]['order']):
+            #
+            # get reaction formula and substrate, product names
+            #
+
+            reaction = self.reactions[id]['reaction']
+            if not re.match(r".+-->.+",reaction):
+                continue
+            reaction.replace(" ","")
+            substrate, product = reaction.split("-->")
+            #
+            # Substrate
+            #
+            new_text = ""
+            newarray = []
+            for metabolite in substrate.split("+"):
+                newarray.append(metabolitename_changed[metabolite])
+            new_text = "+".join(newarray)
+            new_text = new_text+"-->"
+            #
+            # Product
+            #
+            newarray = []
+            for metabolite in product.split("+"):
+                newarray.append(metabolitename_changed[metabolite])
+            new_text = new_text+"+".join(newarray)
+            if not reaction == new_text:
+                print("Caution!:",id, 'reaction', reaction, "was changed to" , new_text)
+                self.reactions[id]['reaction'] = new_text
+
+        #
+        # Check metabolite name in target_fragment data
+        #
+        for id in sorted(self.target_fragments.keys(), key=lambda x: self.target_fragments[x]['order']):
+            #
+            # get reaction formula and substrate, product names
+            #
+
+            atommap = self.target_fragments[id]['atommap']
+            if not re.match(r".+_.+",atommap):
+                continue
+            atommap.replace(" ","")
+            fragments = atommap.split("+")
+            fragments_array = []
+            #
+            # For each fragments
+            #
+            for fragment in fragments:
+                temps = fragment.split("_")
+                metabolite = "_".join(temps[:-1])
+                atomdata = temps[-1]
+                #print('atommap', id, atommap, fragment, temps, metabolite, atomdata)
+                fragments_array.append(metabolitename_changed[metabolite]+"_"+atomdata)
+            new_text = "+".join(fragments_array)
+            if not atommap == new_text:
+                print("Caution!:",id, 'target_fragments', atommap, "was changed to" , new_text)
+                self.target_fragments[id]['atommap'] = new_text
+        #
+        # Check number of carbons in atom mappinng data
+        #
+        for id in sorted(self.reactions.keys(), key=lambda x: self.reactions[x]['order']):
+            #
+            # get reaction formula and substrate, product names
+            #
+            reaction = self.reactions[id]['reaction']
+            if not re.match(r".+-->.+",reaction):
+                continue
+            meatbolites = re.split(r'-->|\+', reaction)
+            atoms = re.split(r'-->|\+', self.reactions[id]['atommap'])
+            if not len(meatbolites) == len(atoms):
+                print("There is an problem in ", id,  reaction, self.reactions[id]['atommap'])
+            for metabolite, atom in zip(meatbolites, atoms):
+                if not len(atom) == self.metabolites[metabolite]['C_number']:
+                    print("Error!", id, "Carbon number of ", metabolite, "does not match the metabolite's carbon number:", self.metabolites[metabolite]['C_number'])
+                    number_of_errors = number_of_errors + 1
+        #
+        # Check Carbon number in target_fragment data
+        #
+        for id in sorted(self.target_fragments.keys(), key=lambda x: self.target_fragments[x]['order']):
+            #
+            # get reaction formula and substrate, product names
+            #
+
+            atommap = self.target_fragments[id]['atommap']
+            if not re.match(r".+_.+",atommap):
+                continue
+            atommap.replace(" ","")
+            fragments = atommap.split("+")
+            fragments_array = []
+            #
+            # For each fragments
+            #
+            for fragment in fragments:
+                temps = fragment.split("_")
+                metabolite = "_".join(temps[:-1])
+                atomdata = temps[-1]
+                carbonnumber = self.metabolites[metabolite]['C_number']
+                for number in atomdata.split(":"):
+                    if int(number) > carbonnumber:
+                        print("Error!", id, "Carbon number in ", fragment, "does not match the metabolite's carbon number:", carbonnumber)
+                        number_of_errors = number_of_errors + 1
+        #
+        # Check Metabolic Network
+        #
+        metabolitename_in_model = {}
+        for id in sorted(self.reactions.keys(), key=lambda x: self.reactions[x]['order']):
+            #
+            # get reaction formula and substrate, product names
+            #
+            reaction = self.reactions[id]['stoichiometry']
+            reaction.replace(" ","")
+            substrate, product = reaction.split("-->")
+            #
+            # Substrate
+            #
+            new_text = ""
+            newarray = []
+            for metabolite in substrate.split("+"):
+                #
+                # Check coefficient: {0.5}Pyr
+                #
+                if len(metabolite.split("}")) == 1:
+                    # no coefficient
+                    metabolite_name = metabolite
+                    if not metabolite_name in metabolitename_in_model:
+                        metabolitename_in_model[metabolite_name] = {'p':[], 's':[]}
+                    metabolitename_in_model[metabolite_name]["s"].append(id)
+                elif len(metabolite.split("}")) == 2:
+                    # coefficient data
+                    stnum, metabolite_name = metabolite.split("}")
+                    if not metabolite_name in metabolitename_in_model:
+                        metabolitename_in_model[metabolite_name] = {'p':[], 's':[]}
+                    metabolitename_in_model[metabolite_name]["s"].append(id)
+            #
+            # Product
+            #
+            newarray = []
+            for metabolite in product.split("+"):
+                if len(metabolite.split("}")) == 1:
+                    metabolite_name = metabolite
+                    if not metabolite_name in metabolitename_in_model:
+                        metabolitename_in_model[metabolite_name] = {"p":[], "s":[]}
+                    metabolitename_in_model[metabolite_name]["p"].append(id)
+                elif len(metabolite.split("}")) == 2:
+                    stnum, metabolite_name = metabolite.split("}")
+                    if not metabolite_name in metabolitename_in_model:
+                        metabolitename_in_model[metabolite_name] = {"p":[], "s":[]}
+                    metabolitename_in_model[metabolite_name]["p"].append(id)
+        for metabolite in metabolitename_in_model:
+            substrate_ids = metabolitename_in_model[metabolite]["s"]
+            product_ids = metabolitename_in_model[metabolite]["p"]
+            if self.metabolites[metabolite]['excreted'] == 'excreted':
+                if len(substrate_ids) > 0:
+                    print("Error!: Excreted metabolite", metabolite, "is a substrate in ", substrate_ids)
+                    number_of_errors = number_of_errors + 1
+                continue
+            if self.metabolites[metabolite]['carbonsource'] == 'carbonsource':
+                if len(product_ids) > 0:
+                    print("Error!: Carbon source metabolite", metabolite, "is a product in ", product_ids)
+                    number_of_errors = number_of_errors + 1
+                continue
+            if len(product_ids) == 0:
+                print("Error!: Metabolite", metabolite, "is not produced in the metabolic network, but used in reaction(s) ", substrate_ids)
+                number_of_errors = number_of_errors + 1
+            if len(substrate_ids) == 0:
+                print("Error!: Metabolite", metabolite, "is not used in the metabolic network, but produced  in reaction(s) ", product_ids)
+                number_of_errors = number_of_errors + 1
+
+        #
+        # Check inconsistency in atom mapping
+        #
+
+        for id in sorted(self.reactions.keys(), key=lambda x: self.reactions[x]['order']):
+            #
+            # get reaction formula and substrate, product names
+            #
+            atommap = self.reactions[id]['atommap']
+            if not re.match(r".+-->.+",atommap):
+                continue
+            substrate, product = atommap.split("-->")
+            substrate_dict = {}
+            for metabolite in substrate.split("+"):
+                for letter in metabolite:
+                    if not letter in substrate_dict:
+                        substrate_dict[letter] = 0
+                    substrate_dict[letter] = substrate_dict[letter] + 1
+            product_dict = {}
+            for metabolite in product.split("+"):
+                for letter in metabolite:
+                    if not letter in product_dict:
+                        product_dict[letter] = 0
+                    product_dict[letter] = product_dict[letter] + 1
+            for letter in substrate_dict:
+                if substrate_dict[letter] > 1:
+                    print("Error!:", id,  "Symbol", letter, "is not unique in atom mapping data of substrate ", substrate)
+                    number_of_errors = number_of_errors + 1
+            for letter in product_dict:
+                if product_dict[letter] > 1:
+                    print("Error!:", id,  "Symbol", letter, "is not unique in atom mapping data of product ", product)
+                    number_of_errors = number_of_errors + 1
+                if not letter in substrate_dict:
+                    print("Error!:", id,  "Symbol", letter, "in product atom mapping", product, "does not exist in the subtrate atom mapping", substrate)
+                    number_of_errors = number_of_errors + 1
+
+        return(number_of_errors)
+
 
     def update(self):
         """
@@ -3348,10 +3703,10 @@ class MetabolicModel:
         if output == "for_parallel":
             if method == "SLSQP":
                 parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux, "SLSQP")
-            elif method == "LN_PRAXIS":
-                parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux, "LN_PRAXIS")
-            elif method == "GN_CRS2_LM":
-                parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux, "GN_CRS2_LM")
+            elif method == "COBYLA":
+                parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux, "COBYLA")
+            elif method in ["LN_COBYLA","LN_BOBYQA","LN_NEWUOA","LN_PRAXIS","LN_SBPLX","LN_NELDERMEAD","GN_DIRECT_L","GN_AGS","GN_CRS2_LM","GN_ESCH","GN_IRES"]:
+                parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux, method)
             elif method == "deep":
                 parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux)
             else:
@@ -3367,28 +3722,8 @@ class MetabolicModel:
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_scipy(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "SLSQP")
             elif method == "COBYLA":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_scipy(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "COBYLA")
-            elif method == "LN_COBYLA":
-                state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "LN_COBYLA")
-            elif method == "LN_BOBYQA":
-                state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "LN_BOBYQA")
-            elif method == "LN_NEWUOA":
-                state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "LN_NEWUOA")
-            elif method == "LN_PRAXIS":
-                state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "LN_PRAXIS")
-            elif method == "LN_SBPLX":
-                state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "LN_SBPLX")
-            elif method == "LN_NELDERMEAD":
-                state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "LN_NELDERMEAD")
-            elif method == "GN_DIRECT_L":
-                state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "GN_DIRECT_L")
-            elif method == "GN_CRS2_LM":
-                state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "GN_CRS2_LM")
-            elif method == "GN_ESCH":
-                state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "GN_ESCH")
-            elif method == "GN_IRES":
-                state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = "GN_IRES")
-
-
+            elif method in ["LN_COBYLA","LN_BOBYQA","LN_NEWUOA","LN_PRAXIS","LN_SBPLX","LN_NELDERMEAD","GN_DIRECT_L","GN_AGS","GN_CRS2_LM","GN_ESCH","GN_IRES"]:
+                state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = method)
             elif method == "deep":
                 state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_deep(configuration, self.experiments, numbers, vectors, self.matrixinv, self.func, flux)
             else:
@@ -3433,27 +3768,15 @@ class MetabolicModel:
             if self.configuration['callbacklevel'] >= 3:
                 print("Trying to start fitting task using", method, "method using parallel processing")
 
-            if method == "SLSQP":
+            if method in ["SLSQP","COBYLA"]:
                 for i, flux_temp in enumerate(flux):
-                    parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp, "SLSQP")
+                    parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp, method)
                     jobs.append(parameters)
                 result = Parallel(n_jobs=ncpus)([delayed(optimize.fit_r_mdv_scipy)(configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) for (configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) in jobs])
 
-                    #jobs.append([i, job_server.submit(optimize.fit_r_mdv_scipy, parameters,
-                    # (optimize.calc_MDV_residue_scipy,),
-                    # ("numpy","scipy","scipy.integrate"))])
-            elif method == "LN_PRAXIS":
+            elif method in ["GN_CRS2_LM","LN_COBYLA","LN_BOBYQA","LN_NEWUOA","LN_PRAXIS","LN_SBPLX","LN_NELDERMEAD","GN_DIRECT_L","GN_AGS","GN_CRS2_LM","GN_ESCH","GN_IRES"]:
                 for i, flux_temp in enumerate(flux):
-                    parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp, "LN_PRAXIS")
-                    jobs.append(parameters)
-                result = Parallel(n_jobs=ncpus)([delayed(optimize.fit_r_mdv_nlopt)(configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) for (configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) in jobs])
-
-                    #jobs.append([i, job_server.submit(optimize.fit_r_mdv_nlopt, parameters,
-                    # (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
-                    # ("numpy","nlopt","scipy","scipy.integrate"))])
-            elif method == "GN_CRS2_LM":
-                for i, flux_temp in enumerate(flux):
-                    parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp, "GN_CRS2_LM")
+                    parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp, method)
                     jobs.append(parameters)
                 result = Parallel(n_jobs=ncpus)([delayed(optimize.fit_r_mdv_nlopt)(configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) for (configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) in jobs])
 
@@ -3478,7 +3801,22 @@ class MetabolicModel:
                     #jobs.append([i, job_server.submit(optimize.fit_r_mdv_deep, parameters,
                     # (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
                     # ("numpy","nlopt","scipy","scipy.integrate"))])
+            """
+            elif method == "LN_PRAXIS":
+                for i, flux_temp in enumerate(flux):
+                    parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp, "LN_PRAXIS")
+                    jobs.append(parameters)
+                result = Parallel(n_jobs=ncpus)([delayed(optimize.fit_r_mdv_nlopt)(configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) for (configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) in jobs])
 
+                    #jobs.append([i, job_server.submit(optimize.fit_r_mdv_nlopt, parameters,
+                    # (optimize.calc_MDV_residue_scipy, optimize.calc_MDV_residue_nlopt,optimize.fit_r_mdv_scipy,optimize.fit_r_mdv_nlopt),
+                    # ("numpy","nlopt","scipy","scipy.integrate"))])
+            elif method == "GN_CRS2_LM":
+                for i, flux_temp in enumerate(flux):
+                    parameters = (configuration, self.experiments, numbers, vectors, self.matrixinv, self.calmdv_text, flux_temp, "GN_CRS2_LM")
+                    jobs.append(parameters)
+                result = Parallel(n_jobs=ncpus)([delayed(optimize.fit_r_mdv_nlopt)(configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) for (configuration, experiments, numbers, vectors, matrixinv, calmdv_text, flux_temp, method) in jobs])
+            """
 
             state_list = []
             kai_list = []

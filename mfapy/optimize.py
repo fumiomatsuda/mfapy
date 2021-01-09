@@ -142,7 +142,7 @@ def initializing_Rm_fitting(numbers, vectors, matrixinv, template, initial_searc
 def calc_protrude_scipy(independent_flux, *args):
     """
     Objective function for initializing_Rm_fitting (SLSQP)
-    Calc penalty score of metabolic state out side of the feasible space.
+    This function calculates penalty score of metabolic state out side of the feasible space.
 
     Parameters
     ----------
@@ -668,9 +668,10 @@ def fit_r_mdv_nlopt(configure, experiments, numbers, vectors, matrixinv, func, f
 
 def fit_r_mdv_deep(configure, experiments, numbers, vectors, matrixinv, func, flux):
     """
-    Low level function for model fitting by interations of fittings.
-    2n th iteration:  SLSQP
-    2n + 1 th iteration:  LN_PRAXIS
+    Low level function for model fitting by iterative fittings.
+    1st iteration:  GN_CRS2_LM (global optimizer)
+    2n th iterations:  SLSQP (local)
+    2n + 1 th iterations:  LN_PRAXIS (local)
     This combination is empirically best
 
     Parameters

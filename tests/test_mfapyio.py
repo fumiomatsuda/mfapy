@@ -22,7 +22,7 @@ class Testmfapy(unittest.TestCase):
 
     def test_load_metabolic_model_reactions(self):
 
-        reactions = mfapy.mfapyio.load_metabolic_model_reactions(self.filename, format="text", output = "normal")
+        reactions = mfapy.mfapyio.load_metabolic_model_reactions(self.filename, format="text", mode = "normal")
         expected = float(300.0)
         actual = reactions["v17"]['ub']
         self.assertEqual(expected, actual)
@@ -35,7 +35,7 @@ class Testmfapy(unittest.TestCase):
         # 'use': 'use'}
 
     def test_load_metabolic_model_reversibles(self):
-        reversible_reactions = mfapy.mfapyio.load_metabolic_model_reversibles(self.filename, format="text", output = "normal")
+        reversible_reactions = mfapy.mfapyio.load_metabolic_model_reversibles(self.filename, format="text", mode = "normal")
         expected = 'free'
         actual = reversible_reactions["Input"]['type']
         self.assertEqual(expected, actual)
@@ -43,7 +43,7 @@ class Testmfapy(unittest.TestCase):
         #{'forward': 'v9+e1', 'order': 1, 'reverse': 'nothing', 'type': 'free'}
 
     def test_load_metabolic_model_metabolites(self):
-        metabolites = mfapy.mfapyio.load_metabolic_model_metabolites(self.filename, format="text", output = "normal")
+        metabolites = mfapy.mfapyio.load_metabolic_model_metabolites(self.filename, format="text", mode = "normal")
         expected = 'no'
         actual = metabolites["Asp"]['excreted']
         self.assertEqual(expected, actual)
@@ -51,7 +51,7 @@ class Testmfapy(unittest.TestCase):
         #{'C_number': 4,'carbonsource': 'carbonsource', 'excreted': 'no', 'order': 18, 'symmetry': 'no'}
 
     def test_load_metabolic_model_fragments(self):
-        target_fragments = mfapy.mfapyio.load_metabolic_model_fragments(self.filename, format="text", output = "normal")
+        target_fragments = mfapy.mfapyio.load_metabolic_model_fragments(self.filename, format="text", mode = "normal")
         expected = 'no'
         actual = target_fragments["AKGc"]['use']
         self.assertEqual(expected, actual)

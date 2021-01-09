@@ -449,7 +449,7 @@ class MdvData:
                     if (ratio > threshold_ratio) and (std < threshold_std):
                         self.set_mdv_for_comparison(fragment, number)
 
-    def add_gaussian_noise(self, stdev, iteration, method = 'absolute', normalize = "on"):
+    def add_gaussian_noise(self, stdev, iteration = 1, method = 'absolute', normalize = "on"):
         """
         Add gausian noise to MDV data
 
@@ -469,7 +469,7 @@ class MdvData:
 
         Examples
         --------
-        >>> mdv.add_gaussian_noise(0.05, 5)
+        >>> mdv.add_gaussian_noise(0.01)
 
         See Also
         --------
@@ -1075,11 +1075,11 @@ class MdvTimeCourseData:
         """
         for time in self.mdvtc.keys():
             if format == "csv":
-                save_filename = filename + str(int(time)) + "sec.csv"
+                save_filename = filename + str(int(time)) + ".csv"
             elif format == "text":
-                save_filename = filename + str(int(time)) + "sec.txt"
+                save_filename = filename + str(int(time)) + ".txt"
             else:
-                save_filename = filename + str(int(time)) + "sec.txt"
+                save_filename = filename + str(int(time)) + ".txt"
             self.mdvtc[time].save(save_filename, format)
 
 

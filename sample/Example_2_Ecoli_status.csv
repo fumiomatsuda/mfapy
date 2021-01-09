@@ -1,0 +1,168 @@
+State,Id,type,flux_calue,flux_std,lb,ub,
+reaction,r1,fitting,100,1.592764298,0.0001,1000,SubsGlc --> G6P
+reaction,r2,free,1,1,0.0001,1000,G6P --> F6P
+reaction,r3,free,1,1,0.0001,1000,F6P --> G6P
+reaction,r4,free,1,1,0.0001,1000,F6P --> FBP
+reaction,r5,free,1,1,0.0001,1000,FBP --> F6P
+reaction,r6,free,1,1,0.0001,1000,FBP --> DHAP + GAP
+reaction,r7,free,1,1,0.0001,1000,DHAP + GAP --> FBP
+reaction,r8,free,1,1,0.0001,1000,DHAP --> GAP
+reaction,r9,free,1,1,0.0001,1000,GAP --> DHAP
+reaction,r10,free,1,1,0.0001,1000,GAP --> PGA
+reaction,r11,free,1,1,0.0001,1000,PGA --> GAP
+reaction,r12,free,1,1,0.0001,1000,PGA --> PEP
+reaction,r13,free,1,1,0.0001,1000,PEP --> PGA
+reaction,r14,free,1,1,0.0001,1000,PEP --> Pyr
+reaction,r15,free,1,1,0.0001,1000,Pyr --> PEP
+reaction,r16,free,1,1,0.0001,1000,Pyr --> AcCOA + CO2in
+reaction,r17,free,1,1,0.0001,1000,AcCOA + Oxa --> IsoCit
+reaction,r18,free,1,1,0.0001,1000,IsoCit --> aKG + CO2in
+reaction,r19,free,1,1,0.0001,1000,aKG --> Suc + CO2in
+reaction,r20,free,1,1,0.0001,1000,Suc --> Fum
+reaction,r21,free,1,1,0.0001,1000,Fum --> Suc
+reaction,r22,free,1,1,0.0001,1000,Fum --> Mal
+reaction,r23,free,1,1,0.0001,1000,Mal --> Fum
+reaction,r24,free,1,1,0.0001,1000,Mal --> Oxa
+reaction,r25,free,1,1,0.0001,1000,Oxa --> Mal
+reaction,r26,free,1,1,0.0001,1000,IsoCit + AcCOA --> Mal + Suc
+reaction,r27,free,1,1,0.0001,1000,G6P --> m6PG
+reaction,r28,free,1,1,0.0001,1000,m6PG --> Ru5P + CO2in
+reaction,r29,free,1,1,0.0001,1000,Ru5P --> R5P
+reaction,r30,free,1,1,0.0001,1000,R5P --> Ru5P
+reaction,r31,free,1,1,0.0001,1000,Ru5P --> Xu5P
+reaction,r32,free,1,1,0.0001,1000,Xu5P --> Ru5P
+reaction,r33,free,1,1,0.0001,1000,R5P + Xu5P --> S7P + GAP
+reaction,r34,free,1,1,0.0001,1000,GAP + S7P --> Xu5P + R5P
+reaction,r35,free,1,1,0.0001,1000,GAP + S7P --> F6P + E4P
+reaction,r36,free,1,1,0.0001,1000,E4P + F6P --> S7P + GAP
+reaction,r37,free,1,1,0.0001,1000,E4P + Xu5P --> F6P + GAP
+reaction,r38,free,1,1,0.0001,1000,GAP + F6P --> Xu5P + E4P
+reaction,r39,free,1,1,0.0001,1000,m6PG --> Pyr + GAP
+reaction,r40,free,1,1,0.0001,1000,PEP + CO2in --> Oxa
+reaction,r41,free,1,1,0.0001,1000,Oxa --> PEP + CO2in
+reaction,r42,free,1,1,0.0001,1000,Mal --> Pyr + CO2in
+reaction,r43,free,1,1,0.0001,1000,AcCOA + AcCOA --> AcAcCOA
+reaction,r44,free,1,1,0.0001,1000,AcAcCOA + Acetate --> AcAc + AcCOA
+reaction,r45,free,1,1,0.0001,1000,AcAc --> Acetone + CO2in
+reaction,r46,free,1,1,0.0001,1000,Acetone --> IPA
+reaction,r47,fitting,1.481084962,0.961209141,0.0001,1000,Acetone --> Acetoneex
+reaction,r48,fitting,13.34139088,1.505828596,0,1000,IPA --> IPAex
+reaction,r49,free,1,1,0.0001,1000,AcCOA --> Acetate
+reaction,r50,fitting,36.81200288,2.817618538,0.0001,1000,Acetate --> Acetateex
+reaction,r51,free,1,1,0.0001,1000,Pyr --> AcCOA + Formate
+reaction,r52,fixed,0.000001,1,0,1000,Formate --> Formateex
+reaction,r53,fixed,0.000001,1,0,1000,Suc --> Succinateex
+reaction,r54,fixed,0.000001,1,0,1000,IsoCit --> Citrateex
+reaction,r55,fixed,0.000001,1,0,1000,aKG --> a-ketoglutarateex
+reaction,r56,free,1,1,0.0001,1000,SubsCO2 --> CO2in
+reaction,r57,free,1,1,0.0001,1000,CO2in --> CO2ex
+reaction,r58,pseudo,1,1,0.0001,1000,Pyr --> Ala
+reaction,r59,pseudo,1,1,0.0001,1000,Oxa --> Asp
+reaction,r60,pseudo,1,1,0.0001,1000,Oxa --> Thr
+reaction,r61,pseudo,1,1,0.0001,1000,aKG --> Glu
+reaction,r62,pseudo,1,1,0.0001,1000,E4P + PEP + PEP --> Phe
+reaction,r63,pseudo,1,1,0.0001,1000,E4P + PEP + PEP --> Tyr
+reaction,r64,pseudo,1,1,0.0001,1000,Oxa + Pyr --> Ile
+reaction,r65,pseudo,1,1,0.0001,1000,AcCOA + Pyr + Pyr --> Leu
+reaction,r66,pseudo,1,1,0.0001,1000,Pyr + Pyr --> Val
+reaction,r67,free,1,1,0.0001,1000,PGA --> Ser
+reaction,r68,free,1,1,0.0001,1000,Ser --> Gly + MEETHF
+reaction,r69,free,1,1,0.0001,1000,Gly + MEETHF --> Ser
+reaction,r70,free,1,1,0.0001,1000,Gly --> CO2in + MEETHF
+reaction,r71,free,1,1,0.0001,1000,CO2in + MEETHF --> Gly
+reaction,r72,fixed,0.950214672,1,0.0001,1000,G6P --> Biomass
+reaction,r73,fixed,0.328635221,1,0.0001,1000,F6P --> Biomass
+reaction,r74,fixed,0.597939964,1,0.0001,1000,DHAP --> Biomass
+reaction,r75,fixed,2.618884339,1,0.0001,1000,PGA --> Biomass
+reaction,r76,fixed,1.603776958,1,0.0001,1000,Ser --> Biomass
+reaction,r77,fixed,2.697682629,1,0.0001,1000,Gly --> Biomass
+reaction,r78,fixed,3.1472964,1,0.0001,1000,MEETHF --> Biomass
+reaction,r79,fixed,3.33316766,1,0.0001,1000,PEP --> Biomass
+reaction,r80,fixed,13.13150324,1,0.0001,1000,Pyr --> Biomass
+reaction,r81,fixed,13.57184663,1,0.0001,1000,AcCOA --> Biomass
+reaction,r82,fixed,5.000910289,1,0.0001,1000,aKG --> Biomass
+reaction,r83,fixed,8.281700263,1,0.0001,1000,Oxa --> Biomass
+reaction,r84,fixed,4.161013223,1,0.0001,1000,R5P --> Biomass
+reaction,r85,fixed,1.673304861,1,0.0001,1000,E4P --> Biomass
+reaction,r86,fixed,10,1,0.0001,1000,Ala --> Alaex
+reaction,r87,fixed,10,1,0.0001,1000,Asp --> Aspex
+reaction,r88,fixed,10,1,0.0001,1000,Thr --> Threx
+reaction,r89,fixed,10,1,0.0001,1000,Glu --> Gluex
+reaction,r90,fixed,10,1,0.0001,1000,Phe --> Pheex
+reaction,r91,fixed,10,1,0.0001,1000,Tyr --> Tyrex
+reaction,r92,fixed,10,1,0.0001,1000,Ile --> Ileex
+reaction,r93,fixed,10,1,0.0001,1000,Leu --> Leuex
+reaction,r94,fixed,10,1,0.0001,1000,Val --> Valex
+reaction,r95,free,1,1,0.0001,1000,SubsAla --> Ala
+reaction,r96,free,1,1,0.0001,1000,SubsAsp --> Asp
+reaction,r97,free,1,1,0.0001,1000,SubsThr --> Thr
+reaction,r98,free,1,1,0.0001,1000,SubsGlu --> Glu
+reaction,r99,free,1,1,0.0001,1000,SubsPhe --> Phe
+reaction,r100,free,1,1,0.0001,1000,SubsTyr --> Tyr
+reaction,r101,free,1,1,0.0001,1000,SubsIle --> Ile
+reaction,r102,free,1,1,0.0001,1000,SubsLeu --> Leu
+reaction,r103,free,1,1,0.0001,1000,SubsVal --> Val
+reversible,PGI,free,1,1,-300,300,
+reversible,FBA,free,1,1,-300,300,
+reversible,TPI,free,1,1,-300,300,
+reversible,GAPDH,free,1,1,-300,300,
+reversible,PEPH,free,1,1,-300,300,
+reversible,SDH,free,1,1,-300,300,
+reversible,MDH,free,1,1,-300,300,
+reversible,RPI,free,1,1,-300,300,
+reversible,RBE,free,1,1,-300,300,
+reversible,TKT1,free,1,1,-300,300,
+reversible,TAL,free,1,1,-300,300,
+reversible,TKT2,free,1,1,-300,300,
+reversible,FH,free,1,1,-300,300,
+metabolite,m6PG,fixed,10,1,0.001,100,
+metabolite,AcAc,fixed,10,1,0.001,100,
+metabolite,AcAcCOA,fixed,10,1,0.001,100,
+metabolite,AcCOA,fixed,10,1,0.001,100,
+metabolite,Acetate,fixed,10,1,0.001,100,
+metabolite,Acetateex,fixed,10,1,0.001,100,
+metabolite,Acetone,fixed,10,1,0.001,100,
+metabolite,Acetoneex,fixed,10,1,0.001,100,
+metabolite,a-ketoglutarateex,fixed,10,1,0.001,100,
+metabolite,aKG,fixed,10,1,0.001,100,
+metabolite,Ala,fixed,10,1,0.001,100,
+metabolite,Asp,fixed,10,1,0.001,100,
+metabolite,Biomass,fixed,10,1,0.001,100,
+metabolite,Citrateex,fixed,10,1,0.001,100,
+metabolite,CO2ex,fixed,10,1,0.001,100,
+metabolite,CO2in,fixed,10,1,0.001,100,
+metabolite,DHAP,fixed,10,1,0.001,100,
+metabolite,E4P,fixed,10,1,0.001,100,
+metabolite,F6P,fixed,10,1,0.001,100,
+metabolite,FBP,fixed,10,1,0.001,100,
+metabolite,Formate,fixed,10,1,0.001,100,
+metabolite,Formateex,fixed,10,1,0.001,100,
+metabolite,G6P,fixed,10,1,0.001,100,
+metabolite,GAP,fixed,10,1,0.001,100,
+metabolite,Glu,fixed,10,1,0.001,100,
+metabolite,Gly,fixed,10,1,0.001,100,
+metabolite,Ile,fixed,10,1,0.001,100,
+metabolite,IPA,fixed,10,1,0.001,100,
+metabolite,IPAex,fixed,10,1,0.001,100,
+metabolite,IsoCit,fixed,10,1,0.001,100,
+metabolite,Leu,fixed,10,1,0.001,100,
+metabolite,Mal,fixed,10,1,0.001,100,
+metabolite,MEETHF,fixed,10,1,0.001,100,
+metabolite,Oxa,fixed,10,1,0.001,100,
+metabolite,PEP,fixed,10,1,0.001,100,
+metabolite,PGA,fixed,10,1,0.001,100,
+metabolite,Phe,fixed,10,1,0.001,100,
+metabolite,Pyr,fixed,10,1,0.001,100,
+metabolite,R5P,fixed,10,1,0.001,100,
+metabolite,Ru5P,fixed,10,1,0.001,100,
+metabolite,S7P,fixed,10,1,0.001,100,
+metabolite,Ser,fixed,10,1,0.001,100,
+metabolite,SubsCO2,fixed,10,1,0.001,100,
+metabolite,SubsGlc,fixed,10,1,0.001,100,
+metabolite,Succinateex,fixed,10,1,0.001,100,
+metabolite,Fum,fixed,10,1,0.001,100,
+metabolite,Suc,fixed,10,1,0.001,100,
+metabolite,Thr,fixed,10,1,0.001,100,
+metabolite,Tyr,fixed,10,1,0.001,100,
+metabolite,Val,fixed,10,1,0.001,100,
+metabolite,Xu5P,fixed,10,1,0.001,100,
