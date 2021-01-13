@@ -16,8 +16,7 @@ class Testmfapy(unittest.TestCase):
     def setUp(self):
         # procedures before every tests are started. This code block is executed every time
         target_fragment =  {
-        'AKGe': {'atommap': 'AKG_1:2:3:4:5','number': 6,'order': 0,'type': 'gcms','use': 'use', 'formula': 'no'},
-        'AKGmsms': {'atommap': 'AKG_1:2:3:4:5+AKG_1+AKG_2:3:4:5', 'number': 10,'order': 1, 'type': 'msms', 'use': 'use', 'formula': 'no'}}
+        'AKGe': {'atommap': 'AKG_1:2:3:4:5','number': 6,'order': 0,'type': 'gcms','use': 'use', 'formula': 'no'}}
         self.mdv = mfapy.mdv.MdvData(target_fragment)
         #print(self.mdv.mdv)
         self.mdv.mdv['AKGe'][0]["ratio"] = 0.5
@@ -26,16 +25,7 @@ class Testmfapy(unittest.TestCase):
         self.mdv.mdv['AKGe'][3]["ratio"] = 0.1
         self.mdv.mdv['AKGe'][4]["ratio"] = 0.1
         self.mdv.mdv['AKGe'][5]["ratio"] = 0.1
-        self.mdv.mdv['AKGmsms'][0]["ratio"] = 0.1
-        self.mdv.mdv['AKGmsms'][1]["ratio"] = 0.1
-        self.mdv.mdv['AKGmsms'][2]["ratio"] = 0.1
-        self.mdv.mdv['AKGmsms'][3]["ratio"] = 0.1
-        self.mdv.mdv['AKGmsms'][4]["ratio"] = 0.1
-        self.mdv.mdv['AKGmsms'][5]["ratio"] = 0.1
-        self.mdv.mdv['AKGmsms'][6]["ratio"] = 0.5
-        self.mdv.mdv['AKGmsms'][7]["ratio"] = 0.1
-        self.mdv.mdv['AKGmsms'][8]["ratio"] = 0.1
-        self.mdv.mdv['AKGmsms'][9]["ratio"] = 0.1
+
 
 
     def test_has_data(self):
@@ -115,7 +105,7 @@ class Testmfapy(unittest.TestCase):
 
     def test_get_fragments_for_mdv_calculation(self):
         list = self.mdv.get_fragments_for_mdv_calculation()
-        expected = ['AKGe', 'AKGmsms']
+        expected = ['AKGe']
         actual = list
         self.assertEqual(expected, actual)
     def test_set_observed_fragments(self):
@@ -128,7 +118,7 @@ class Testmfapy(unittest.TestCase):
         self.mdv.add_gaussian_noise(0.01, 1, method = 'absolute')
 
         expected = 0.0
-        actual = self.mdv.mdv['AKGmsms'][4]["std"]
+        actual = self.mdv.mdv['AKGe'][4]["std"]
         self.assertEqual(expected, actual)
     def test_generate_observed_mdv(self):
         list, ratio, *remains = self.mdv.generate_observed_mdv()
@@ -136,13 +126,16 @@ class Testmfapy(unittest.TestCase):
         actual = ratio[0]
         self.assertEqual(expected, actual)
     def test_get_number_of_measurement(self):
-        expected = 14
+        expected = 5
         actual = self.mdv.get_number_of_measurement()
         self.assertEqual(expected, actual)
         self.mdv.set_mdv_for_ignore('AKGe', 5)
-        expected = 14
+        expected = 5
         actual = self.mdv.get_number_of_measurement()
         self.assertEqual(expected, actual)
-
+        self.mdv.set_mdv_for_ignore('AKGe', 4)
+        expected = 4
+        actual = self.mdv.get_number_of_measurement()
+        self.assertEqual(expected, actual)
 if __name__ == '__main__':
     unittest.main()

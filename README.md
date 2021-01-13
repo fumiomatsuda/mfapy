@@ -12,7 +12,6 @@ mfapy supports:
 6. Goodness-of-fit analysis
 7. Parallel performing non-linear optimization jobs using parallel python.
 8. Automated model construction from model description file
-9. MS/MS spectra data
 
 License
 ----------------------------------------
@@ -41,7 +40,7 @@ Install
 2. Create virtual environment such as named "mfapy" and install required packages
 ~~~
     > conda create -n mfapy python=3.6 numpy scipy matplotlib=2.1 joblib
-    > conda activate mfapy 
+    > conda activate mfapy
     > conda install -c conda-forge nlopt
     > conda install -c anaconda mkl-service
 ~~~
@@ -68,23 +67,23 @@ Learn more <https://github.com/fumiomatsuda/mfapy>
 
 Version 054
 ----------------------------------------
-19/06/28  class MetabolicModel: search_ci Grid search procedure is updated. 
+19/06/28  class MetabolicModel: search_ci Grid search procedure is updated.
 
-19/06/28  class MdvData: add_gaussian_noise  "normalize" option is newly added. 
- 
-19/07/01  optimize: def fit_r_mdv_deep add global optimization by "GN_CRS2_LM" before iteration  
+19/06/28  class MdvData: add_gaussian_noise  "normalize" option is newly added.
+
+19/07/01  optimize: def fit_r_mdv_deep add global optimization by "GN_CRS2_LM" before iteration
 
 Version 055
 ----------------------------------------
 19/12/27 Support Python 3.8
 
-19/12/27 Example_1_toymodel_INST.py is updated to explain a method to construct time course mdv data from mdv files.  
+19/12/27 Example_1_toymodel_INST.py is updated to explain a method to construct time course mdv data from mdv files.
 
 Version 057
 ----------------------------------------
-20/7/12 initializing_Rm_fitting, fit_r_mdv_scipy, fit_r_mdv_nlopt in optimizaton: Expection is newly raised to avoid error in  paralell processing.  
+20/7/12 initializing_Rm_fitting, fit_r_mdv_scipy, fit_r_mdv_nlopt in optimizaton: Expection is newly raised to avoid error in  paralell processing.
 
-20/7/13 joblib instead of pp is employed for paralell proceccing.  
+20/7/13 joblib instead of pp is employed for paralell proceccing.
 
 20/7/30 Format of model definition file was updated to support external with a backward compatibility.
 
@@ -96,7 +95,7 @@ Version 057
 
 20/7/30 load_metabolic_model_fragments in mfapyio: Support external id.
 
-20/7/30 External id data was added to Example_0_toymodel_model.txt, 
+20/7/30 External id data was added to Example_0_toymodel_model.txt,
 
 20/7/30 External id data was added to Example_1_toymodel_model.txt.
 

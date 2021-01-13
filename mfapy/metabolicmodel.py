@@ -182,14 +182,6 @@ class MetabolicModel:
                     number = number + len(positions.split(":"))
                 self.target_fragments[id]['number'] = number + 1
             #
-            # In the case of intermediate analysis using MS/MS, vector length is ([nl] + 1) * ([prod]+1)
-            #
-            elif self.target_fragments[id]['type'] == 'msms':
-                precursor, nl, product = atommap.split("+")
-                nl_positions = nl.split("_")[1]
-                product_positions = product.split("_")[1]
-                self.target_fragments[id]['number'] = (len(positions.split(":"))+1) * (len(positions.split(":"))+1)
-            #
             # Set matrixes on isotope effects
             #
             formula = self.target_fragments[id]['formula']
@@ -1560,19 +1552,6 @@ class MetabolicModel:
                                 if self.configuration['callbacklevel'] == 7:
                                     print('  |-Found the reverse relationship for symmetry metabolile', reaction, r_product, product_emu, reaction_id, substrate_emus)
                             #
-                            # MS/MS
-                            #
-                            elif r_product in self.target_fragments and self.target_fragments[r_product]['type'] == "msms":
-                                #decode
-                                substrate_emus = reaction.split("+")
-                                substrate_emus_reaction = '+'.join(substrate_emus)
-                                #
-                                #
-                                hit_emu_reactionset.update([substrate_emus_reaction])
-                                # Add substrate to hit_emu
-                                for substrate_emu in substrate_emus:
-                                    hit_emuset.update([substrate_emu])
-                            #
                             # non synmetry metabolite
                             #
                             else:
@@ -1956,82 +1935,7 @@ class MetabolicModel:
             target_emus = target_fragments[target_fragment]['atommap']
             #msms data
             if target_fragments[target_fragment]['type'] == "msms":
-                precursor, neutralloss, product = target_emus.replace(' ','').split('+')
-                # get sise information
-                size_precursor = size_of_EMU(precursor);
-                size_product = size_of_EMU(product);
-                size_neutralloss = size_of_EMU(neutralloss);
-                product_carbon_number = list(product.split('_')[1]);
-                # Mask of product carbon
-                product_mask = [];
-                for i in (range(size_precursor)):
-                    product_mask.append("0")
-                for i in (product_carbon_number):
-                    product_mask[size_precursor - int(i)] = "1"
-                # Number of IDV
-                numberofidv = 2 ** size_precursor
-                # intitialize mdv_matrix
-                mdv_matrix = [];
-                for pre in (range(0, size_precursor + 1)):
-                    temp = []
-                    for pro in (range(0, size_product + 1)):
-                        temp.append('')
-                    mdv_matrix.append(temp)
-                # Check IDV numbers for precursor and product ions
-                # Number of MRM series
-                mrm_count = 0
-                for i in (sorted(range(numberofidv))):
-                    #Generate IDV
-                    idv="{0:0>{1}{2}}".format(i, size_precursor, 'b')
-                    #Generate IDV of product ions
-                    idv_masked_by_product = format((int(idv,2) & int("".join(product_mask),2)), 'b')
-                    #Numbers of 13C in precursor and product ion
-                    precursor_isotope_number = sum([1 for x in idv if x == "1"])
-                    product_isotope_number = sum([1 for x in idv_masked_by_product if x == "1"])
-                    if (mdv_matrix[precursor_isotope_number][product_isotope_number] == ''):
-                        mdv_matrix[precursor_isotope_number][product_isotope_number] = mrm_count
-                        mrm_count = mrm_count + 1
-                #print mdv_matrix
-                #Prepare matrix A and B
-                string += "\tA_" + precursor + product + "= numpy.zeros(("+str((mrm_count)*(mrm_count))+"))\n"
-                string += "\tB_" + precursor + product + "= numpy.zeros(("+str(mrm_count)+",))\n"
-                equation_count = 0
-
-                #precursor ion
-                for i in range(size_precursor+1):
-                    if (equation_count >= mrm_count):
-                        break
-                    for j in range(size_product+1):
-                        if (mdv_matrix[i][j] != ''):
-                            string += "\tA_" + precursor + product+"[" + str(equation_count * (mrm_count) + mdv_matrix[i][j]) + "] = 1\n"
-                    string += "\tB_" + precursor + product+"[" + str(equation_count )+ "] = X_"+str(size_precursor)+"[" + str(emu_intermediate[int(size_precursor)][precursor] * (size_precursor + 1) + i)+"]\n"
-                    equation_count = equation_count + 1
-
-                #product ion
-                for j in range(size_product+1):
-                    if (equation_count >= mrm_count):
-                        break
-                    for i in range(size_precursor+1):
-                        #print i, j, mdv_matrix[i][j]
-                        if (mdv_matrix[i][j] != ''):
-                            string += "\tA_" + precursor + product+"[" + str(equation_count * (mrm_count) + mdv_matrix[i][j]) + "] = 1\n"
-                    string += "\tB_" + precursor + product+"[" + str(equation_count )+ "] = X_"+str(size_product)+"[" + str(emu_intermediate[int(size_product)][product] * (size_product + 1) + j)+"]\n"
-                    equation_count = equation_count + 1
-
-                #neutral loss
-                for j in range(size_neutralloss+1):
-                    if (equation_count >= mrm_count):
-                        break
-                    for i in range(size_product+1):
-                        #print i, j, mdv_matrix[i][j]
-                        if (mdv_matrix[i][i + j] != ''):
-                            string += "\tA_" + precursor + product+"[" + str(equation_count * (mrm_count) + mdv_matrix[i][i + j]) + "] = 1\n"
-                    string += "\tB_" + precursor + product+"[" + str(equation_count )+ "] = X_"+str(size_neutralloss)+"[" + str(emu_intermediate[int(size_neutralloss)][neutralloss] * (size_neutralloss + 1) + j)+"]\n"
-                    equation_count = equation_count + 1
-
-                string +="\tA_" + precursor + product + ".resize(("+str(mrm_count)+","+ str(mrm_count)+"))\n"
-                string += "\tMS_" + precursor + product + " = numpy.linalg.solve(A_" + precursor + product + ", B_" + precursor + product + ")\n"
-                string += "\temu_list['" + target_fragment +"'] = [" + ','.join("MS_" + precursor + product + "["+str(x)+"]" for x in range(mrm_count)) + "]\n"
+                pass
             #gcms
             else:
                 emus = target_emus.replace(' ','').split('+')
@@ -2682,79 +2586,7 @@ class MetabolicModel:
             # "msms" type
             #
             if target_fragments[target_fragment]['type'] == "msms":
-                precursor, neutralloss, product = target_emus.replace(' ','').split('+')
-                # Get sizes
-                size_precursor = size_of_EMU(precursor);
-                size_product = size_of_EMU(product);
-                size_neutralloss = size_of_EMU(neutralloss);
-                product_carbon_number = list(product.split('_')[1]);
-                product_mask = [];
-                for i in (range(size_precursor)):
-                    product_mask.append("0")
-                for i in (product_carbon_number):
-                    product_mask[size_precursor - int(i)] = "1"
-                numberofidv = 2 ** size_precursor
-                mdv_matrix = [];
-                for pre in (range(0, size_precursor + 1)):
-                    temp = []
-                    for pro in (range(0, size_product + 1)):
-                        temp.append('')
-                    mdv_matrix.append(temp)
-                mrm_count = 0
-                for i in (sorted(range(numberofidv))):
-                    idv="{0:0>{1}{2}}".format(i, size_precursor, 'b')
-                    idv_masked_by_product = format((int(idv,2) & int("".join(product_mask),2)), 'b')
-                    precursor_isotope_number = sum([1 for x in idv if x == "1"])
-                    product_isotope_number = sum([1 for x in idv_masked_by_product if x == "1"])
-                    if (mdv_matrix[precursor_isotope_number][product_isotope_number] == ''):
-                        mdv_matrix[precursor_isotope_number][product_isotope_number] = mrm_count
-                        mrm_count = mrm_count + 1
-                #print mdv_matrix
-                string += "\t\tA_" + precursor + product + "= numpy.zeros(("+str((mrm_count)*(mrm_count))+"))\n"
-                string += "\t\tB_" + precursor + product + "= numpy.zeros(("+str(mrm_count)+",))\n"
-                equation_count = 0
-
-                #precursor ion
-                for i in range(size_precursor+1):
-                    if (equation_count >= mrm_count):
-                        break
-                    for j in range(size_product+1):
-                        if (mdv_matrix[i][j] != ''):
-                            string += "\t\tA_" + precursor + product+"[" + str(equation_count * (mrm_count) + mdv_matrix[i][j]) + "] = 1\n"
-                    #string += "\t\tB_" + precursor + product+"[" + str(equation_count )+ "] = X_"+str(size_precursor)+"[" + str(emu_intermediate[int(size_precursor)][precursor] * (size_precursor + 1) + i)+"]\n"
-                    string += "\t\tB_" + precursor + product+"[" + str(equation_count )+ "] = y[i]["+ str(emu_intermediates_to_p[precursor] + i) + "]\n"
-
-                    equation_count = equation_count + 1
-
-                #product ion
-                for j in range(size_product+1):
-                    if (equation_count >= mrm_count):
-                        break
-                    for i in range(size_precursor+1):
-                        #print i, j, mdv_matrix[i][j]
-                        if (mdv_matrix[i][j] != ''):
-                            string += "\t\tA_" + precursor + product+"[" + str(equation_count * (mrm_count) + mdv_matrix[i][j]) + "] = 1\n"
-                    #string += "\t\tB_" + precursor + product+"[" + str(equation_count )+ "] = X_"+str(size_product)+"[" + str(emu_intermediate[int(size_product)][product] * (size_product + 1) + j)+"]\n"
-                    string += "\t\tB_" + precursor + product+"[" + str(equation_count )+ "] = y[i]["+ str(emu_intermediates_to_p[product] + j) + "]\n"
-
-                    equation_count = equation_count + 1
-
-                #neutral loss
-                for j in range(size_neutralloss+1):
-                    if (equation_count >= mrm_count):
-                        break
-                    for i in range(size_product+1):
-                        #print i, j, mdv_matrix[i][j]
-                        if (mdv_matrix[i][i + j] != ''):
-                            string += "\t\tA_" + precursor + product+"[" + str(equation_count * (mrm_count) + mdv_matrix[i][i + j]) + "] = 1\n"
-                    #string += "\t\tB_" + precursor + product+"[" + str(equation_count )+ "] = X_"+str(size_neutralloss)+"[" + str(emu_intermediate[int(size_neutralloss)][neutralloss] * (size_neutralloss + 1) + j)+"]\n"
-                    string += "\t\tB_" + precursor + product+"[" + str(equation_count )+ "] = y[i]["+ str(emu_intermediates_to_p[neutralloss] + j) + "]\n"
-
-                    equation_count = equation_count + 1
-
-                string +="\t\tA_" + precursor + product + ".resize(("+str(mrm_count)+","+ str(mrm_count)+"))\n"
-                string += "\t\tMS_" + precursor + product + " = numpy.linalg.solve(A_" + precursor + product + ", B_" + precursor + product + ")\n"
-                string += "\t\temu_list['" + target_fragment +"'].append([" + ','.join("MS_" + precursor + product + "["+str(x)+"]" for x in range(mrm_count)) + "])\n"
+                pass
             #
             # "gcms"
             #
