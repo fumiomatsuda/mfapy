@@ -10,7 +10,7 @@ mfapy supports:
 4. Metabolic flux, net metabolic flux of reversible reaction, and metabolite concentration could be considered as fitting parameters.
 5. G-value by introducing the "pseudo" reaction
 6. Goodness-of-fit analysis
-7. Parallel performing non-linear optimization jobs using parallel python.
+7. Parallel performing non-linear optimization jobs using joblib package.
 8. Automated model construction from model description file
 
 License
