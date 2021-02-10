@@ -336,7 +336,7 @@ class MdvData:
                 return True
         return False
 
-    def set_mdv_for_ignore(self, fragment, number):
+    def set_unused_mdv_for_comparison(self, fragment, number):
         """
         Setter of single mass data to be ignored for MDV comparison
 
@@ -346,7 +346,7 @@ class MdvData:
 
         Examples
         --------
-        >>> mdv.set_mdv_for_ignored(fragment, number)
+        >>> mdv.set_unused_mdv_for_comparison(fragment, number)
 
         See Also
         --------
@@ -443,7 +443,7 @@ class MdvData:
         """
         for fragment in self.fragments_for_mdv_calculation:
             for number in self.mdv[fragment]:
-                self.set_mdv_for_ignore(fragment, number)
+                self.set_unused_mdv_for_comparison(fragment, number)
                 if fragment in self.observed_fragments:
                     ratio, std, use = self.get_data(fragment, number)
                     if (ratio > threshold_ratio) and (std < threshold_std):
@@ -706,6 +706,8 @@ class MdvData:
                 if fragment not in self.mdv:
                     continue
                 number = int(number.replace("m", ""))
+                if number not in self.mdv[fragment]:
+                    continue
 
                 self.mdv[fragment][number]['ratio'] = float(ratio)
                 if len(std) <= 0:

@@ -671,7 +671,7 @@ def fit_r_mdv_deep(configure, experiments, numbers, vectors, matrixinv, func, fl
     Low level function for model fitting by iterative fittings.
     1st iteration:  GN_CRS2_LM (global optimizer)
     2n th iterations:  SLSQP (local)
-    2n + 1 th iterations:  LN_PRAXIS (local)
+    2n + 1 th iterations:  LN_SBPLX (local)
     This combination is empirically best
 
     Parameters
@@ -731,7 +731,7 @@ def fit_r_mdv_deep(configure, experiments, numbers, vectors, matrixinv, func, fl
             print("Deep",k,"Start SLSQP method######################################################################")
         state, kai, flux, Rm_ind_sol = fit_r_mdv_scipy(configure, experiments, numbers, vectors, matrixinv, func, flux, method = "SLSQP")
         if (callbacklevel >= 4):
-            print("Deep",k,"Start LN_PRAXIS method##################################################################")
+            print("Deep",k,"Start LN_SBPLX method###################################################################")
         state, kai, flux, Rm_ind_sol = fit_r_mdv_nlopt(configure, experiments, numbers, vectors, matrixinv, func, flux, method = "LN_PRAXIS")
 
 
