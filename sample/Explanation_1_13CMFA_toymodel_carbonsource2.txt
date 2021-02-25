@@ -1,0 +1,7 @@
+Name	Isotopomer	Ratio
+Asp	#0000	0.5
+Asp	#1111	0.5
+AcCoA	#00	0.5
+AcCoA	#11	0.5
+
+
