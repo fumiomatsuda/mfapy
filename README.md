@@ -115,7 +115,7 @@ Version 057
 
 Version 058
 ----------------------------------------
-20/9/3 Files for Example 6 (the Metropolis-Hastings algorithm reported in Scientific Reports volume 10, Article number: 286 (2020)) were updated to reproduce MCF-7 example.
+20/9/3 Files for Example 7 (the Metropolis-Hastings algorithm reported in Scientific Reports volume 10, Article number: 286 (2020)) were updated to reproduce MCF-7 example.
 
 20/9/3 A bug in mfapy.metabolicmodel.calc_rss was fixed.
 
@@ -127,7 +127,7 @@ Version 059
 
 21/1/9 Example files were totally reorganized.
 
-21/1/9 Exlanation 1 files were newly added to explain mfapy functions.
+21/1/9 Explanation 1 files were newly added to explain mfapy functions.
 
 
 If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>
