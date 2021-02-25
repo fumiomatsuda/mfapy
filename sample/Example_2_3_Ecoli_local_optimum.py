@@ -13,7 +13,7 @@ import os, sys, time
 
 if __name__ == '__main__':
     #
-    # Number of initial flux vector
+    # Number of random initial flux vector
     #
     numofmodel = 1000
     #
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     #
     # Carbon sources
     #
-    carbon_source1 = model.generate_carbon_source_templete()
+    carbon_source1 = model.generate_carbon_source_template()
     carbon_source1.set_each_isotopomer('SubsGlc',{'#000000': 0.02, '#100000': 0.7, '#111111': 0.28 }, correction = 'yes')
     carbon_source1.set_each_isotopomer('SubsCO2',{'#0': 1.0, '#1': 0.0}, correction = 'no')
     carbon_source1.set_each_isotopomer('SubsAla',{'#000': 1.0}, correction = 'yes')

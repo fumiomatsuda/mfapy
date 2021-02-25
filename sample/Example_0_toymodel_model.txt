@@ -19,7 +19,7 @@ v5	Suc --> Fum	Suc --> Fum	ABCD --> ABCD	(kegg:R02164)	0.0	300
 v6	Fum --> OAC	Fum --> OAC	ABCD --> ABCD	(kegg:R01082)	0.0	300
 v7	OAC --> Fum	OAC --> Fum	ABCD --> ABCD	(kegg:R01082)	0.0	300
 v8	Asp --> OAC	Asp --> OAC	ABCD --> ABCD	(kegg:R00355)	0.0	300
-v9	Glu --> Gluex	nd	nd 	(kegg:R00243)	0.0	300
+v9	Glu --> Gluex	nd	nd	(kegg:R00243)	0.0	300
 #
 # Definition of metabolites
 //Metabolites
@@ -40,6 +40,6 @@ FUM	v6	v7	(kegg:R01082)	-300	300
 #
 # Definition of Target fragments
 //Target_fragments
-Glue	gcms	Glu_1:2:3:4:5	use	C5H10N2O3
-Gluee	gcms	Glu_1:2:3+Glu_4:5	use	C5H10N2O3
+Glue	intermediate	Glu_1:2:3:4:5	use	C5H10N2O3
+Glugc	gcms	Glu_1:2:3+Glu_4:5	use	C5H10N2O3
 //End

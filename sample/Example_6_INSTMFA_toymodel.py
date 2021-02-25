@@ -35,12 +35,12 @@ if __name__ == '__main__':
     #
     # Generation of CarbonSource instance and isotope labelling information
     #
-    cs = model.generate_carbon_source_templete()
+    cs = model.generate_carbon_source_template()
     cs.set_each_isotopomer('SubsGlc', {'#000000':0.5,'#111111':0.5}, correction = 'yes')
     #
     # Generation of initial IDV state (IDV at experimenta start (time = 0)
     #
-    cs2 = model.generate_carbon_source_templete()
+    cs2 = model.generate_carbon_source_template()
     cs2.set_each_isotopomer('SubsGlc', {'#000000':1.0}, correction = 'yes')
     idv = model.calc_idv(state_dic, cs2)
     #
@@ -64,16 +64,16 @@ if __name__ == '__main__':
     # Example_5_INST_mdvtimecourse30.txt
     # Example_5_INST_mdvtimecourse50.txt
     #
-    mdv_timecourse.save("Example_5_INST_mdvtimecourse")
+    mdv_timecourse.save("Example_6_INST_mdvtimecourse")
     #
     # Loading of mdv data
     #
-    mdv_00 = model.load_mdv_data('Example_5_INST_mdvtimecourse0.txt')
-    mdv_05 = model.load_mdv_data('Example_5_INST_mdvtimecourse5.txt')
-    mdv_10 = model.load_mdv_data('Example_5_INST_mdvtimecourse10.txt')
-    mdv_15 = model.load_mdv_data('Example_5_INST_mdvtimecourse15.txt')
-    mdv_30 = model.load_mdv_data('Example_5_INST_mdvtimecourse30.txt')
-    mdv_50 = model.load_mdv_data('Example_5_INST_mdvtimecourse50.txt')
+    mdv_00 = model.load_mdv_data('Example_6_INST_mdvtimecourse0.txt')
+    mdv_05 = model.load_mdv_data('Example_6_INST_mdvtimecourse5.txt')
+    mdv_10 = model.load_mdv_data('Example_6_INST_mdvtimecourse10.txt')
+    mdv_15 = model.load_mdv_data('Example_6_INST_mdvtimecourse15.txt')
+    mdv_30 = model.load_mdv_data('Example_6_INST_mdvtimecourse30.txt')
+    mdv_50 = model.load_mdv_data('Example_6_INST_mdvtimecourse50.txt')
     #
     # Construction of time course mdv data from loaded mdv data using MdvTimeCourseData instance
     #
@@ -113,7 +113,6 @@ if __name__ == '__main__':
     fig = figure()
     axL = fig.add_subplot(121)
     axL.scatter(ratio_array_predicted, ratio_array1,  c = 'b')
-    show()
     #
     # Show MDV timecourse
     #
@@ -125,7 +124,7 @@ if __name__ == '__main__':
     axR.plot(tc, mdv_timecourse.get_timecourse_data("AKGe", 3),  c = 'g')
     axR.plot(tc, mdv_timecourse.get_timecourse_data("AKGe", 4),  c = 'y')
     axR.plot(tc, mdv_timecourse.get_timecourse_data("AKGe", 5),  c = 'g')
-
+    show()
 
 
 

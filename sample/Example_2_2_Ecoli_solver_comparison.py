@@ -12,7 +12,9 @@ import mfapy
 import os, sys, time
 
 if __name__ == '__main__':
-
+    #
+    # Total 100 (=20*5) random initial flux vectors were prepared
+    #
     numofmodel = 20
     repeatn = 5
     #
@@ -25,7 +27,7 @@ if __name__ == '__main__':
     #
     model.set_configuration(callbacklevel = 0) #
     model.set_configuration(iteration_max = 10000)
-    model.set_configuration(ncpus = 4) #Number of local CPUs for Parallel python
+    model.set_configuration(ncpus = 4) #Number of local CPUs for joblib
     #
     # Batch setting of constrains from  file
     #
@@ -35,7 +37,7 @@ if __name__ == '__main__':
     #
     # Set isotope labelling of carbon sources
     #
-    carbon_source1 = model.generate_carbon_source_templete()
+    carbon_source1 = model.generate_carbon_source_template()
     carbon_source1.set_each_isotopomer('SubsGlc',{'#000000': 0.02, '#100000': 0.7, '#111111': 0.28 }, correction = 'yes')
     carbon_source1.set_each_isotopomer('SubsCO2',{'#0': 1.0, '#1': 0.0}, correction = 'no')
     carbon_source1.set_each_isotopomer('SubsAla',{'#000': 1.0}, correction = 'yes')
@@ -58,7 +60,7 @@ if __name__ == '__main__':
     model.set_experiment('ex1', mdv_observed1, carbon_source1)
     #
     #
-    print("Obtaining initial state using parallel processing using joblib")
+    print("Generation of initial states using parallel processing using joblib")
     flux_initial_array = []
     rss_initial_array = []
     for j in range(repeatn):

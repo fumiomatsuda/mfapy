@@ -34,11 +34,11 @@ if __name__ == '__main__':
     #
     # Generation of CarbonSource instance
     #
-    carbon_source1 = model.generate_carbon_source_templete()
+    carbon_source1 = model.generate_carbon_source_template()
     #
     # Isotope labelling information of carbon sources 1
     #
-    carbon_source1 = model.generate_carbon_source_templete()
+    carbon_source1 = model.generate_carbon_source_template()
     carbon_source1.set_all_isotopomers('SubsCO2', [0.99, 0.01])
     carbon_source1.set_each_isotopomer('SubsGlc',{'#000000': 0, '#100000': 1}, correction = 'yes')
     carbon_source1.set_each_isotopomer('SubsGln',{'#00000': 1.}, correction = 'yes')
@@ -49,11 +49,11 @@ if __name__ == '__main__':
     #
     # Generation of CarbonSource instance
     #
-    carbon_source2 = model.generate_carbon_source_templete()
+    carbon_source2 = model.generate_carbon_source_template()
     #
     # Isotope labelling information of carbon sources 2
     #
-    carbon_source2 = model.generate_carbon_source_templete()
+    carbon_source2 = model.generate_carbon_source_template()
     carbon_source2.set_all_isotopomers('SubsCO2', [0.99, 0.01])
     carbon_source2.set_each_isotopomer('SubsGlc',{'#000000': 1, '#100000': 0}, correction = 'yes')
     carbon_source2.set_each_isotopomer('SubsGln',{'#11111': 1}, correction = 'yes')

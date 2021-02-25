@@ -57,23 +57,23 @@ if __name__ == '__main__':
     #
     # Generation of initial flux
     #
-    print("Obtaining 8 initial states using parallel processing")
-    state, flux_opt1 = model.generate_initial_states(100, 8, method ="parallel")
-    print("RSS of initial states are is:",model.calc_rss(flux_opt1))
+    print("Generating 100 random initial states using parallel processing")
+    state, flux_opt1 = model.generate_initial_states(500, 100, method ="parallel")
+    print("RSS of the best initial state is:",model.calc_rss(flux_opt1[0]))
     results = [('template', flux_opt1[0])]
     model.set_configuration(callbacklevel = 0) #
     #
     # Model Fitting
     #
-    print("Finding metabolic flux distributiions by non-liner optimizations")
+    print("Fitting by non-liner optimizations")
     start = time.time()
-    for i in range(10):
-        for method in ["GN_CRS2_LM","LN_SBPLX","SLSQP"]:
+    state, RSS_bestfit, flux_opt1 = model.fitting_flux(method = "GN_CRS2_LM", flux = flux_opt1)
+    for i in range(15):
+        for method in ["SLSQP","LN_SBPLX"]:
             state, RSS_bestfit, flux_opt1 = model.fitting_flux(method = method, flux = flux_opt1)
             pvalue, rss_thres = model.goodness_of_fit(flux_opt1[0], alpha = 0.05)
-            print(i, method, ": State", state[0], "RSS:{0:>8.2f} Time:{1:>8.2f} Threshold:{2:>8.2f} pvalue:{3:>8.7f}".format(RSS_bestfit[0], time.time()-start, rss_thres, pvalue))
+            print("RSS of the best state is:",model.calc_rss(flux_opt1[0]))
         results.append((method, flux_opt1[0]))
-
     model.show_results(results)
 
 

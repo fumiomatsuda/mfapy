@@ -36,7 +36,7 @@ if __name__ == '__main__':
             #
             # Generation of instances of CarbonSource class from model
             #
-            cs = model.generate_carbon_source_templete()
+            cs = model.generate_carbon_source_template()
             cs.set_each_isotopomer('SubsGlc',isotope1, correction = "no")
             #
             # Generation of MDV instances from metabolic state and carbon source.
@@ -53,7 +53,7 @@ if __name__ == '__main__':
                 #
                 # Generation of instances of CarbonSource class from model
                 #
-                cs2 = model.generate_carbon_source_templete()
+                cs2 = model.generate_carbon_source_template()
                 cs2.set_each_isotopomer('SubsGlc',isotope2, correction = "no")
                 #
                 # Generation of MDV instances from metabolic state and carbon source.
@@ -78,7 +78,7 @@ if __name__ == '__main__':
             # Target reactions to estimate 95% CI
             #
             target_reactions = [('reaction', "v4"),('reaction', "v5"),('reaction', "v6"),('reaction', "v7"),('reversible', "FUM")]
-            ci_edge = model.generate_ci_templete(targets = target_reactions)
+            ci_edge = model.generate_ci_template(targets = target_reactions)
             #
             # Grid search
             #
