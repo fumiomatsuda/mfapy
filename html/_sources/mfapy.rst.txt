@@ -1,0 +1,53 @@
+mfapy package
+=============
+
+Submodules
+----------
+
+mfapy.carbonsource module
+-------------------------
+
+.. automodule:: mfapy.carbonsource
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mfapy.mdv module
+----------------
+
+.. automodule:: mfapy.mdv
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mfapy.metabolicmodel module
+---------------------------
+
+.. automodule:: mfapy.metabolicmodel
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mfapy.mfapyio module
+--------------------
+
+.. automodule:: mfapy.mfapyio
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mfapy.optimize module
+---------------------
+
+.. automodule:: mfapy.optimize
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: mfapy
+   :members:
+   :undoc-members:
+   :show-inheritance:

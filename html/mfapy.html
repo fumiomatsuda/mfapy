@@ -1,0 +1,1627 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mfapy package &#8212; mfapy  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to mfapy’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="mfapy-package">
+<h1>mfapy package<a class="headerlink" href="#mfapy-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-mfapy.carbonsource">
+<span id="mfapy-carbonsource-module"></span><h2>mfapy.carbonsource module<a class="headerlink" href="#module-mfapy.carbonsource" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="mfapy.carbonsource.CarbonSource">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mfapy.carbonsource.</span></code><code class="sig-name descname"><span class="pre">CarbonSource</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">carbon_sources</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.carbonsource.CarbonSource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for carbon source information.</p>
+<dl class="py method">
+<dt id="mfapy.carbonsource.CarbonSource.generate_carbonsource_MDV">
+<code class="sig-name descname"><span class="pre">generate_carbonsource_MDV</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">carbonsource</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'no'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.carbonsource.CarbonSource.generate_carbonsource_MDV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator of MDVs of all EMUs of each carbon source.
+This function is called in the mfapy.metabolicmodel.MetabolicModel</p>
+<p>carbonsource: List of carbon source metabolite (optional)
+correction: (yes/no) Correction of isotopomer distribution considering natural 13C occurence</p>
+<p>Dictionary of mdv data of carbon source.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span><span class="o">.</span><span class="n">generate_carbonsource_MDV</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Correcton of IDV by natural 13C method was improved.
+labeled by 2 13C and 3 13C was taken into consideration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.carbonsource.CarbonSource.generate_dict">
+<code class="sig-name descname"><span class="pre">generate_dict</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.carbonsource.CarbonSource.generate_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator of a dictionary of MDVs of all EMUs</p>
+<p>nothing</p>
+<p>mdvs : Dictionary of MDVs of all EMUs</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdvs</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">generate_dict</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.carbonsource.CarbonSource.set_all_isotopomers">
+<code class="sig-name descname"><span class="pre">set_all_isotopomers</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'no'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.carbonsource.CarbonSource.set_all_isotopomers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter of IDV data by list of all mass isotopomer distribution</p>
+<p>compound: Name of carbon source
+list: list of mass isotopomer distribution (from 000, 001, 010, to 111)
+correction: (yes/no) Correction of isotopomer distribution considering natural 13C occurence</p>
+<p>Booleans.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span><span class="o">.</span><span class="n">set_all_isotopomers</span><span class="p">(</span><span class="s1">&#39;AcCoA&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.carbonsource.CarbonSource.set_carbonsources">
+<code class="sig-name descname"><span class="pre">set_carbonsources</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'no'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.carbonsource.CarbonSource.set_carbonsources" title="Permalink to this definition">¶</a></dt>
+<dd><p>To set isotopomer data of multiple carbon sourses from text file.</p>
+<p>filename : filename of MDV data with following format.
+Name    Isotopomer      Ratio
+Asp     #0000   0.5
+Asp     #1111   0.5
+AcCoA   #00     0.5
+AcCoA   #11     0.5
+correction : (yes/no) Correction of isotopomer distribution considering natural 13C occurence
+format : “text” (defalut) or “csv”
+output : “normal” (defalut) or “debug”</p>
+<p>Boolean: True/False</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cs2</span><span class="o">.</span><span class="n">set_isotopomers_from_file</span><span class="p">(</span><span class="s1">&#39;Example_1_carbonsource2.txt&#39;</span><span class="p">,</span> <span class="n">correction</span> <span class="o">=</span> <span class="s2">&quot;yes&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.carbonsource.CarbonSource.set_each_isotopomer">
+<code class="sig-name descname"><span class="pre">set_each_isotopomer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'no'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.carbonsource.CarbonSource.set_each_isotopomer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter of IDV data by distribution of selected mass isotopomers</p>
+<p>compound: Name of carbon source
+dict: Dictionary of mass isotopomer and its relative abundance {‘#111’: 0.5, ‘#001’: 0.5}
+correction: (yes/no) Correction of isotopomer distribution considering natural 13C occurence</p>
+<p>Booleans.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span><span class="o">.</span><span class="n">set_each_isotopomers</span><span class="p">(</span><span class="s1">&#39;AcCoA&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;#11&#39;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;#10&#39;</span><span class="p">:</span><span class="mf">0.25</span><span class="p">},</span> <span class="n">correction</span> <span class="o">=</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.carbonsource.CarbonSource.set_labeled_compounds">
+<code class="sig-name descname"><span class="pre">set_labeled_compounds</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'no'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.carbonsource.CarbonSource.set_labeled_compounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter of IDV data by distribution of selected mass isotopomers</p>
+<p>compound: Name of carbon source
+dict: Dictionary of lableled compound name and its relative abundance {‘[1_13C]glucose’: 0.5, ‘[U_13C]glucose’:0.5}
+correction: (yes/no) Correction of isotopomer distribution considering natural 13C occurence</p>
+<p>Booleans.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span><span class="o">.</span><span class="n">set_labeled_compounds</span><span class="p">(</span><span class="s1">&#39;Glc&#39;</span><span class="p">,{</span><span class="s1">&#39;[1_13C]glucose&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;[U_13C]glucose&#39;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">},</span> <span class="n">correction</span> <span class="o">=</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>labeledcompound_dict = {
+“[13C]CO2”: “#1”,
+“[12C]CO2”: “#0”,
+“[13C]THF”: “#1”,
+“[12C]THF”: “#0”,
+“[1-13C]glucose”: “#100000”,
+“[2-13C]glucose”: “#010000”,
+“[1,2-13C]glucose”: “#110000”,
+“[U-13C]glucose”: “#111111”,
+“[1-13C]glutamine”: “#10000”,
+“[2-13C]glutamine”: “#01000”,
+“[5-13C]glutamine”: “#00001”,
+“[U-13C]glutamine”: “#11111”,
+}</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.carbonsource.CarbonSource.show">
+<code class="sig-name descname"><span class="pre">show</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.carbonsource.CarbonSource.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to display contents of CarbonSource instance</p>
+<p>nothing.</p>
+<p>nothing.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">Name: Asp</span>
+<span class="go">Carbon number: 4</span>
+<span class="go">#0000   1.0</span>
+<span class="go">Name: AcCoA</span>
+<span class="go">Carbon number: 2</span>
+<span class="go">#00     0.5</span>
+<span class="go">#10     0.25</span>
+<span class="go">#11     0.25</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.carbonsource.main">
+<code class="sig-prename descclassname"><span class="pre">mfapy.carbonsource.</span></code><code class="sig-name descname"><span class="pre">main</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.carbonsource.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-mfapy.mdv">
+<span id="mfapy-mdv-module"></span><h2>mfapy.mdv module<a class="headerlink" href="#module-mfapy.mdv" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="mfapy.mdv.INV_correcting">
+<code class="sig-prename descclassname"><span class="pre">mfapy.mdv.</span></code><code class="sig-name descname"><span class="pre">INV_correcting</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">formula</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.INV_correcting" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="mfapy.mdv.MdvData">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mfapy.mdv.</span></code><code class="sig-name descname"><span class="pre">MdvData</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_fragments</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class of mass distribution vector (MDV) information. A instance of the MdvData class could be generate from
+an instance of MetabolicModel class using model.generate_mdv_templete()</p>
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.add_gaussian_noise">
+<code class="sig-name descname"><span class="pre">add_gaussian_noise</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stdev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'absolute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'on'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.add_gaussian_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add gausian noise to MDV data</p>
+<p>ratio: Intensity of noise;
+iteration: Number of sampleing
+method:</p>
+<blockquote>
+<div><p>relative: intentsity = (randn() * stdev + 1) * original_intensity
+absolute: intentsity = randn() * stdev) + original_intensity</p>
+</div></blockquote>
+<dl class="simple">
+<dt>normalize</dt><dd><p>on: sum of fragment intensity is set to 1.0</p>
+</dd>
+</dl>
+<p>boolean: True/False</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">add_gaussian_noise</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.add_natural_isotope">
+<code class="sig-name descname"><span class="pre">add_natural_isotope</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.add_natural_isotope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Addition of natural isotope effect to fragments
+Molecular formula information in “target fragment” of model file is used.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">add_natural_isotope</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.check">
+<code class="sig-name descname"><span class="pre">check</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'debug'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to check missing values in the MDV data before MDV comparison</p>
+<p>output: Show details when “debug” mode</p>
+<p>boolean: True/False</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">check</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.comparison_with_another_mdv">
+<code class="sig-name descname"><span class="pre">comparison_with_another_mdv</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mdv</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.comparison_with_another_mdv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Comparison of two MDV data</p>
+<p>mdv: an instanse of MdvData class for comparison</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">compare_mdv</span><span class="p">(</span><span class="n">mdv_fitted</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.correct_natural_isotope">
+<code class="sig-name descname"><span class="pre">correct_natural_isotope</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.correct_natural_isotope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Correction of natural isotope effedt from fragments
+Molecular formula information in “target fragment” of model file is used.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">correct_natural_isotope</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>mode: “normal”(defalut) and “correction” (force remove negatives and normalization)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.generate_observed_mdv">
+<code class="sig-name descname"><span class="pre">generate_observed_mdv</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.generate_observed_mdv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator of MDV related inforamtion in list format.
+This function is used in model.set_experiment()</p>
+<p>id_array: List of ids
+ratio_array: List of ratio data
+std_array:List of std data
+use_array: List of use data
+observed_fragments: List of observed fragment
+data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">id_array</span><span class="p">,</span> <span class="n">ratio_array</span><span class="p">,</span> <span class="n">std_array</span><span class="p">,</span> <span class="n">use_array</span><span class="p">,</span> <span class="n">observed_fragments</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">generate_observed_mdv</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.get_data">
+<code class="sig-name descname"><span class="pre">get_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter of single MDV data</p>
+<p>fragment: name of target_fragment
+number: Number of isotope</p>
+<p>ratio: Relative abundance of mass spectra data
+std: Standard deviation of measured MDV data
+use: Data to be used for MDV comparison. ‘use’ or ‘no’</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ratio</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">use</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;Leu85&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.get_fragment_mdv">
+<code class="sig-name descname"><span class="pre">get_fragment_mdv</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.get_fragment_mdv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter of MDV data of given fragment</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv_pattern</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">get_fragment_mdv</span><span class="p">(</span><span class="s1">&#39;Leu85&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>fragment: name of target_fragment</p>
+<p>mdv_pattern: Array of MDV</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.get_fragments_for_mdv_calculation">
+<code class="sig-name descname"><span class="pre">get_fragments_for_mdv_calculation</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.get_fragments_for_mdv_calculation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter of fragment list whose MDVs are calculated in calmdv fucntion</p>
+<p>fragments: List of fragment names to be used for MDV comparison</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_fragment</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">get_fragments_for_mdv_calculation</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.get_number_of_measurement">
+<code class="sig-name descname"><span class="pre">get_number_of_measurement</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.get_number_of_measurement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter of number of measurement of the MDV data set.</p>
+<p>number_of_measurement : Number of measurement</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">number_of_measurement</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">get_number_of_measurement</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.has_data">
+<code class="sig-name descname"><span class="pre">has_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.has_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checker whether the MdvData instance has data of [number] th isotope of [fragment] mass spectra.</p>
+<p>fragment: name of target_fragment
+number: number of isotope</p>
+<p>Boolean: TrueFalse</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">mdv</span><span class="o">.</span><span class="n">has_data</span><span class="p">(</span><span class="s1">&#39;Leu85&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="n">brabra</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.load">
+<code class="sig-name descname"><span class="pre">load</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load MDV data from the text file.</p>
+<p>filename : filename of MDV data with following format.
+Name    Spectrum        Select  MDV     Std
+Ala57   m0      1       0.566990778     0.000774686
+Ala57   m1      1       0.148623963     0.000774686
+Ala57   m2      1       0.039467636     0.000774686
+Ala57   m3      1       0.244917622     0.000774686</p>
+<p>format : “text” (defalut) or “csv”
+output : “normal” (defalut) or “debug”</p>
+<p>Boolean: True/False</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="nb">format</span> <span class="o">=</span> <span class="s1">&#39;text&#39;</span><span class="p">,</span><span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.save">
+<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save MDV data to the text/csv file</p>
+<p>mdv : a instance of mfapy.mdv for templete
+filename : filename of MDV data with the format.</p>
+<p>Name    Spectrum        Select  MDV     Std
+Ala57   m0      1       0.566990778     0.000774686
+Ala57   m1      1       0.148623963     0.000774686
+Ala57   m2      1       0.039467636     0.000774686
+Ala57   m3      1       0.244917622     0.000774686</p>
+<dl class="simple">
+<dt>format:</dt><dd><p>‘csv’ : CSV.
+‘text’ : tab-deliminated text.</p>
+</dd>
+</dl>
+<p>Boolean: True/False</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="s1">&#39;filename&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.set_data">
+<code class="sig-name descname"><span class="pre">set_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.set_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter of single MDV data</p>
+<p>fragment: name of target_fragment
+number: Number of isotope
+ratio: Relative abundance of mass spectra data
+std: Standard deviation of measured MDV data
+use: Data to be used for MDV comparison. ‘use’ or ‘no’</p>
+<p>Boolean: TrueFalse</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="s1">&#39;Leu85&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.763</span><span class="p">,</span> <span class="mf">0.0054</span><span class="p">,</span> <span class="s1">&#39;use&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.set_mdv_for_comparison">
+<code class="sig-name descname"><span class="pre">set_mdv_for_comparison</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.set_mdv_for_comparison" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter of single mass data to be used for MDV comparison</p>
+<p>fragments and number: fragment names and its mass data  to be used for MDV comparison</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">set_mdv_for_comparison</span><span class="p">(</span><span class="n">fragment</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.set_mdvs_for_comparison">
+<code class="sig-name descname"><span class="pre">set_mdvs_for_comparison</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.set_mdvs_for_comparison" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setters of multiple data to be used for MDV comparison</p>
+<p>threshold_ratios: Mass spectral signals with normalized intensities above threshold_ratios are used to be used for MDV comparison
+threshold_std: Threshold for std data</p>
+<p>boolean: True/False</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">set_mdvs_for_comparison</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.set_observed_fragments">
+<code class="sig-name descname"><span class="pre">set_observed_fragments</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragments</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.set_observed_fragments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter of observed fragment. When new MdvData instance is generated ‘observed_fragment’ == ‘target_fragment’.</p>
+<p>fragments: List of fragment names calculated in calmdv fucntion</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">set_observed_fragments</span><span class="p">([</span><span class="s1">&#39;Phe_85&#39;</span><span class="p">,</span> <span class="s1">&#39;Ala_57&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.set_std">
+<code class="sig-name descname"><span class="pre">set_std</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'absolute'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.set_std" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set standard deviation levels from mass sepctral intensity</p>
+<dl class="simple">
+<dt>method: Method to calculate stdev levels:</dt><dd><p>‘relative’ (detault): Levels are set by stdev = [value] * signal intensity
+‘abusolute’: Levels are set by stdev = [value]</p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">set_std</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;absolute&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvData.set_unused_mdv_for_comparison">
+<code class="sig-name descname"><span class="pre">set_unused_mdv_for_comparison</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvData.set_unused_mdv_for_comparison" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter of single mass data to be ignored for MDV comparison</p>
+<p>fragments and number: fragment names and its mass data  to be ignored for MDV comparison</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">set_unused_mdv_for_comparison</span><span class="p">(</span><span class="n">fragment</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mfapy.mdv.MdvTimeCourseData">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mfapy.mdv.</span></code><code class="sig-name descname"><span class="pre">MdvTimeCourseData</span></code><a class="headerlink" href="#mfapy.mdv.MdvTimeCourseData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="mfapy.mdv.MdvTimeCourseData.add_gaussian_noise">
+<code class="sig-name descname"><span class="pre">add_gaussian_noise</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stdev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'absolute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'on'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvTimeCourseData.add_gaussian_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add gausian noise to MdvTimeCourseData</p>
+<p>ratio: Intensity of noise;
+iteration: Number of sampleing
+method:</p>
+<blockquote>
+<div><p>relative: intentsity = (randn() * stdev + 1) * original_intensity
+absolute: intentsity = randn() * stdev) + original_intensity</p>
+</div></blockquote>
+<dl class="simple">
+<dt>normalize</dt><dd><p>on: sum of fragment intensity is set to 1.0</p>
+</dd>
+</dl>
+<p>boolean: True/False</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">add_gaussian_noise</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvTimeCourseData.add_time_point">
+<code class="sig-name descname"><span class="pre">add_time_point</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdv_instance</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvTimeCourseData.add_time_point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvTimeCourseData.generate_observed_mdv">
+<code class="sig-name descname"><span class="pre">generate_observed_mdv</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvTimeCourseData.generate_observed_mdv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator of MDV related inforamtion in list format.
+This function is used in model.set_experiment()</p>
+<p>id_array: List of ids
+ratio_array: List of ratio data
+std_array:List of std data
+use_array: List of use data
+observed_fragments: List of observed fragment
+data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">id_array</span><span class="p">,</span> <span class="n">ratio_array</span><span class="p">,</span> <span class="n">std_array</span><span class="p">,</span> <span class="n">use_array</span><span class="p">,</span> <span class="n">observed_fragments</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">generate_observed_mdv</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvTimeCourseData.get_data">
+<code class="sig-name descname"><span class="pre">get_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvTimeCourseData.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter of single MDV data</p>
+<p>fragment: name of target_fragment
+number: Number of isotope</p>
+<p>ratio: Relative abundance of mass spectra data
+std: Standard deviation of measured MDV data
+use: Data to be used for MDV comparison. ‘use’ or ‘no’</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ratio</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">use</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;Leu85&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvTimeCourseData.get_number_of_measurement">
+<code class="sig-name descname"><span class="pre">get_number_of_measurement</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvTimeCourseData.get_number_of_measurement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter of number of measurement of the MDV data set.</p>
+<p>number_of_measurement : Number of measurement</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">number_of_measurement</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">get_number_of_measurement</span><span class="p">()</span>
+</pre></div>
+</div>
+<p># Revised 180527</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvTimeCourseData.get_timecourse_data">
+<code class="sig-name descname"><span class="pre">get_timecourse_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvTimeCourseData.get_timecourse_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter of time course MDV data</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tc</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">get_timecourse_data</span><span class="p">(</span><span class="s1">&#39;Leu85&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>fragment: name of target_fragment
+number: Number of isotope</p>
+<p>tc: Array of time course of Mass isotopomer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvTimeCourseData.get_timepoints">
+<code class="sig-name descname"><span class="pre">get_timepoints</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvTimeCourseData.get_timepoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter of Time points</p>
+<p>timepoints: list of time points
+Examples
+——–
+&gt;&gt;&gt; timepoints = mdv.get_timepoints()
+&gt;&gt;&gt; timepoints
+&gt;&gt;&gt; [0., 1., 5,]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvTimeCourseData.has_data">
+<code class="sig-name descname"><span class="pre">has_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvTimeCourseData.has_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checker whether the MdvData instance has data of [number] th isotope of [fragment] mass spectra.</p>
+<p>fragment: name of target_fragment
+number: number of isotope</p>
+<p>Boolean: TrueFalse</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">mdv</span><span class="o">.</span><span class="n">has_data</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Leu85&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="n">brabra</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvTimeCourseData.save">
+<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvTimeCourseData.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save MDV data to the text/csv file</p>
+<p>mdv : a instance of mfapy.mdv for templete
+filename : filename of MDV data with the format.</p>
+<p>Name    Spectrum        Select  MDV     Std
+Ala57   m0      1       0.566990778     0.000774686
+Ala57   m1      1       0.148623963     0.000774686
+Ala57   m2      1       0.039467636     0.000774686
+Ala57   m3      1       0.244917622     0.000774686</p>
+<dl class="simple">
+<dt>format:</dt><dd><p>‘csv’ : CSV.
+‘text’ : tab-deliminated text.</p>
+</dd>
+</dl>
+<p>Boolean: True/False</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="s1">&#39;filename&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvTimeCourseData.set_data">
+<code class="sig-name descname"><span class="pre">set_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvTimeCourseData.set_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter of single MDV data</p>
+<p>time
+fragment: name of target_fragment
+number: Number of isotope
+ratio: Relative abundance of mass spectra data
+std: Standard deviation of measured MDV data
+use: Data to be used for MDV comparison. ‘use’ or ‘no’</p>
+<p>Boolean: TrueFalse</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Leu85&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.763</span><span class="p">,</span> <span class="mf">0.0054</span><span class="p">,</span> <span class="s1">&#39;use&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvTimeCourseData.set_mdvs_for_comparison">
+<code class="sig-name descname"><span class="pre">set_mdvs_for_comparison</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvTimeCourseData.set_mdvs_for_comparison" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setters of multiple data to be used for MDV comparison</p>
+<p>threshold_ratios: Mass spectral signals with normalized intensities above threshold_ratios are used to be used for MDV comparison
+threshold_std: Threshold for std data</p>
+<p>boolean: True/False</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">set_mdvs_for_comparison</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvTimeCourseData.set_observed_fragments">
+<code class="sig-name descname"><span class="pre">set_observed_fragments</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragments</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvTimeCourseData.set_observed_fragments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter of observed fragment. When new MdvData instance is generated ‘observed_fragment’ == ‘target_fragment’.</p>
+<p>fragments: List of fragment names to be used for MDV comparison</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">set_observed_fragments</span><span class="p">([</span><span class="s1">&#39;Phe_85&#39;</span><span class="p">,</span> <span class="s1">&#39;Ala_57&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.mdv.MdvTimeCourseData.set_std">
+<code class="sig-name descname"><span class="pre">set_std</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'absolute'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.MdvTimeCourseData.set_std" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set standard deviation levels from mass sepctral intensity</p>
+<dl class="simple">
+<dt>method: Method to calculate stdev levels:</dt><dd><p>‘relative’ (detault): Levels are set by stdev = [value] * signal intensity
+‘abusolute’: Levels are set by stdev = [value]</p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span><span class="o">.</span><span class="n">set_std</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;absolute&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.mdv.binomial">
+<code class="sig-prename descclassname"><span class="pre">mfapy.mdv.</span></code><code class="sig-name descname"><span class="pre">binomial</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.binomial" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.mdv.count_atom_number">
+<code class="sig-prename descclassname"><span class="pre">mfapy.mdv.</span></code><code class="sig-name descname"><span class="pre">count_atom_number</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">formula</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.count_atom_number" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.mdv.transition_matrix">
+<code class="sig-prename descclassname"><span class="pre">mfapy.mdv.</span></code><code class="sig-name descname"><span class="pre">transition_matrix</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">formula</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.mdv.transition_matrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-mfapy.metabolicmodel">
+<span id="mfapy-metabolicmodel-module"></span><h2>mfapy.metabolicmodel module<a class="headerlink" href="#module-mfapy.metabolicmodel" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="mfapy.metabolicmodel.MetabolicModel">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mfapy.metabolicmodel.</span></code><code class="sig-name descname"><span class="pre">MetabolicModel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reversible</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metabolites</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_fragments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class of Metabolic model</p>
+<p>Instances of this class have fuctions to analyze mass spectrometry based 13C MFA data.
+MetabolicModel instances are able to generate other classes including MDVData and CarbonSouece</p>
+<p>reactions : Dictionary describing metabolite reactions
+reversible : Dictionary for defining reversible reactions
+metabolites : Dictionary including metabolite information
+target_fragments : Dictionary of target_fragments</p>
+<p>model : instance of metabolic model</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">reactions</span><span class="p">,</span> <span class="n">reversible</span><span class="p">,</span> <span class="n">metabolites</span><span class="p">,</span> <span class="n">target_fragments</span> <span class="o">=</span> <span class="n">mfapy</span><span class="o">.</span><span class="n">mfapyio</span><span class="o">.</span><span class="n">load_metabolic_model</span><span class="p">(</span><span class="s2">&quot;example_1_toymodel_model.txt&quot;</span><span class="p">,</span> <span class="nb">format</span> <span class="o">=</span> <span class="s2">&quot;text&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">mfapy</span><span class="o">.</span><span class="n">metabolicmodel</span><span class="o">.</span><span class="n">MetabolicModel</span><span class="p">(</span><span class="n">reactions</span><span class="p">,</span> <span class="n">reversible</span><span class="p">,</span> <span class="n">metabolites</span><span class="p">,</span> <span class="n">target_fragments</span><span class="p">)</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>self.reactions = reactions
+self.metabolites = metabolites
+self.reversible = reversible
+self.target_fragments = target_fragments
+self.symmetry = {}
+self.carbon_source = {}
+self.experiments = {}</p>
+</div></blockquote>
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.add_perturbation">
+<code class="sig-name descname"><span class="pre">add_perturbation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flux</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.add_perturbation" title="Permalink to this definition">¶</a></dt>
+<dd><p>New state dict is generarate from a given state dict by an addition of small random perturbation to an independent flux</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">check</span><span class="p">,</span> <span class="n">perturbed_state</span><span class="p">,</span> <span class="n">flux_vector</span><span class="p">,</span> <span class="n">reaction_name_list</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">add_perturbation</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>state_dict: Dictionary of metabolic state data.</p>
+<p>check, boolean:
+perturbed_state, dict: Dictionary of metabolic state data.
+flux_vector, list: List of metabolic flux, metabolite concentration data.
+reaction_name_list, list: List of ids</p>
+<p>21.1.2021 Newly created by F. Matsuda</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.calc_idv">
+<code class="sig-name descname"><span class="pre">calc_idv</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flux</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_sources</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.calc_idv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calc IDV from given flux and carbon_sources.
+Examples
+——–
+&gt;&gt;&gt; idv = model.calc_idv(flux, carbon_sources)</p>
+<p>flux : dic of metabolic state of initial state
+carbon_sources: Instance of carbon source object</p>
+<p>idv : array of idv</p>
+<p>set_experiment()
+generate_mdv()</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.calc_rss">
+<code class="sig-name descname"><span class="pre">calc_rss</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fluxes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'flux'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.calc_rss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter to obtain a residual sum of square (RSS) between estimated MDVs of ‘flux’ and measured MDVs in ‘experiment(s)’</p>
+<p>flux: Dictionary of metabolic flux distribution or independent flux vector</p>
+<dl class="simple">
+<dt>mode:</dt><dd><p>“independent”:Calculation of RSS from independent flux vector
+“flux”:Calculation of RSS from state dictionary</p>
+</dd>
+</dl>
+<p>rss : Residual sum of square (RSS)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rss</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">calc_rss</span><span class="p">(</span><span class="n">flux_opt</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">rss</span>
+<span class="go">7564.123</span>
+</pre></div>
+</div>
+<p>140912 Call of calmdv funcion is removed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.check_independents">
+<code class="sig-name descname"><span class="pre">check_independents</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">independents</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.check_independents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checker method to test whether a given vector of independent fluxes is able to produce feasible status (flux) vector within lower and upper boundaries.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">check</span><span class="p">,</span> <span class="n">flux_vector</span><span class="p">,</span> <span class="n">reaction_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_independents</span><span class="p">(</span><span class="n">independents</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>independents: list of independent fluxes generated by self.get_independents</p>
+<p>check, Boolean, True: A given vector of independent fluxes is able to produce feasible status (flux)  vector within lower and upper boundaries.
+flux_vector, list: List of metabolic flux, metabolite concentration data.
+reaction_name, list: List of ids</p>
+<p>20.1.2021 Newly constructed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.clear_experiment">
+<code class="sig-name descname"><span class="pre">clear_experiment</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.clear_experiment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear all ‘experiment set(s)’ in the metabolic model.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">clear_experiment</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>model.set_experiment()</p>
+<p>Newly developed at 4/9/2014</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.fitting_flux">
+<code class="sig-name descname"><span class="pre">fitting_flux</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SLSQP'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'result'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.fitting_flux" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for fitting a metabolic model to multiple experiments</p>
+<dl class="simple">
+<dt>method:</dt><dd><p>‘SLSQP’: A sequential least squares programming algorithm implemented by scipy
+“LN_PRAXIS”: Gradient-free local optimization via the “principal-axis method” implemented by nlopt
+“GN_CRS2_LM”: Controlled random searchimplemented for global optimizatoin by nlopt
+‘deep’: Repeated execution of SLSQP &amp; LN_PRAXIS</p>
+</dd>
+</dl>
+<p>flux: Initial flux distribution generated by self.generate_initial_states().
+When flux is a dict of one state, single fitting trial is exected.
+When flux is a array of multiple dists of states, muptiple fitting trial is exected by using the parallel processing.</p>
+<dl class="simple">
+<dt>output: Output method. (default, output = ‘result’)</dt><dd><p>‘result’: Fitting problem is solved inside of the function.
+‘for_parallel’: Fitting problems is NOT solved inside of the function. In this mode, a tupple of
+parameters for fit_r_mdv_pyopt() functions are generated for parallel processinng.</p>
+</dd>
+<dt>Parameters in self.configuration:</dt><dd><p>iteration_max: Maximal number of interation in the optimizers. Example: self.set_configuration(iteration_max = 1000)
+number_of_repeat: Number of repeated execution by ‘deep’ functions. model.set_configuration(number_of_repeat = 2)</p>
+</dd>
+</dl>
+<p>#
+# Single fitting trial
+#
+&gt;&gt;&gt; state, flux_initial = model.generate_initial_states(10, 1)
+&gt;&gt;&gt; state, RSS_bestfit, flux_opt = model.fitting_flux(method = ‘deep’, flux = flux_initial)
+&gt;&gt;&gt; results= [(“deep”, flux_opt)]
+&gt;&gt;&gt; model.show_results(results, pool_size = “off”)
+#
+# Multipe fitting trials by using parallel python
+#
+&gt;&gt;&gt; state, flux_initial = model.generate_initial_states(50, 4)
+&gt;&gt;&gt; state, RSS_bestfit, flux_opt_slsqp = model.fitting_flux(method = “SLSQP”, flux = flux_initial)
+&gt;&gt;&gt; results= [(“deep”, flux_opt[0])]
+&gt;&gt;&gt; model.show_results(results, pool_size = “off”)
+#
+# Generating parameters for parallel processing
+#
+&gt;&gt;&gt; parameters = model.fitting_flux(method = “SLSQP”, flux = flux_initial, output = “for_parallel”)</p>
+<p>generate_initial_states()</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.generate_calmdv">
+<code class="sig-name descname"><span class="pre">generate_calmdv</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.generate_calmdv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructer of the python function to calculate MDV of target fragments from a metabolic flux distribution.
+This function is performed in reconstruct()</p>
+<p>mode: optimize EMU network reduction (experimental)</p>
+<p>string, cython_string: Texts of python code describing calmdv and diffmdv functions for python 3 and Cython (Experimental)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calmdv_text</span><span class="p">,</span> <span class="n">ccalmdv_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_calmdv</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.generate_carbon_source_template">
+<code class="sig-name descname"><span class="pre">generate_carbon_source_template</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.generate_carbon_source_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator of a templete of CarbonSourse instance. Labeling information of carbon sources will be added to the instance.
+Carbon source compounds are derived from the metabolic model (//Metabolites)</p>
+<p>nothing</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">carbon_source_idv</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate_carbon_source_templete</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>CarbonSource.py</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.generate_carbon_source_templete">
+<code class="sig-name descname"><span class="pre">generate_carbon_source_templete</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.generate_carbon_source_templete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.generate_ci_template">
+<code class="sig-name descname"><span class="pre">generate_ci_template</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">targets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.generate_ci_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator of a blank dictionary to keep confidence interval search results.
+A dictionaty generated by the method is used in self.search_ci</p>
+<p>targets:
+‘normal’: Free reversible and inreversible reactions
+‘independent’: Independent reactions
+‘all’: all reactions
+‘without_reversible_reactions’: inreversible reactions</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ci</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate_ci_templete</span><span class="p">(</span><span class="n">targets</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;reaction&quot;</span><span class="p">,</span><span class="s2">&quot;r29_g6pdh&quot;</span><span class="p">),(</span><span class="s2">&quot;reaction&quot;</span><span class="p">,</span><span class="s2">&quot;r27_pc&quot;</span><span class="p">),(</span><span class="s2">&quot;reaction&quot;</span><span class="p">,</span><span class="s2">&quot;r28_mae&quot;</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ci</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate_ci_templete</span><span class="p">(</span><span class="n">targets</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>search_ci.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.generate_ci_templete">
+<code class="sig-name descname"><span class="pre">generate_ci_templete</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">targets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.generate_ci_templete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.generate_initial_states">
+<code class="sig-name descname"><span class="pre">generate_initial_states</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.generate_initial_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial metabolic states are randomly generated for “iterations” times from which
+better states with lower RSS (number_of_initial_states) were selected.
+The metabolic flux distribution is a initial flux data for model fitting.</p>
+<dl class="simple">
+<dt>method:</dt><dd><p>‘normal’ : Sequencial generation of flux distributions.
+‘parallel’ : Parallel generation of flux distributions using parallel processing.</p>
+</dd>
+<dt>iterations:</dt><dd><p>Number of trials to generate initial metabolic state. A trial sometimes failed due to a bad optimization state.</p>
+</dd>
+<dt>initial_states:</dt><dd><p>Number of initial metabolic state(s) to be generated.</p>
+</dd>
+<dt>template:</dt><dd><p>Templete metabolic state(s) dict. When template is available, initial metabolic state(s) similiar to
+the templete metabolic state are generated. This function is used in the grid search fucntion.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>flux (list or dict) :</dt><dd><p>[number_of_initial_states &gt; 1 ] List of dictionaris of multiple metabolic state data.
+[number_of_initial_states == 1 ] Dictionaly of single metabolic state data.</p>
+</dd>
+</dl>
+<p>state : State of generation results</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">state</span><span class="p">,</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate_initial_states</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">state</span><span class="p">,</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate_initial_states</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">template</span> <span class="o">=</span> <span class="n">flux</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Fitting the metabolic model to multiple experiments</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.generate_mdv">
+<code class="sig-name descname"><span class="pre">generate_mdv</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flux</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_sources</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timepoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startidv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.generate_mdv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator of a MdvData instance including MDV data generated from given flux and carbon sources.</p>
+<p>flux: Dictionary of metabolic flux distribution
+carbon_sources: Instance of CarbonSource
+timepoint: For INST-13C MFA. An array of time points of measurement in MDV
+startidv: array of idv as starting isotope distribution for INST</p>
+<p>mdv : MdvData instance</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate_mdv</span><span class="p">(</span><span class="n">flux</span><span class="p">,</span> <span class="n">mdv_carbon_sources</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>generate_carbonsource_MDV</p>
+<p>140912 calc_MDV_from_flux instead of calmdv is used.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.generate_state">
+<code class="sig-name descname"><span class="pre">generate_state</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.generate_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator of a random metabolic flux distribution.</p>
+<p>template: Dictionary of metabolic state. When template is available, metabolic state most similar to the template is generated. The function is used in the grid search.</p>
+<p>flux : Dictionary of metabolic flux data.
+independent_flux : List of independent flux</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">flux</span><span class="p">,</span> <span class="n">independent_flux</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate_intial_flux_distribution</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.generate_state_dict">
+<code class="sig-name descname"><span class="pre">generate_state_dict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmp_r</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.generate_state_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator of a state dict from a given vector.</p>
+<p>tmp_r: tmp_r = numpy.dot(matrixinv, Rm_intial)</p>
+<p>state_dict : Dictionary of metabolic state data.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">state_dict</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate_state_dict</span><span class="p">(</span><span class="n">tmp_r</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.get_constrain">
+<code class="sig-name descname"><span class="pre">get_constrain</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.get_constrain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter of constrains of metabolic reaction.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">stdev</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_constrain</span><span class="p">(</span><span class="s2">&quot;reaction&quot;</span><span class="p">,</span><span class="s2">&quot;pgi&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>group :group of parameters (“reaction”, “reversible”, “metabolite”) (str)
+id : id in model definition (str)</p>
+<p>type: type of constrain “fitting”, “fixed”, “free”, “pseudo”
+value : Level of metabolic flux (float)
+stdev : Standard deviation of metabolic flux level used for ‘fitting’ type reactions.</p>
+<p>set_constrain</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.get_degree_of_freedom">
+<code class="sig-name descname"><span class="pre">get_degree_of_freedom</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.get_degree_of_freedom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter of degree of freedom of the model</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">degree_of_freedom</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_degree_of_freedom</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>degree_of_freedom: degree of freedom.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.get_independents">
+<code class="sig-name descname"><span class="pre">get_independents</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flux</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.get_independents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter of independent status (flux) vector, its lower and upper boundaries and a list of independent flux ids of given state (flux) dict.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">independent_vector</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">,</span> <span class="n">independent_list</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_independents</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>state_dict: Dictionary of metabolic state data.</p>
+<p>independent_vector: list of independent flux values
+lb: list of independent flux values
+ub: list of independent flux values
+independent_list: list of independent fluxes, metabolites, and reversible reactions.</p>
+<p>20.1.2021 Newly created by F. Matsuda</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.get_number_of_independent_measurements">
+<code class="sig-name descname"><span class="pre">get_number_of_independent_measurements</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.get_number_of_independent_measurements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter of number of independent measurements of the model</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">number_of_independent_measurements</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_number_of_independent_measurements</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>number_of_independent_measurements: number of independent measurements.</p>
+<p>29.9.2014 Modified to consider “fitting” flux information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.get_thres_confidence_interval">
+<code class="sig-name descname"><span class="pre">get_thres_confidence_interval</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flux</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'F_dist'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.get_thres_confidence_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter to obtain a threshold level of RSS for searching confidence interval</p>
+<p>flux: Dictionary of best fitted flux distribution.
+alpha: confidence level. For 95% confience interval, please set alpha = 0.05
+dist:</p>
+<blockquote>
+<div><p>‘F-dist’ (default): Using F-distribution
+‘chai-dist’:Using Chai-square distribution</p>
+</div></blockquote>
+<p>thres: a threshold level of RSS for searching confidence interval
+number_of_measurements: number of measurements
+degree_of_freedom: degree of freecom”</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">thres</span><span class="p">,</span> <span class="n">number_of_reactions</span><span class="p">,</span> <span class="n">degree_of_freedom</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_thres_confidence_interval</span><span class="p">(</span><span class="n">RSS</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">dist</span> <span class="o">=</span> <span class="s1">&#39;F_dist&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.goodness_of_fit">
+<code class="sig-name descname"><span class="pre">goodness_of_fit</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flux</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.goodness_of_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter to calculate goodness-of-fit of a given flux distribution</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">-</span><span class="n">value</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">goodness_of_fit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>flux: Dictionary of metabolic flux distribution
+alpha: Confidence level. Default is 0.05.</p>
+<p>pvalue: p-value determined by chi-squere test.
+rss_thres: Threshold RSS at the alpha levels</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvalue</span><span class="p">,</span> <span class="n">rss_thres</span><span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">goodness_of_fit</span><span class="p">(</span><span class="n">flux_opt_fitted</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.load_mdv_data">
+<code class="sig-name descname"><span class="pre">load_mdv_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.load_mdv_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load MDV data from the text file. This function generate new instance of mfapy.mdv class from a instance of mfapy.model.</p>
+<p>model : a instance of mfapy.model for templete
+filename : filename of MDV data with following format.
+Name    Spectrum        Select  MDV     Std
+Ala57   m0      1       0.566990778     0.000774686
+Ala57   m1      1       0.148623963     0.000774686
+Ala57   m2      1       0.039467636     0.000774686
+Ala57   m3      1       0.244917622     0.000774686</p>
+<p>format : “text” (defalut) or “csv”
+output : “normal” (defalut) or “debug”
+Reterns
+———-
+Boolean: True/False</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdv</span> <span class="o">=</span> <span class="n">load_mdv_data</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.load_states">
+<code class="sig-name descname"><span class="pre">load_states</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.load_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a text/csv file with ‘reacton type’ information to generate new states dict.</p>
+<p>filename : filename of flux data with following format.</p>
+<p>type    Id      type    flux_calue      flux_std        lb      ub
+reaction        v1      fixed   100     1       0.001   100
+reaction        v2      free    100     1       0.001   100
+reaction        v3      free    50      1       0.001   100
+metabolites     AcCoA   fixed   1       1       0.001   100
+metabolites     OAC     fixed   1       1       0.001   100
+metabolites     OACs    fixed   1       1       0.001   100
+metabolites     OACx    fixed   1       1       0.001   100
+reversible      FUM     free    1       1       0.001   100</p>
+<dl class="simple">
+<dt>format:</dt><dd><p>‘csv’ : CSV.
+‘text’ : tab-deliminated text.</p>
+</dd>
+</dl>
+<p>Dict: Dictionary of states dict.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">states</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">load_states</span><span class="p">(</span><span class="s2">&quot;test.csv&quot;</span><span class="p">,</span> <span class="nb">format</span> <span class="o">=</span> <span class="s1">&#39;csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.modelcheck">
+<code class="sig-name descname"><span class="pre">modelcheck</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.modelcheck" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to check medel definition data.</p>
+<p>nothing</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">datacheck</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>reconstruct</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.posterior_distribution">
+<code class="sig-name descname"><span class="pre">posterior_distribution</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.posterior_distribution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.reconstruct">
+<code class="sig-name descname"><span class="pre">reconstruct</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'no'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.reconstruct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to reconstruct the metabolic model to generate new stoichiometry matrix and a function to
+calculate MDV data.</p>
+<p>mode: experimental</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>calmdv_text : A dictionary has two keys. “calmdv” and “diffmdv” are instance of functions for
+13C-MFA and INST-13C-MFA to generate MDV from a given metabolic flux, respectively.</p>
+<p>update</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.save_states">
+<code class="sig-name descname"><span class="pre">save_states</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.save_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save state dict to a text/csv file with ‘type’ information.</p>
+<p>filename : filename of MDV data with the format.
+dict : a dictinary of flux
+format:</p>
+<blockquote>
+<div><p>‘csv’ : CSV.
+‘text’ : tab-deliminated text.</p>
+</div></blockquote>
+<p>Boolean: True/False</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">save_states</span><span class="p">(</span><span class="n">flux_dict</span><span class="p">,</span> <span class="s2">&quot;test.csv&quot;</span><span class="p">,</span> <span class="nb">format</span> <span class="o">=</span> <span class="s1">&#39;csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.search_ci">
+<code class="sig-name descname"><span class="pre">search_ci</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ci</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'F_dist'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputthres</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.search_ci" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to estimate confidence intervals using information in a ‘ci’ dictionary.</p>
+<p>ci: dictionary for storeing confidence interval results. ci is generated by self.generate_ci_templete()
+flux: Distribution of best fitted flux
+method:</p>
+<blockquote>
+<div><p>‘grid’: Grid search method</p>
+</div></blockquote>
+<p>alpha: (default 0.05) Confidence interval level. 0.05 means a 95% confidence interval level
+dist:</p>
+<blockquote>
+<div><p>‘F-dist’ (default): Using F-distribution
+‘chai-dist’:Using Chai-square distribution</p>
+</div></blockquote>
+<dl class="simple">
+<dt>outputthres:</dt><dd><p>The grid search results larger than outputthres * threshold rss were removed from output</p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ci</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate_ci_templete</span><span class="p">(</span><span class="n">targets</span> <span class="o">=</span> <span class="s1">&#39;independent&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ci</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">search_confidence_interval_parallel</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span> <span class="n">flux</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;grid&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>ci:dictionary of confidence interval results.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.set_boundary">
+<code class="sig-name descname"><span class="pre">set_boundary</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.set_boundary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter of a lower and upper boundaries of metablic states</p>
+<p>group : metabolite, reaction, reversible (str)
+id :  id of state parameter (str)
+lb : lower boundary (float)
+ub : upper boundary (float)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">set_boundary</span><span class="p">(</span><span class="s2">&quot;reaction&quot;</span><span class="p">,</span> <span class="s1">&#39;HEX1&#39;</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>set_constrain</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.set_configuration">
+<code class="sig-name descname"><span class="pre">set_configuration</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.set_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter of a configuration of model parameters.</p>
+<dl class="simple">
+<dt>‘callbacklevel’: default = 0,</dt><dd><p>‘callbacklevel’ determines a frequency level of callbacks from metabolic model.
+# 0: No call back
+# 1: Error report
+# 2: Simple pregress report for grid search
+# 3: Detailed pregress report for grid search
+# 4: Simple pregress report for flux fitting
+# 5: Detailed pregress report for flux fitting
+# 7: Detailed report for model constrution
+# 8: Debug</p>
+</dd>
+<dt>‘iteration_max’: default = 1000,</dt><dd><p>Maximal number of interations (steps) in each fitting task.</p>
+</dd>
+</dl>
+<p>‘default_reaction_lb’: default = 0.001,
+‘default_reaction_ub’: default = 5000.0,
+‘default_metabolite_lb’: default = 0.001,
+‘default_metabolite_ub’: default = 500.0,
+‘default_reversible_lb’: default = -300,
+‘default_reversible_ub’: default = 300.0,</p>
+<blockquote>
+<div><p>Default lower and upper boundaries used only when there is no data in the model definition file.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>‘grid_search_iterations’: default = 1,</dt><dd><p>Number of trials for model fitting at each point in grid search.</p>
+</dd>
+<dt>‘initial_search_repeats_in_grid_search’: default = 50,</dt><dd><p>Number of initial metabolic flux disributions generated for each trial in grid search.
+Best initial metabolic flux disribution with smallest RSS is employed.</p>
+</dd>
+<dt>‘initial_search_iteration_max’: default = 1000,</dt><dd><p>Maximal number of interations (steps) allowed in each task to find feasible initial metabolic flux distribution.</p>
+</dd>
+<dt>‘add_naturalisotope_in_calmdv’:default = “no”</dt><dd><p>For INST-13C MFA. Natural isotope is added to MDVs of all intermediate at time = 0.</p>
+</dd>
+<dt>‘number_of_repeat’:default = 3,</dt><dd><p>For “deep” function of self.fitting flux. “Global” =&gt; “Local” optimization methods are repeated for n times.</p>
+</dd>
+<dt>‘ncpus’:default = 3,</dt><dd><p>Number of CPUs used in parallel processing</p>
+</dd>
+<dt>‘ppservers’: default = (“”,),</dt><dd><p>Obsolete: For parallel processing using pp.</p>
+</dd>
+<dt>‘odesolver’: default = “scipy” # or “sundials”</dt><dd><p>Only “scipy” is avaliable due to memory leak problem of sundials</p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">set_configuration</span><span class="p">(</span><span class="n">callbacklevel</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">set_configuration</span><span class="p">(</span><span class="n">iteration_max</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.set_constrain">
+<code class="sig-name descname"><span class="pre">set_constrain</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.set_constrain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter of a metabolic constrains.
+Please perform update() after model modification.</p>
+<p>group :group of parameters (“reaction”, “reversible”, “metabolite”) (str)
+id : id in model definition (str)
+type: type of constrain “fitting”, “fixed”, “free”, “pseudo” (str)</p>
+<blockquote>
+<div><p>“fitting” : For the calclation of RSS by using “value” and stdev
+“fixed”   : Fixed to “value”. Not used for the calculation of RSS.
+“free”    : Free between lower and upper boundary. Not used for the calculation of RSS.
+“pseudo”  : Pseudo reaction is a special “free” reaction to consider G-index.
+The reaction is ignored in a stoichiometry matrix. However, the reaction is considered
+in the MDV calculation.</p>
+</div></blockquote>
+<p>value : Level of metabolic flux (float)
+stdev : Standard deviation of metabolic flux level used for ‘fitting’ type reactions. (float)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">set_fixed_reaction</span><span class="p">(</span><span class="s2">&quot;reaction&quot;</span><span class="p">,</span> <span class="s1">&#39;pgi&#39;</span><span class="p">,</span> <span class="s2">&quot;fixed&quot;</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>get_constrain</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.set_constraints_from_state_dict">
+<code class="sig-name descname"><span class="pre">set_constraints_from_state_dict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.set_constraints_from_state_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reaction types, value, stdev, lb, and ub are set from the state dict data at once</p>
+<p>flux_dict: Dictionary of flux. Data in ‘value’, ‘stdev’, ‘lb’, ‘ub’ and ‘type’ fields are used.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">set_constraints_from_state_dict</span><span class="p">(</span><span class="n">flux_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.set_experiment">
+<code class="sig-name descname"><span class="pre">set_experiment</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_sources</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startidv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.set_experiment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter of an ‘experiment’ to metabolic model. Here an ‘experiment’ indicated
+a set of a carbon source labeling pattern and a measured MDV data.
+Parallel labeling experiment can be performed by setting multiple sets of ‘experiment’.</p>
+<p>name : name of the experiment (unique)
+mdv : MDVdata instance including measured MDV data of target fragments.
+carbon_sources: Instance of carbon source object
+startidv: array of idv as starting isotope distribution for INST</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">set_experiment</span><span class="p">(</span><span class="s1">&#39;ex1&#39;</span><span class="p">,</span> <span class="n">mdv1</span><span class="p">,</span> <span class="n">cs1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">set_experiment</span><span class="p">(</span><span class="s1">&#39;ex2&#39;</span><span class="p">,</span> <span class="n">mdv2</span><span class="p">,</span> <span class="n">cs2</span><span class="p">,</span> <span class="n">startidv</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.show_flux_balance">
+<code class="sig-name descname"><span class="pre">show_flux_balance</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metabolite</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'csv'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.show_flux_balance" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of metabolic flux levels of reactions related to given metabolite.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">show_metabolite_balance</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="s2">&quot;Fum&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">show_metabolite_balance</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="s2">&quot;Fum&quot;</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;metabolite_balance.csv&quot;</span><span class="p">,</span> <span class="nb">format</span> <span class="o">=</span> <span class="s2">&quot;csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>input: Tuple of (“name”, dic of metabolic statet) [(‘name1’, state1),(‘name2’, state2),(‘name3’, state3),]
+metabolite: ID of metabolite of interest
+filename: Results are saved when file name is not “”/
+format: “csv” or “text”</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.show_results">
+<code class="sig-name descname"><span class="pre">show_results</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'on'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'on'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'on'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'off'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkrss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'off'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'csv'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.show_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to output metabolic state data.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">show_results</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">flux</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="n">rss</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="n">mdv</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="n">pool_size</span> <span class="o">=</span> <span class="s2">&quot;off&quot;</span><span class="p">,</span>  <span class="n">checkrss</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span><span class="p">)</span><span class="c1"># Output to console</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">show_results</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;show_results.csv&quot;</span><span class="p">,</span> <span class="nb">format</span> <span class="o">=</span> <span class="s2">&quot;csv&quot;</span><span class="p">)</span><span class="c1"># Output to .csv file</span>
+</pre></div>
+</div>
+<p>input: Tuple of (“name”, dic of metabolic statet) [(‘name1’, state1),(‘name2’, state2),(‘name3’, state3),]
+flux: show flux data “on”/”off”
+rss: show rss data “on”/”off”
+mdv: show mdv data “on”/”off”
+pool_size: show metabolite data “on”/”off”
+check rss: show each RSS value “on”/”off”
+filename: Results are saved when file name is not “”/
+format: “csv” or “text”</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.show_results_in_map">
+<code class="sig-name descname"><span class="pre">show_results_in_map</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flux</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapfilename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputfilename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formattext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.1f'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.show_results_in_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to project metabolic state data into metabolic file (.GML).</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">show_results_in_map</span><span class="p">(</span><span class="n">flux_opt1</span><span class="p">,</span> <span class="s2">&quot;Example_2_cancer_map_new.gml&quot;</span><span class="p">,</span> <span class="s2">&quot;Example_2_cancer_map_mapped.gml&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">show_results_in_map</span><span class="p">(</span><span class="n">flux_opt1</span><span class="p">,</span> <span class="s2">&quot;Example_2_cancer_map_new.gml&quot;</span><span class="p">,</span> <span class="s2">&quot;Example_2_cancer_map_mapped.gml&quot;</span><span class="p">,</span> <span class="n">formattext</span> <span class="o">=</span> <span class="s2">&quot;.2f&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>flux: dic of metabolic state
+mapfilename: name of blank GML file
+outputfilename: name of uutput GML file
+format: format string of “format” method of string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mfapy.metabolicmodel.MetabolicModel.update">
+<code class="sig-name descname"><span class="pre">update</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.metabolicmodel.MetabolicModel.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to generate stoichiometry matrix. A metabolic model have to be updated when any types (fixed, free, fitting, pseudo)
+of reactions, metabolites, and reversible reactions are modified.</p>
+<p>nothing</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>reconstruct</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-mfapy.mfapyio">
+<span id="mfapy-mfapyio-module"></span><h2>mfapy.mfapyio module<a class="headerlink" href="#module-mfapy.mfapyio" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="mfapy.mfapyio.load_metabolic_model">
+<code class="sig-prename descclassname"><span class="pre">mfapy.mfapyio.</span></code><code class="sig-name descname"><span class="pre">load_metabolic_model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mfapy/mfapyio.html#load_metabolic_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mfapy.mfapyio.load_metabolic_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to read metabolic model information from a text file with following format.</p>
+<p>CAUTION: Now this function has no error checking.</p>
+<p>filename : metabolic model file
+format : “text” (defalut, tab deliminated) or “csv”
+mode : “normal” (defalut) or “debug” (to show loaded metabolic file data)</p>
+<p>reactions : Dictionary describing metabolite reactions
+reversible : Dictionary for defining reversible reactions
+metabolites : Dictionary including metabolite information
+target_fragments : Dictionary of target_fragments</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">reactions</span><span class="p">,</span> <span class="n">reversible</span><span class="p">,</span> <span class="n">metabolites</span><span class="p">,</span> <span class="n">target_fragments</span> <span class="o">=</span> <span class="n">load_metabolic_model</span><span class="p">(</span><span class="s2">&quot;filename.txt&#39;)</span>
+<span class="go"># The obtaind data (dictionaries) are directly used for generation of new Metabolic Model object</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">MetabolicModel</span><span class="p">(</span><span class="n">reactions</span><span class="p">,</span> <span class="n">reversible</span><span class="p">,</span> <span class="n">metabolites</span><span class="p">,</span> <span class="n">target_fragments</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.mfapyio.load_metabolic_model_fragments">
+<code class="sig-prename descclassname"><span class="pre">mfapy.mfapyio.</span></code><code class="sig-name descname"><span class="pre">load_metabolic_model_fragments</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mfapy/mfapyio.html#load_metabolic_model_fragments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mfapy.mfapyio.load_metabolic_model_fragments" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to Load mass fragment information from a metabolic model file with following format.</p>
+<p>//Target_fragments
+Glue        gcms    Glu_1:2:3:4:5   use     C5H10N2O3
+Gluee       gcms    Glu_1:2:3+Glu_4:5       use     C5H10N2O3</p>
+<p>filename : metabolic model file
+format : “text” (defalut, tab deliminated) or “csv”
+mode : “normal” (defalut) or “debug” (to show loaded metabolic file data)</p>
+<p>target_fragments : Dictionary of target_fragments</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">target_fragments</span> <span class="o">=</span> <span class="n">load_metabolic_model_fragments</span><span class="p">(</span><span class="s1">&#39;filename.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">target_fragments</span>
+<span class="go">{&#39;Thr302&#39;: {&#39;atommap&#39;: &#39;Thr_12&#39;, &#39;use&#39;: &#39;no&#39;, &#39;type&#39;: &#39;gcms&#39;, &#39;order&#39;: 35, &#39;number&#39;: 3}, ...}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.mfapyio.load_metabolic_model_metabolites">
+<code class="sig-prename descclassname"><span class="pre">mfapy.mfapyio.</span></code><code class="sig-name descname"><span class="pre">load_metabolic_model_metabolites</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mfapy/mfapyio.html#load_metabolic_model_metabolites"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mfapy.mfapyio.load_metabolic_model_metabolites" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to load Metabolite information from a file with following format.</p>
+<p>//Metabolites
+CO2ex       1       no      no      excreted        (kegg:C00011)   0.0     300
+AcCoA       2       no      carbonsource    no      (kegg:C00024)   0.0     300
+OAC 4       no      no      no      (kegg:C00036)   0.0     300
+Cit 6       no      no      no      (kegg:C00158)   0.0     300
+AKG 5       no      no      no      (kegg:C00026)   0.0     300
+Suc 4       symmetry        no      no      (kegg:C00042)   0.0     300
+Fum 4       symmetry        no      no      (kegg:C00122)   0.0     300
+Glu 5       no      no      no      (kegg:C00025)   0.0     300
+Asp 4       no      carbonsource    no      (kegg:C00049)   0.0     300</p>
+<p>filename : metabolic model file
+format : “text” (defalut, tab deliminated) or “csv”
+mode : “normal” (defalut) or “debug” (to show loaded metabolic file data)</p>
+<p>metabolites : Dictionary including metabolite information</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">metabolites</span> <span class="o">=</span> <span class="n">load_metabolic_model_metabolites</span><span class="p">(</span><span class="s1">&#39;filename.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">metabolites</span>
+<span class="go">{&#39;GLUEX&#39;: {&#39;excreted&#39;: &#39;no&#39;, &#39;carbonsource&#39;: &#39;carbonsource&#39;, &#39;C_number&#39;: 5, &#39;symmetry&#39;: &#39;no&#39;, &#39;order&#39;: 4}, ...}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.mfapyio.load_metabolic_model_reactions">
+<code class="sig-prename descclassname"><span class="pre">mfapy.mfapyio.</span></code><code class="sig-name descname"><span class="pre">load_metabolic_model_reactions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mfapy/mfapyio.html#load_metabolic_model_reactions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mfapy.mfapyio.load_metabolic_model_reactions" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to load metabolic reaction information from a text or CSV file with following format.</p>
+<p>//Reactions
+v1  AcCoA + OAC –&gt; Cit     AcCoA + OAC –&gt; Cit     AB + CDEF –&gt; FEDBAC    (kegg:R00351)   0.0     300
+v2  Cit –&gt; AKG + CO2ex     Cit –&gt; AKG + CO2ex     ABCDEF –&gt; ABCDE + F    (kegg:R00709)   0.0     300
+v3  AKG –&gt; Glu     AKG –&gt; Glu     ABCDE –&gt; ABCDE         (kegg:R00243)   0.0     300
+v4  AKG –&gt; Suc + CO2ex     AKG –&gt; Suc + CO2ex     ABCDE –&gt; BCDE + A      (kegg:R01197)   0.0     300
+v5  Suc –&gt; Fum     Suc –&gt; Fum     ABCD –&gt; ABCD   (kegg:R02164)   0.0     300
+v6  Fum –&gt; OAC     Fum –&gt; OAC     ABCD –&gt; ABCD   (kegg:R01082)   0.0     300
+v7  OAC –&gt; Fum     OAC –&gt; Fum     ABCD –&gt; ABCD   (kegg:R01082)   0.0     300
+v8  Asp –&gt; OAC     Asp –&gt; OAC     ABCD –&gt; ABCD   (kegg:R00355)   0.0     300</p>
+<p>filename : metabolic model file
+format : “text” (defalut, tab deliminated) or “csv”
+mode : “normal” (defalut) or “debug” (to show loaded metabolic file data)</p>
+<p>reactions : Dictionary describing metabolite reactions</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">reactions</span> <span class="o">=</span> <span class="n">load_metabolic_model_reaction</span><span class="p">(</span><span class="s1">&#39;filename.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">reactions</span>
+<span class="go">{&#39;r4&#39;: {&#39;atommap&#39;: &#39;AB+CDEF--&gt;FEDBAC&#39;, &#39;reaction&#39;: &#39;ACCOA+OAA--&gt;ICI&#39;, &#39;use&#39;: &#39;use&#39;, &#39;lb&#39;: 0.1, &#39;flux_value&#39;: 0.0, &#39;reversible&#39;: &#39;no&#39;, &#39;flux_var&#39;: 1.0, &#39;type&#39;: &#39;free&#39;, &#39;order&#39;: 3, &#39;ub&#39;: 300.0},...}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.mfapyio.load_metabolic_model_reversibles">
+<code class="sig-prename descclassname"><span class="pre">mfapy.mfapyio.</span></code><code class="sig-name descname"><span class="pre">load_metabolic_model_reversibles</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mfapy/mfapyio.html#load_metabolic_model_reversibles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mfapy.mfapyio.load_metabolic_model_reversibles" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to oad definitions of reversible reactions from a metabolic model file with following format.</p>
+<p>//Reversible_reactions
+FUM v6      v7      (kegg:R01082)   0.0     300</p>
+<p>filename : metabolic model file
+format : “text” (defalut, tab deliminated) or “csv”
+mode : “normal” (defalut) or “debug” (to show loaded metabolic file data)</p>
+<p>reversible : Dictionary for defining reversible reactions</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">reversible</span> <span class="o">=</span> <span class="n">load_metabolic_model_reversibles</span><span class="p">(</span><span class="s1">&#39;filename.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">reversible</span>
+<span class="go">{&#39;MDH&#39;: {&#39;flux_value&#39;: 0.0, &#39;reverse&#39;: &#39;r27&#39;, &#39;flux_var&#39;: 1.0, &#39;forward&#39;: &#39;r26&#39;, &#39;type&#39;: &#39;free&#39;, &#39;order&#39;: 6}, ...}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mfapy.optimize">
+<span id="mfapy-optimize-module"></span><h2>mfapy.optimize module<a class="headerlink" href="#module-mfapy.optimize" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="mfapy.optimize.calc_MDV_from_flux">
+<code class="sig-prename descclassname"><span class="pre">mfapy.optimize.</span></code><code class="sig-name descname"><span class="pre">calc_MDV_from_flux</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmp_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_fragments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdv_carbon_sources</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timepoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y0temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.optimize.calc_MDV_from_flux" title="Permalink to this definition">¶</a></dt>
+<dd><p>Low level function to calculate mdv vector and mdv hash from metabolic flux and carbon
+source MDV using calmdv. This funcition is called from mfapy.metabolicmodel.show_results.</p>
+<p>tmp_r: list of metabolix state
+target_fragments: list of targed mdvs for MDV calclation, model.target_fragments.keys()
+mdv_carbon_sources: dict of mdv_carbon_sources in model.experiments[ex_id][‘mdv_carbon_sources’]
+func: Dict of functions for MDV calclation in model.func
+timepoint: For INST mode only. timepoints for MDV comparison in model.experiments[ex_id][‘timepoint’]
+y0temp: Start IDV state for INST mode</p>
+<p>f: Penalty score</p>
+<p>mdv_exp, mdv_hash = optimize.calc_MDV_from_flux(tmp_r, target_fragments_temp, mdv_carbon_sources_temp, self.func)</p>
+<p>mfapy.metabolicmodel.show_results</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.optimize.calc_MDV_residue">
+<code class="sig-prename descclassname"><span class="pre">mfapy.optimize.</span></code><code class="sig-name descname"><span class="pre">calc_MDV_residue</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.optimize.calc_MDV_residue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Low level function for residual sum of square calculation from mfapy.metabolicmodel.MetaboliModel.calc_rss</p>
+<p>x: list. vector of independent flux
+<a href="#id1"><span class="problematic" id="id2">*</span></a>args: list of parameters.
+<a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: dic of parameters.
+Returns
+——-
+f: RSS + Penalty score (When out side of the lower and upper boundaries)</p>
+<p>fit_r_mdv_scipy</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.optimize.calc_MDV_residue_nlopt">
+<code class="sig-prename descclassname"><span class="pre">mfapy.optimize.</span></code><code class="sig-name descname"><span class="pre">calc_MDV_residue_nlopt</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.optimize.calc_MDV_residue_nlopt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Low level function for residual sum of square calculation for model fitting using nlopt.nlopt</p>
+<p>x: list. vector of independent flux
+<a href="#id5"><span class="problematic" id="id6">*</span></a>args: list of parameters.</p>
+<p>f: RSS + Penalty score (When out side of the lower and upper boundaries)</p>
+<p>fit_r_mdv_scipy</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.optimize.calc_MDV_residue_scipy">
+<code class="sig-prename descclassname"><span class="pre">mfapy.optimize.</span></code><code class="sig-name descname"><span class="pre">calc_MDV_residue_scipy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.optimize.calc_MDV_residue_scipy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Low level function for residual sum of square calculation for model fitting using scipy.optimize.minimize</p>
+<p>x: list. vector of independent flux
+<a href="#id7"><span class="problematic" id="id8">*</span></a>args: list of parameters.</p>
+<p>f: RSS + Penalty score (When out side of the lower and upper boundaries)</p>
+<p>fit_r_mdv_scipy</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.optimize.calc_protrude_nlopt">
+<code class="sig-prename descclassname"><span class="pre">mfapy.optimize.</span></code><code class="sig-name descname"><span class="pre">calc_protrude_nlopt</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">independent_flux</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.optimize.calc_protrude_nlopt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Objective function for initializing_Rm_fitting (nlpot)
+Calc penalty score of metabolic state out side of the feasible space.</p>
+<p>independent_flux: vector of independent flux
+grad: not used
+<a href="#id9"><span class="problematic" id="id10">*</span></a>args: list of parameters.</p>
+<p>f: Penalty score</p>
+<p>initializing_Rm_fitting</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.optimize.calc_protrude_scipy">
+<code class="sig-prename descclassname"><span class="pre">mfapy.optimize.</span></code><code class="sig-name descname"><span class="pre">calc_protrude_scipy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">independent_flux</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.optimize.calc_protrude_scipy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Objective function for initializing_Rm_fitting (SLSQP)
+This function calculates penalty score of metabolic state out side of the feasible space.</p>
+<p>independent_flux: vector of independent flux
+<a href="#id11"><span class="problematic" id="id12">*</span></a>args: list of parameters.</p>
+<p>f: Penalty score</p>
+<p>initializing_Rm_fitting</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.optimize.fit_r_mdv_deep">
+<code class="sig-prename descclassname"><span class="pre">mfapy.optimize.</span></code><code class="sig-name descname"><span class="pre">fit_r_mdv_deep</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numbers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrixinv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.optimize.fit_r_mdv_deep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Low level function for model fitting by iterative fittings.
+1st iteration:  GN_CRS2_LM (global optimizer)
+2n th iterations:  SLSQP (local)
+2n + 1 th iterations:  LN_PRAXIS (local)
+This combination is empirically best</p>
+<p>configures: “model.configures” including various configulatoins of the model.
+experiments: “model.experiments” including experiments defined in the model.
+numbers: “model.numbers” including various numbers of the model.
+vectors: “model.vector” including various vectors of the model.
+matrixinv: “model.matrixinv” is a inversed matrix for the flux calculation.
+func: Dict of functions for MDV calclation in model.func
+flux: Dictionary of initial metabolic state.</p>
+<p>state: finishing condition
+kai: Residual sum of square of fitted metabolic state
+opt_flux: list of fitted metabolix state
+Rm_ind_sol: list of fitted independent flux</p>
+<p>state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_deep(configure, self.experiments, numbers, vectors, self.matrixinv, self.func, flux)</p>
+<p>optimize.fit_r_nlopt
+optimize.fit_r_scipy</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.optimize.fit_r_mdv_nlopt">
+<code class="sig-prename descclassname"><span class="pre">mfapy.optimize.</span></code><code class="sig-name descname"><span class="pre">fit_r_mdv_nlopt</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numbers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrixinv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LN_PRAXIS'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.optimize.fit_r_mdv_nlopt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Low level function for model fitting using nlopt.opt</p>
+<p>configures: “model.configures” including various configulatoins of the model.
+experiments: “model.experiments” including experiments defined in the model.
+numbers: “model.numbers” including various numbers of the model.
+vectors: “model.vector” including various vectors of the model.
+matrixinv: “model.matrixinv” is a inversed matrix for the flux calculation.
+func: Dict of functions for MDV calclation in model.func
+flux: Dictionary of initial metabolic state.
+method: “LN_COBYLA”, “LN_BOBYQA”, “LN_NEWUOA”, “LN_PRAXIS”, “LN_SBPLX”, “LN_NELDERMEAD”, “GN_DIRECT_L”, “GN_CRS2_LM”,”GN_ESCH”</p>
+<p>state: finishing condition
+kai: Residual sum of square of fitted metabolic state
+opt_flux: list of fitted metabolix state
+Rm_ind_sol: list of fitted independent flux</p>
+<p>state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_nlopt(configure, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = “LN_PRAXIS”)</p>
+<p>calc_MDV_residue_nlopt</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.optimize.fit_r_mdv_scipy">
+<code class="sig-prename descclassname"><span class="pre">mfapy.optimize.</span></code><code class="sig-name descname"><span class="pre">fit_r_mdv_scipy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numbers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrixinv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SLSQP'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.optimize.fit_r_mdv_scipy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Low level function for model fitting using scipy.optimize.minimize</p>
+<p>configures: “model.configures” including various configulatoins of the model.
+experiments: “model.experiments” including experiments defined in the model.
+numbers: “model.numbers” including various numbers of the model.
+vectors: “model.vector” including various vectors of the model.
+matrixinv: “model.matrixinv” is a inversed matrix for the flux calculation.
+func: Dict of functions for MDV calclation in model.func
+flux: Dictionary of initial metabolic state.
+method: “SLSQP” and “COBYLA” are available</p>
+<p>state: finishing condition
+kai: Residual sum of square of fitted metabolic state
+opt_flux: list of fitted metabolix state
+Rm_ind_sol: list of fitted independent flux</p>
+<p>state, kai, opt_flux, Rm_ind_sol = optimize.fit_r_mdv_scipy(configure, self.experiments, numbers, vectors, self.matrixinv, self.func, flux, method = “SLSQP”)</p>
+<p>calc_MDV_residue_scipy</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mfapy.optimize.initializing_Rm_fitting">
+<code class="sig-prename descclassname"><span class="pre">mfapy.optimize.</span></code><code class="sig-name descname"><span class="pre">initializing_Rm_fitting</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numbers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrixinv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_search_iteration_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fitting'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mfapy.optimize.initializing_Rm_fitting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Funcition to generate randomized initial flux dixtribution using scipy.optimize.minimize SLSQP</p>
+<p>numbers: “model.numbers” including various number related data of the model.
+vectors: “model.vector” including various vector related data of the model.
+matrixinv: “model.matrixinv” is a inversed matrix for flux calculation.
+template: Dictionary of metabolic state. When template is available, metabolic state most similar to the template is generated. The function is used in the grid search.
+initial_search_iteration_max: “configure[“initial_search_iteration_max”]”. Maximal number of interations (steps) allowed in each task to find feasible initial metabolic flux distribution.
+method: “fitting” is only available.</p>
+<p>tmp_r: (list) metabolic state data (tmp_r = numpy.dot(matrixinv, Rm_temp)
+Rm_temp: (list) metabolic state vector
+Rm_ind: (list) independent flux vector
+state: State of finishing condition “Failed”/”Determined”</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tmp_r</span><span class="p">,</span> <span class="n">Rm_temp</span><span class="p">,</span> <span class="n">Rm_ind</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">initializing_Rm_fitting</span><span class="p">(</span><span class="n">numbers</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">matrixinv</span><span class="p">,</span> <span class="n">template</span> <span class="p">,</span><span class="n">initial_search_iteration_max</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>calc_protrude_scipy</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mfapy">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mfapy" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">mfapy</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">mfapy package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-mfapy.carbonsource">mfapy.carbonsource module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-mfapy.mdv">mfapy.mdv module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-mfapy.metabolicmodel">mfapy.metabolicmodel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-mfapy.mfapyio">mfapy.mfapyio module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-mfapy.optimize">mfapy.optimize module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-mfapy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to mfapy’s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/mfapy.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
