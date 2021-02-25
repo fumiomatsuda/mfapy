@@ -1,4 +1,7 @@
-﻿#-------------------------------------------------------------------------------
+﻿#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+#-------------------------------------------------------------------------------
 # Name:        mdv.py
 # Purpose:     MdvData class in mfapy
 #
@@ -8,6 +11,17 @@
 # Copyright:   (c) Fumio_Matsuda 2018
 # Licence:     MIT license
 #-------------------------------------------------------------------------------
+"""mdv.py:MdvData class in mfapy
+
+The module includes::
+
+    MdvData class
+    MdvTimeCourseData class
+
+Todo:
+    * I/O
+
+"""
 
 import numpy as numpy
 from scipy.stats import chi2, f

@@ -1,4 +1,6 @@
-﻿#-------------------------------------------------------------------------------
+﻿#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#-------------------------------------------------------------------------------
 # Name:        metabolicmodel.py
 # Purpose:     MetabolicModel class in mfapy
 #
@@ -8,6 +10,19 @@
 # Copyright:   (c) Fumio_Matsuda 2018
 # Licence:     MIT license
 #-------------------------------------------------------------------------------
+
+"""metabolicmodel.py:MetabolicModel class in mfapy
+
+This is a core module of mfapy.
+
+The module includes::
+
+    MetabolicModel clas
+
+Todo:
+    * Rewriting model construction part.
+
+"""
 
 import numpy as numpy
 import scipy as scipy
@@ -21,36 +36,22 @@ import copy,time
 #from assimulo.solvers import CVode
 
 class MetabolicModel:
-    """
-    Class of Metabolic model
+    """Class of Metabolic model
 
-    Instances of this class have fuctions to analyze mass spectrometry based 13C MFA data.
-    MetabolicModel instances are able to generate other classes including MDVData and CarbonSouece
+    An instances of this class has fuctions to analyze mass spectrometry based 13C MFA data.
 
+    An metabolicModel instance generates other classes including MDVData and CarbonSouece
 
-    Parameters
-    ----------
-    reactions : Dictionary describing metabolite reactions
-    reversible : Dictionary for defining reversible reactions
-    metabolites : Dictionary including metabolite information
-    target_fragments : Dictionary of target_fragments
-
-    Returns
-    -------
-    model : instance of metabolic model
+    Returns:
+        instance: instance of metabolic model
 
 
-    See Also
-    --------
+    Examples:
+        >>> reactions, reversible, metabolites, target_fragments = mfapy.mfapyio.load_metabolic_model("example_1_toymodel_model.txt", format = "text")
+        >>> model = mfapy.metabolicmodel.MetabolicModel(reactions, reversible, metabolites, target_fragments)
 
+    Attributes::
 
-    Examples
-    --------
-    >>> reactions, reversible, metabolites, target_fragments = mfapy.mfapyio.load_metabolic_model("example_1_toymodel_model.txt", format = "text")
-    >>> model = mfapy.metabolicmodel.MetabolicModel(reactions, reversible, metabolites, target_fragments)
-
-    Attributes
-    --------
         self.reactions = reactions
         self.metabolites = metabolites
         self.reversible = reversible
@@ -62,8 +63,18 @@ class MetabolicModel:
     """
 
     def __init__(self, reactions, reversible, metabolites, target_fragments, mode = "normal"):
-        '''
-        Generator of new instances
+        '''Generator of new instance
+        Args:
+            reactions (dict): Dictionary describing metabolite reactions
+
+            reversible (dict): Dictionary for defining reversible reactions
+
+            metabolites (dict): Dictionary including metabolite information
+
+            target_fragments (dict): Dictionary of target_fragments
+
+            mode (str): "normal" or "debug"
+
         '''
         #
         # Keep original information
@@ -199,21 +210,16 @@ class MetabolicModel:
         if mode=="debug":
             self.configuration["callbacklevel"] = 1
     def modelcheck(self):
-        """
-        Method to check medel definition data.
+        """Method to check medel definition data.
 
-        Parameters
-        ----------
-        nothing
+        Args:
+            nothing
 
+        Examples:
+            >>> model.datacheck()
 
-        Examples
-        --------
-        >>> model.datacheck()
-
-        See Also
-        --------
-        reconstruct
+        See Also:
+            reconstruct
         """
         import re
         number_of_errors = 0
@@ -550,22 +556,19 @@ class MetabolicModel:
 
 
     def update(self):
-        """
-        Method to generate stoichiometry matrix. A metabolic model have to be updated when any types (fixed, free, fitting, pseudo)
-        of reactions, metabolites, and reversible reactions are modified.
+        """Method to generate stoichiometry matrix.
 
-        Parameters
-        ----------
-        nothing
+        A metabolic model have to be updated when any types (fixed, free, fitting, pseudo) of reactions, metabolites, and reversible reactions are modified.
+
+        Args:
+            nothing
 
 
-        Examples
-        --------
-        >>> model.update()
+        Examples:
+            >>> model.update()
 
-        See Also
-        --------
-        reconstruct
+        See Also:
+            reconstruct
 
         """
         def rref(M):
@@ -1093,27 +1096,21 @@ class MetabolicModel:
 
 
     def reconstruct(self, mode = "no"):
-        """
-        Method to reconstruct the metabolic model to generate new stoichiometry matrix and a function to
+        """Method to reconstruct the metabolic model to generate new stoichiometry matrix and a function to
         calculate MDV data.
 
-        Parameters
-        ----------
-        mode: experimental
+        Args:
+            mode (str): experimental
+
+        Returns:
+            * calmdv_text (dict) The dictionary has two keys. "calmdv" and "diffmdv" are instance of functions for 13C-MFA and INST-13C-MFA to generate MDV from a given metabolic flux, respectively.
+
+        Examples:
+            >>> model.reconstruct()
 
 
-        Examples
-        --------
-        >>> model.reconstruct()
-
-        Returns
-        ----------
-        calmdv_text : A dictionary has two keys. "calmdv" and "diffmdv" are instance of functions for
-        13C-MFA and INST-13C-MFA to generate MDV from a given metabolic flux, respectively.
-
-        See Also
-        --------
-        update
+        See Also:
+            update
 
         """
 
@@ -1135,21 +1132,18 @@ class MetabolicModel:
         return calmdv_text
 
     def generate_calmdv(self,mode = 'normal'):
-        """
-        Constructer of the python function to calculate MDV of target fragments from a metabolic flux distribution.
+        """Constructer of the python function to calculate MDV of target fragments from a metabolic flux distribution.
+
         This function is performed in reconstruct()
 
-        Parameters
-        ----------
-        mode: optimize EMU network reduction (experimental)
+        Args:
+            mode (str): optimize EMU network reduction (experimental)
 
-        Returns
-        --------
-        string, cython_string: Texts of python code describing calmdv and diffmdv functions for python 3 and Cython (Experimental)
+        Returns:
+            string, cython_string (str) Texts of python code describing calmdv and diffmdv functions for python 3 and Cython (Experimental)
 
-        Examples
-        --------
-        >>> calmdv_text, ccalmdv_text = self.generate_calmdv(mode)
+        Examples:
+            >>> calmdv_text, ccalmdv_text = self.generate_calmdv(mode)
 
         """
         def generate_iterative_list(list):
@@ -2666,53 +2660,54 @@ class MetabolicModel:
         return (string, cython_string)
 
     def set_configuration(self, *args, **kwargs):
-        """
-        Setter of a configuration of model parameters.
+        """Setter of a configuration of model parameters.
 
-        Parameters
-        ----------
+        Args:
+            *args (list): "parameter_name = number"
 
-        'callbacklevel': default = 0,
-            'callbacklevel' determines a frequency level of callbacks from metabolic model.
-            # 0: No call back
-            # 1: Error report
-            # 2: Simple pregress report for grid search
-            # 3: Detailed pregress report for grid search
-            # 4: Simple pregress report for flux fitting
-            # 5: Detailed pregress report for flux fitting
-            # 7: Detailed report for model constrution
-            # 8: Debug
-        'iteration_max': default = 1000,
-            Maximal number of interations (steps) in each fitting task.
-        'default_reaction_lb': default = 0.001,
-        'default_reaction_ub': default = 5000.0,
-        'default_metabolite_lb': default = 0.001,
-        'default_metabolite_ub': default = 500.0,
-        'default_reversible_lb': default = -300,
-        'default_reversible_ub': default = 300.0,
-            Default lower and upper boundaries used only when there is no data in the model definition file.
-        'grid_search_iterations': default = 1,
-            Number of trials for model fitting at each point in grid search.
-        'initial_search_repeats_in_grid_search': default = 50,
-            Number of initial metabolic flux disributions generated for each trial in grid search.
-            Best initial metabolic flux disribution with smallest RSS is employed.
-        'initial_search_iteration_max': default = 1000,
-            Maximal number of interations (steps) allowed in each task to find feasible initial metabolic flux distribution.
-        'add_naturalisotope_in_calmdv':default = "no"
-            For INST-13C MFA. Natural isotope is added to MDVs of all intermediate at time = 0.
-        'number_of_repeat':default = 3,
-            For "deep" function of self.fitting flux. "Global" => "Local" optimization methods are repeated for n times.
-        'ncpus':default = 3,
-            Number of CPUs used in parallel processing
-        'ppservers': default = ("",),
-            Obsolete: For parallel processing using pp.
-        'odesolver': default = "scipy" # or "sundials"
-            Only "scipy" is avaliable due to memory leak problem of sundials
+        Parameters::
 
-        Examples
-        --------
-        >>> model.set_configuration(callbacklevel = 1)
-        >>> model.set_configuration(iteration_max = 1000)
+            'callbacklevel': default = 0,
+                'callbacklevel' determines a frequency level of callbacks from metabolic model.
+                # 0: No call back
+                # 1: Error report
+                # 2: Simple pregress report for grid search
+                # 3: Detailed pregress report for grid search
+                # 4: Simple pregress report for flux fitting
+                # 5: Detailed pregress report for flux fitting
+                # 7: Detailed report for model constrution
+                # 8: Debug
+            'iteration_max': default = 1000,
+                Maximal number of interations (steps) in each fitting task.
+            'default_reaction_lb': default = 0.001,
+            'default_reaction_ub': default = 5000.0,
+            'default_metabolite_lb': default = 0.001,
+            'default_metabolite_ub': default = 500.0,
+            'default_reversible_lb': default = -300,
+            'default_reversible_ub': default = 300.0,
+                Default lower and upper boundaries used only when there is no data in the model definition file.
+            'grid_search_iterations': default = 1,
+                Number of trials for model fitting at each point in grid search.
+            'initial_search_repeats_in_grid_search': default = 50,
+                Number of initial metabolic flux disributions generated for each trial in grid search.
+                Best initial metabolic flux disribution with smallest RSS is employed.
+            'initial_search_iteration_max': default = 1000,
+                Maximal number of interations (steps) allowed in each task to find feasible initial metabolic flux distribution.
+            'add_naturalisotope_in_calmdv':default = "no"
+                For INST-13C MFA. Natural isotope is added to MDVs of all intermediate at time = 0.
+            'number_of_repeat':default = 3,
+                For "deep" function of self.fitting flux. "Global" => "Local" optimization methods are repeated for n times.
+            'ncpus':default = 3,
+                Number of CPUs used in parallel processing
+            'ppservers': default = ("",),
+                Obsolete: For parallel processing using pp.
+            'odesolver': default = "scipy" # or "sundials"
+                Only "scipy" is avaliable due to memory leak problem of sundials
+
+        Examples:
+
+            >>> model.set_configuration(callbacklevel = 1)
+            >>> model.set_configuration(iteration_max = 1000)
 
 
         See Also
@@ -2727,34 +2722,31 @@ class MetabolicModel:
                 print(word,'is set at',kwargs[word])
 
     def set_constrain(self, group, id, type, value = 0.1, stdev = 1.0):
-        """
-        Setter of a metabolic constrains.
+        """Setter of a metabolic constrains.
+
         Please perform update() after model modification.
 
-        Parameters
-        ----------
-        group :group of parameters ("reaction", "reversible", "metabolite") (str)
-        id : id in model definition (str)
-        type: type of constrain "fitting", "fixed", "free", "pseudo" (str)
-            "fitting" : For the calclation of RSS by using "value" and stdev
-            "fixed"   : Fixed to "value". Not used for the calculation of RSS.
-            "free"    : Free between lower and upper boundary. Not used for the calculation of RSS.
-            "pseudo"  : Pseudo reaction is a special "free" reaction to consider G-index.
-            The reaction is ignored in a stoichiometry matrix. However, the reaction is considered
-            in the MDV calculation.
+        Args:
+            group (str):group of parameters ("reaction", "reversible", "metabolite")
+
+            id (str): id in model definition
+
+            type (str): type of constrain "fitting", "fixed", "free", "pseudo":
+                * "fitting" : For the calclation of RSS by using "value" and stdev
+                * "fixed"   : Fixed to "value". Not used for the calculation of RSS.
+                * "free"    : Free between lower and upper boundary. Not used for the calculation of RSS.
+                * "pseudo"  : Pseudo reaction is a special "free" reaction to consider G-index. The reaction is ignored in a stoichiometry matrix. However, the reaction is considered in the MDV calculation.
+
+            value (float): Level of metabolic flux
+
+            stdev (float): Standard deviation of metabolic flux level used for 'fitting' type reactions.
+
+        Examples:
+            >>> model.set_fixed_reaction("reaction", 'pgi', "fixed", 100.0,1)
 
 
-        value : Level of metabolic flux (float)
-        stdev : Standard deviation of metabolic flux level used for 'fitting' type reactions. (float)
-
-        Examples
-        --------
-        >>> model.set_fixed_reaction("reaction", 'pgi', "fixed", 100.0,1)
-
-
-        See Also
-        --------
-        get_constrain
+        See Also:
+            get_constrain
 
         """
         if group == "reaction":
@@ -2786,29 +2778,25 @@ class MetabolicModel:
         return False
 
     def get_constrain(self, group, id):
-        """
-        Getter of constrains of metabolic reaction.
-
-        Examples
-        --------
-        >>> type, value, stdev = model.get_constrain("reaction","pgi")
+        """Getter of constrains of metabolic reaction.
 
 
-        Parameters
-        ----------
-        group :group of parameters ("reaction", "reversible", "metabolite") (str)
-        id : id in model definition (str)
+        Args:
+            group (str) :group of parameters ("reaction", "reversible", "metabolite")
+
+            id (str) : id in model definition
 
 
-        Reterns
-        ----------
-        type: type of constrain "fitting", "fixed", "free", "pseudo"
-        value : Level of metabolic flux (float)
-        stdev : Standard deviation of metabolic flux level used for 'fitting' type reactions.
+        Reterns:
+            * type (str) type of constrain "fitting", "fixed", "free", "pseudo"
+            * value (float) Level of metabolic flux
+            * stdev (float) Standard deviation of metabolic flux level used for 'fitting' type reactions.
 
-        See Also
-        --------
-        set_constrain
+        Examples:
+            >>> type, value, stdev = model.get_constrain("reaction","pgi")
+
+        See Also:
+            set_constrain
 
         """
         if group == "reaction":
@@ -2832,24 +2820,23 @@ class MetabolicModel:
         return False, False, False
 
     def set_boundary(self, group, id, lb, ub):
-        """
-        Setter of a lower and upper boundaries of metablic states
+        """ Setter of a lower and upper boundaries of metablic states
 
-        Parameters
-        ----------
-        group : metabolite, reaction, reversible (str)
-        id :  id of state parameter (str)
-        lb : lower boundary (float)
-        ub : upper boundary (float)
+        Args:
+            group (str): metabolite, reaction, reversible
+
+            id (str): id of state parameter
+
+            lb (float): lower boundary
+
+            ub (float): upper boundary
 
 
-        Examples
-        --------
-        >>> model.set_boundary("reaction", 'HEX1', 0.001, 100.0)
+        Examples:
+            >>> model.set_boundary("reaction", 'HEX1', 0.001, 100.0)
 
-        See Also
-        --------
-        set_constrain
+        See Also:
+            set_constrain
         """
         if group == "reaction":
             dic_temp = self.reactions
@@ -2875,23 +2862,15 @@ class MetabolicModel:
 
 
     def set_constraints_from_state_dict(self, dict):
-        """
-        Reaction types, value, stdev, lb, and ub are set from the state dict data at once
+        """Reaction types, value, stdev, lb, and ub are set from the state dict data at once
 
-        Parameters
-        ----------
-        flux_dict: Dictionary of flux. Data in 'value', 'stdev', 'lb', 'ub' and 'type' fields are used.
+        Args:
+            dict (dict): Dictionary of flux. Data in 'value', 'stdev', 'lb', 'ub' and 'type' fields are used.
 
-        Reterns
-        ----------
+        Examples:
+            >>> model.set_constraints_from_state_dict(flux_dict)
 
 
-        Examples
-        --------
-        >>> model.set_constraints_from_state_dict(flux_dict)
-
-        See Also
-        --------
 
         """
         #
@@ -2917,23 +2896,18 @@ class MetabolicModel:
 
 
     def generate_state_dict(self, tmp_r):
-        """
-        Generator of a state dict from a given vector.
+        """Generator of a state dict from a given vector.
 
-        Parameters
-        ----------
-        tmp_r: tmp_r = numpy.dot(matrixinv, Rm_intial)
+        Args:
+            tmp_r (array): tmp_r = numpy.dot(matrixinv, Rm_intial)
 
-        Returns
-        ----------
-        state_dict : Dictionary of metabolic state data.
+        Returns:
+            dict : Dictionary of metabolic state data.
 
-        Examples
-        --------
-        >>> state_dict = model.generate_state_dict(tmp_r)
+        Examples:
+            >>> state_dict = model.generate_state_dict(tmp_r)
 
-        See Also
-        --------
+
         """
         #
         # preparation of data
@@ -2978,22 +2952,18 @@ class MetabolicModel:
         return self.generate_carbon_source_template()
 
     def generate_carbon_source_template(self):
-        """
-        Generator of a templete of CarbonSourse instance. Labeling information of carbon sources will be added to the instance.
+        """Generator of a templete of CarbonSourse instance. Labeling information of carbon sources will be added to the instance.
+
         Carbon source compounds are derived from the metabolic model (//Metabolites)
 
-        Parameters
-        ----------
-        nothing
+        Args:
+            Not required.
 
+        Examples:
+            >>> carbon_source_idv = model.generate_carbon_source_templete()
 
-        Examples
-        --------
-        >>> carbon_source_idv = model.generate_carbon_source_templete()
-
-        See Also
-        --------
-        CarbonSource.py
+        See Also:
+            CarbonSource.py
 
 
         """
@@ -3012,31 +2982,28 @@ class MetabolicModel:
         return carbonsource.CarbonSource(cs)
 
     def generate_mdv(self, flux, carbon_sources, timepoint = [], startidv = []):
-        """
-        Generator of a MdvData instance including MDV data generated from given flux and carbon sources.
+        """Generator of a MdvData instance including MDV data generated from given flux and carbon sources.
 
-        Parameters
-        ----------
-        flux: Dictionary of metabolic flux distribution
-        carbon_sources: Instance of CarbonSource
-        timepoint: For INST-13C MFA. An array of time points of measurement in MDV
-        startidv: array of idv as starting isotope distribution for INST
+        Args:
+            flux (dict): Dictionary of metabolic flux distribution
 
-        Returns
-        ----------
-        mdv : MdvData instance
+            carbon_sources (instance): Instance of CarbonSource
 
-        Examples
-        --------
-        >>> mdv = model.generate_mdv(flux, mdv_carbon_sources)
+            timepoint (array): For INST-13C MFA. An array of time points of measurement in MDV
 
-        See Also
-        --------
-        generate_carbonsource_MDV
+            startidv (array): array of idv as starting isotope distribution for INST
 
-        History
-        --------
-        140912 calc_MDV_from_flux instead of calmdv is used.
+        Returns:
+            instance* MdvData instance
+
+        Examples:
+            >>> mdv = model.generate_mdv(flux, mdv_carbon_sources)
+
+        See Also:
+            generate_carbonsource_MDV
+
+        History:
+            140912 calc_MDV_from_flux instead of calmdv is used.
 
         """
 
@@ -3071,27 +3038,26 @@ class MetabolicModel:
 
 
     def set_experiment(self, name, mdv, carbon_sources, startidv = []):
-        """
-        Setter of an 'experiment' to metabolic model. Here an 'experiment' indicated
-        a set of a carbon source labeling pattern and a measured MDV data.
+        """Setter of an 'experiment' to metabolic model.
+
+        Here an 'experiment' indicated a set of a carbon source labeling pattern and a measured MDV data.
+
         Parallel labeling experiment can be performed by setting multiple sets of 'experiment'.
 
 
-        Parameters
-        ----------
-        name : name of the experiment (unique)
-        mdv : MDVdata instance including measured MDV data of target fragments.
-        carbon_sources: Instance of carbon source object
-        startidv: array of idv as starting isotope distribution for INST
+        Args:
+            name (str): name of the experiment (unique)
+
+            mdv (instance): MDVdata instance including measured MDV data of target fragments.
+
+            carbon_sources (instance): Instance of carbon source object
+
+            startidv (array): array of idv as starting isotope distribution for INST
 
 
-        Examples
-        --------
-        >>> model.set_experiment('ex1', mdv1, cs1)
-        >>> model.set_experiment('ex2', mdv2, cs2, startidv)
-
-        See Also
-        --------
+        Examples:
+            >>> model.set_experiment('ex1', mdv1, cs1)
+            >>> model.set_experiment('ex2', mdv2, cs2, startidv)
 
 
         """
@@ -3138,26 +3104,24 @@ class MetabolicModel:
         return True
 
     def calc_idv(self, flux, carbon_sources):
-        """
-        Calc IDV from given flux and carbon_sources.
-        Examples
-        --------
-        >>> idv = model.calc_idv(flux, carbon_sources)
+        """Calc IDV from given flux and carbon_sources.
 
-        Parameters
-        ----------
-        flux : dic of metabolic state of initial state
-        carbon_sources: Instance of carbon source object
+        Examples:
+            >>> idv = model.calc_idv(flux, carbon_sources)
 
-        Parameters
-        ----------
-        idv : array of idv
+        Args:
+
+            flux (dict): dict of metabolic state of initial state
+
+            carbon_sources (instance): Instance of carbon source object
+
+        Returns:
+            array : array of idv
 
 
-        See Also
-        --------
-        set_experiment()
-        generate_mdv()
+        See Also:
+            set_experiment()
+            generate_mdv()
 
 
 
@@ -3193,26 +3157,22 @@ class MetabolicModel:
 
 
     def clear_experiment(self):
-        """
-        Clear all 'experiment set(s)' in the metabolic model.
+        """Clear all 'experiment set(s)' in the metabolic model.
 
 
-        Parameters
-        ----------
+        Args:
+            Not required
+
+        Examples:
+            >>> model.clear_experiment()
 
 
-        Examples
-        --------
-        >>> model.clear_experiment()
+        See Also:
 
+            model.set_experiment()
 
-        See Also
-        --------
-        model.set_experiment()
-
-        History
-        --------
-        Newly developed at 4/9/2014
+        History:
+            Newly developed at 4/9/2014
 
 
         """
@@ -3224,24 +3184,17 @@ class MetabolicModel:
         return True
 
     def generate_state(self, template = []):
-        """
-        Generator of a random metabolic flux distribution.
+        """Generator of a random metabolic flux distribution.
 
-        Parameters
-        ----------
-        template: Dictionary of metabolic state. When template is available, metabolic state most similar to the template is generated. The function is used in the grid search.
+        Args:
+            template (dict): Dictionary of metabolic state. When template is available, metabolic state most similar to the template is generated. The function is used in the grid search.
 
-        Returns
-        ----------
-        flux : Dictionary of metabolic flux data.
-        independent_flux : List of independent flux
+        Returns:
+            * flux (dict) Dictionary of metabolic flux data.
+            * independent_flux (array) List of independent flux
 
-        Examples
-        --------
-        >>> flux, independent_flux = model.generate_intial_flux_distribution()
-
-        See Also
-        --------
+        Examples:
+            >>> flux, independent_flux = model.generate_intial_flux_distribution()
 
         """
         #
@@ -3265,35 +3218,37 @@ class MetabolicModel:
 
 
     def generate_initial_states(self, iterations = 100, initial_states = 1, method = 'normal', template = []):
-        """
-        Initial metabolic states are randomly generated for "iterations" times from which
-        better states with lower RSS (number_of_initial_states) were selected.
+        """Initial metabolic states are randomly generated for "iterations" times from which better states with lower RSS (number_of_initial_states) were selected.
+
         The metabolic flux distribution is a initial flux data for model fitting.
 
-        Parameters
-        ----------
-        method:
-            'normal' : Sequencial generation of flux distributions.
-            'parallel' : Parallel generation of flux distributions using parallel processing.
-        iterations:
-            Number of trials to generate initial metabolic state. A trial sometimes failed due to a bad optimization state.
-        initial_states:
-            Number of initial metabolic state(s) to be generated.
-        template:
-            Templete metabolic state(s) dict. When template is available, initial metabolic state(s) similiar to
-            the templete metabolic state are generated. This function is used in the grid search fucntion.
+        Args:
+            method:
+                * 'normal' : Sequencial generation of flux distributions.
+                * 'parallel' : Parallel generation of flux distributions using parallel processing.
 
-        Returns
-        ----------
-        flux (list or dict) :
-            [number_of_initial_states > 1 ] List of dictionaris of multiple metabolic state data.
-            [number_of_initial_states == 1 ] Dictionaly of single metabolic state data.
-        state : State of generation results
+            iterations:
+                Number of trials to generate initial metabolic state. A trial sometimes failed due to a bad optimization state.
 
-        Examples
-        --------
-        >>> state, dict = model.generate_initial_states(50,1)
-        >>> state, dict = model.generate_initial_states(50, 2, template = flux)
+            initial_states:
+                Number of initial metabolic state(s) to be generated.
+
+            template:
+                Templete metabolic state(s) dict. When template is available, initial metabolic state(s) similiar to
+                the templete metabolic state are generated. This function is used in the grid search fucntion.
+
+        Returns:
+            * flux (list or dict) :
+                [number_of_initial_states > 1 ] List of dictionaris of multiple metabolic state data.
+                [number_of_initial_states == 1 ] Dictionaly of single metabolic state data.
+
+            * state  (str or array) :
+                [number_of_initial_states > 1 ] Str of stop condition.
+                [number_of_initial_states == 1 ] Array of Str of stop condition.
+
+        Examples:
+            >>> state, dict = model.generate_initial_states(50,1)
+            >>> state, dict = model.generate_initial_states(50, 2, template = flux)
 
         See Also
         --------
@@ -3459,53 +3414,50 @@ class MetabolicModel:
 
 
     def fitting_flux(self, method = 'SLSQP', flux = [], output = 'result'):
-        """
-        Method for fitting a metabolic model to multiple experiments
+        """Method for fitting a metabolic model to multiple experiments
 
-        Parameters
+        ARgs:
         ----------
-        method:
-            'SLSQP': A sequential least squares programming algorithm implemented by scipy
-            "LN_PRAXIS": Gradient-free local optimization via the "principal-axis method" implemented by nlopt
-            "GN_CRS2_LM": Controlled random searchimplemented for global optimizatoin by nlopt
-            'deep': Repeated execution of SLSQP & LN_PRAXIS
-        flux: Initial flux distribution generated by self.generate_initial_states().
-        When flux is a dict of one state, single fitting trial is exected.
-        When flux is a array of multiple dists of states, muptiple fitting trial is exected by using the parallel processing.
+        method (str):
+            * 'SLSQP': A sequential least squares programming algorithm implemented by scipy
+            * "LN_PRAXIS": Gradient-free local optimization via the "principal-axis method" implemented by nlopt
+            * "GN_CRS2_LM": Controlled random searchimplemented for global optimizatoin by nlopt
+            * 'deep': Repeated execution of SLSQP & LN_PRAXIS
 
-        output: Output method. (default, output = 'result')
-            'result': Fitting problem is solved inside of the function.
-            'for_parallel': Fitting problems is NOT solved inside of the function. In this mode, a tupple of
-            parameters for fit_r_mdv_pyopt() functions are generated for parallel processinng.
+        flux (dict): Initial flux distribution generated by self.generate_initial_states():
+            * When flux is a dict of one state, single fitting trial is exected.
+            * When flux is a array of multiple dists of states, muptiple fitting trial is exected by using the parallel processing.
+
+        output (str): Output method. (default, output = 'result'):
+            * 'result': Fitting problem is solved inside of the function.
+            * 'for_parallel': Fitting problems is NOT solved inside of the function. In this mode, a tupple of parameters for fit_r_mdv_pyopt() functions are generated for parallel processinng.
 
         Parameters in self.configuration:
-            iteration_max: Maximal number of interation in the optimizers. Example: self.set_configuration(iteration_max = 1000)
-            number_of_repeat: Number of repeated execution by 'deep' functions. model.set_configuration(number_of_repeat = 2)
+            * iteration_max: Maximal number of interation in the optimizers. Example: self.set_configuration(iteration_max = 1000)
+            * number_of_repeat: Number of repeated execution by 'deep' functions. model.set_configuration(number_of_repeat = 2)
 
-        Examples
-        --------
-        #
-        # Single fitting trial
-        #
-        >>> state, flux_initial = model.generate_initial_states(10, 1)
-        >>> state, RSS_bestfit, flux_opt = model.fitting_flux(method = 'deep', flux = flux_initial)
-        >>> results= [("deep", flux_opt)]
-        >>> model.show_results(results, pool_size = "off")
-        #
-        # Multipe fitting trials by using parallel python
-        #
-        >>> state, flux_initial = model.generate_initial_states(50, 4)
-        >>> state, RSS_bestfit, flux_opt_slsqp = model.fitting_flux(method = "SLSQP", flux = flux_initial)
-        >>> results= [("deep", flux_opt[0])]
-        >>> model.show_results(results, pool_size = "off")
-        #
-        # Generating parameters for parallel processing
-        #
-        >>> parameters = model.fitting_flux(method = "SLSQP", flux = flux_initial, output = "for_parallel")
+        Examples::
+            #
+            # Single fitting trial
+            #
+            >>> state, flux_initial = model.generate_initial_states(10, 1)
+            >>> state, RSS_bestfit, flux_opt = model.fitting_flux(method = 'deep', flux = flux_initial)
+            >>> results= [("deep", flux_opt)]
+            >>> model.show_results(results, pool_size = "off")
+            #
+            # Multipe fitting trials by using parallel python
+            #
+            >>> state, flux_initial = model.generate_initial_states(50, 4)
+            >>> state, RSS_bestfit, flux_opt_slsqp = model.fitting_flux(method = "SLSQP", flux = flux_initial)
+            >>> results= [("deep", flux_opt[0])]
+            >>> model.show_results(results, pool_size = "off")
+            #
+            # Generating parameters for parallel processing
+            #
+            >>> parameters = model.fitting_flux(method = "SLSQP", flux = flux_initial, output = "for_parallel")
 
-        See Also
-        --------
-        generate_initial_states()
+        See Also:
+            generate_initial_states()
 
 
         """
@@ -3772,24 +3724,22 @@ class MetabolicModel:
         """
 
     def show_results_in_map(self, flux, mapfilename, outputfilename, formattext = ".1f"):
-        """
-        Method to project metabolic state data into metabolic file (.GML).
-
-        Examples
-        --------
-        >>> model.show_results_in_map(flux_opt1, "Example_2_cancer_map_new.gml", "Example_2_cancer_map_mapped.gml")
-        >>> model.show_results_in_map(flux_opt1, "Example_2_cancer_map_new.gml", "Example_2_cancer_map_mapped.gml", formattext = ".2f")
+        """Method to project metabolic state data into metabolic file (.GML).
 
 
-        Parameters
-        ----------
-        flux: dic of metabolic state
-        mapfilename: name of blank GML file
-        outputfilename: name of uutput GML file
-        format: format string of "format" method of string
+        Args:
+            flux (dict): dict of metabolic state
 
-        Returns
-        --------
+            mapfilename (str): name of blank GML file
+
+            outputfilename (str): name of uutput GML file
+
+            format (str): format string of "format" method of string
+
+        Examples:
+            >>> model.show_results_in_map(flux_opt1, "Example_2_cancer_map_new.gml", "Example_2_cancer_map_mapped.gml")
+            >>> model.show_results_in_map(flux_opt1, "Example_2_cancer_map_new.gml", "Example_2_cancer_map_mapped.gml", formattext = ".2f")
+
 
 
 
@@ -3866,27 +3816,29 @@ class MetabolicModel:
         f.close()
 
     def show_results(self, input, flux = "on", rss = "on", mdv = "on", pool_size = "off", checkrss= "off", filename = "", format = "csv"):
-        """
-        Method to output metabolic state data.
+        """Method to output metabolic state data.
 
-        Examples
-        --------
-        >>> model.show_results(results, flux = "on", rss = "on", mdv = "on", pool_size = "off",  checkrss = "on")# Output to console
-        >>> model.show_results(results, filename = "show_results.csv", format = "csv")# Output to .csv file
+        Args:
+            input (tuple): Tuple of ("name", dic of metabolic statet) [('name1', state1),('name2', state2),('name3', state3),]
 
-        Parameters
-        ----------
-        input: Tuple of ("name", dic of metabolic statet) [('name1', state1),('name2', state2),('name3', state3),]
-        flux: show flux data "on"/"off"
-        rss: show rss data "on"/"off"
-        mdv: show mdv data "on"/"off"
-        pool_size: show metabolite data "on"/"off"
-        check rss: show each RSS value "on"/"off"
-        filename: Results are saved when file name is not ""/
-        format: "csv" or "text"
+            flux (str): show flux data "on"/"off"
 
-        Returns
-        --------
+            rss (str): show rss data "on"/"off"
+
+            mdv (str): show mdv data "on"/"off"
+
+            pool_size (str): show metabolite data "on"/"off"
+
+            check rss (str): show each RSS value "on"/"off"
+
+            filename (str): Results are saved when file name is not ""/
+
+            format (str): "csv" or "text"
+
+        Examples:
+            >>> model.show_results(results, flux = "on", rss = "on", mdv = "on", pool_size = "off",  checkrss = "on")# Output to console
+            >>> model.show_results(results, filename = "show_results.csv", format = "csv")# Output to .csv file
+
 
 
 
@@ -4304,23 +4256,19 @@ class MetabolicModel:
 
 
     def show_flux_balance(self, results, metabolite, filename = "", format = "csv"):
-        """
-        List of metabolic flux levels of reactions related to given metabolite.
+        """List of metabolic flux levels of reactions related to given metabolite.
 
-        Examples
-        --------
-        >>> model.show_metabolite_balance(results, "Fum")
-        >>> model.show_metabolite_balance(results, "Fum", filename = "metabolite_balance.csv", format = "csv")
+        Args:
+            input: Tuple of ("name", dic of metabolic statet) [('name1', state1),('name2', state2),('name3', state3),]
+            metabolite: ID of metabolite of interest
+            filename: Results are saved when file name is not ""/
+            format: "csv" or "text"
 
-        Parameters
-        ----------
-        input: Tuple of ("name", dic of metabolic statet) [('name1', state1),('name2', state2),('name3', state3),]
-        metabolite: ID of metabolite of interest
-        filename: Results are saved when file name is not ""/
-        format: "csv" or "text"
+        Examples:
+            >>> model.show_metabolite_balance(results, "Fum")
+            >>> model.show_metabolite_balance(results, "Fum", filename = "metabolite_balance.csv", format = "csv")
 
-        Returns
-        --------
+
 
         """
 
@@ -4417,34 +4365,25 @@ class MetabolicModel:
 
 
     def calc_rss(self, fluxes, mode = "flux"):
-        """
-        Getter to obtain a residual sum of square (RSS) between estimated MDVs of 'flux' and measured MDVs in 'experiment(s)'
+        """Getter to obtain a residual sum of square (RSS) between estimated MDVs of 'flux' and measured MDVs in 'experiment(s)'
 
-        Parameters
-        ----------
-        flux: Dictionary of metabolic flux distribution or independent flux vector
+        Args:
+            flux (dict): Dictionary of metabolic flux distribution or independent flux vector
 
-        mode:
-            "independent":Calculation of RSS from independent flux vector
-            "flux":Calculation of RSS from state dictionary
+            mode (str):
+                * "independent":Calculation of RSS from independent flux vector
+                * "flux":Calculation of RSS from state dictionary
 
-        Returns
-        ----------
-        rss : Residual sum of square (RSS)
+        Returns:
+            float : Residual sum of square (RSS)
 
-        Examples
-        --------
-        >>> rss = model.calc_rss(flux_opt)
-        >>> print rss
-        7564.123
+        Examples:
+            >>> rss = model.calc_rss(flux_opt)
+            >>> print rss
+            7564.123
 
-        See Also
-        --------
-
-
-        History
-        --------
-        140912 Call of calmdv funcion is removed.
+        History:
+            Call of calmdv funcion is removed.12/9/2014
 
 
         """
@@ -4527,26 +4466,19 @@ class MetabolicModel:
             return rss_list[0]
 
     def goodness_of_fit(self, flux, alpha = 0.05):
-        """
-        Getter to calculate goodness-of-fit of a given flux distribution
+        """Getter to calculate goodness-of-fit of a given flux distribution
 
-        Examples
-        --------
-        >>> p-value = model.goodness_of_fit()
+        Args:
+            flux (dict): Dictionary of metabolic flux distribution
 
-        Parameters
-        ----------
-        flux: Dictionary of metabolic flux distribution
-        alpha: Confidence level. Default is 0.05.
+            alpha (float): Confidence level. Default is 0.05.
 
-        Returns
-        --------
-        pvalue: p-value determined by chi-squere test.
-        rss_thres: Threshold RSS at the alpha levels
+        Returns:
+            * pvalue (float) p-value determined by chi-squere test.
+            * rss_thres (float) Threshold RSS at the alpha levels.
 
-        Examples
-        --------
-        >>> pvalue, rss_thres= model.goodness_of_fit(flux_opt_fitted, alpha = 0.05)
+        Examples:
+            >>> pvalue, rss_thres= model.goodness_of_fit(flux_opt_fitted, alpha = 0.05)
 
 
         """
@@ -4583,26 +4515,26 @@ class MetabolicModel:
 
 
     def get_thres_confidence_interval(self, flux, alpha = 0.05, dist = 'F_dist'):
-        """
-        Getter to obtain a threshold level of RSS for searching confidence interval
+        """Getter to obtain a threshold level of RSS for searching confidence interval
 
-        Parameters
-        ----------
-        flux: Dictionary of best fitted flux distribution.
-        alpha: confidence level. For 95% confience interval, please set alpha = 0.05
-        dist:
-            'F-dist' (default): Using F-distribution
-            'chai-dist':Using Chai-square distribution
+        Args:
+            flux (dict): Dictionary of best fitted flux distribution.
 
-        Returns
-        --------
-        thres: a threshold level of RSS for searching confidence interval
-        number_of_measurements: number of measurements
-        degree_of_freedom: degree of freecom"
+            alpha (float): confidence level. For 95% confience interval, please set alpha = 0.05
 
-        Examples
-        --------
-        >>> thres, number_of_reactions, degree_of_freedom = model.get_thres_confidence_interval(RSS, alpha = 0.05, dist = 'F_dist')
+            dist (str):
+                * 'F-dist' (default): Using F-distribution
+                * 'chai-dist':Using Chai-square distribution
+
+        Returns:
+            * thres (float) a threshold level of RSS for searching confidence interval
+
+            * number_of_measurements (int) number of measurements
+
+            * degree_of_freedom (int) degree of freedom
+
+        Examples:
+            >>> thres, number_of_reactions, degree_of_freedom = model.get_thres_confidence_interval(RSS, alpha = 0.05, dist = 'F_dist')
 
         """
         #
@@ -4623,16 +4555,13 @@ class MetabolicModel:
 
 
     def get_degree_of_freedom(self):
-        """
-        Getter of degree of freedom of the model
+        """Getter of degree of freedom of the model
 
-        Examples
-        --------
-        >>> degree_of_freedom = model.get_degree_of_freedom()
+        Examples:
+            >>> degree_of_freedom = model.get_degree_of_freedom()
 
-        Returns
-        --------
-        degree_of_freedom: degree of freedom.
+        Returns:
+            int: degree of freedom.
 
         """
         #modified 056 200517
@@ -4646,16 +4575,13 @@ class MetabolicModel:
         if self.experiments[sorted(self.experiments.keys())[0]]["mode"] == "INST":
             return self.numbers["independent_number"]
     def get_number_of_independent_measurements(self):
-        """
-        Getter of number of independent measurements of the model
+        """Getter of number of independent measurements of the model
 
-        Examples
-        --------
-        >>> number_of_independent_measurements = model.get_number_of_independent_measurements()
+        :
+            >>> number_of_independent_measurements = model.get_number_of_independent_measurements()
 
-        Returns
-        --------
-        number_of_independent_measurements: number of independent measurements.
+        Returns:
+            int: number of independent measurements.
 
         History
         --------
@@ -4681,29 +4607,23 @@ class MetabolicModel:
         return n + len(fitting_reactions)
 
     def add_perturbation(self, flux):
-        """
-        New state dict is generarate from a given state dict by an addition of small random perturbation to an independent flux
+        """New state dict is generarate from a given state dict by an addition of small random perturbation to an independent flux
 
 
-        Examples
-        --------
-        >>> check, perturbed_state, flux_vector, reaction_name_list = model.add_perturbation(state_dict)
+        Args:
+            state_dict (dict): Dictionary of metabolic state data.
 
-        Parameters
-        ----------
-        state_dict: Dictionary of metabolic state data.
+        Returns:
+        * check (boolean)
+        * perturbed_state (dict)Dictionary of metabolic state data.
+        * flux_vector (array) List of metabolic flux, metabolite concentration data.
+        * reaction_name_list (array) List of ids
 
-        Returns
-        --------
-        check, boolean:
-        perturbed_state, dict: Dictionary of metabolic state data.
-        flux_vector, list: List of metabolic flux, metabolite concentration data.
-        reaction_name_list, list: List of ids
-
+        Examples:
+            >>> check, perturbed_state, flux_vector, reaction_name_list = model.add_perturbation(state_dict)
 
         History
-        --------
-        21.1.2021 Newly created by F. Matsuda
+            Newly created by F. Matsuda 21.1.2021
 
         """
         independent_vector, lbi, ubi, independent_list = self.get_independents(flux)
@@ -4730,12 +4650,10 @@ class MetabolicModel:
 
 
     def get_independents(self, flux):
-        """
-        Getter of independent status (flux) vector, its lower and upper boundaries and a list of independent flux ids of given state (flux) dict.
+        """Getter of independent status (flux) vector, its lower and upper boundaries and a list of independent flux ids of given state (flux) dict.
 
-        Examples
-        --------
-        >>> independent_vector, lb, ub, independent_list = model.get_independents(state_dict)
+        Examples:
+            >>> independent_vector, lb, ub, independent_list = model.get_independents(state_dict)
 
         Parameters
         ----------
@@ -4759,28 +4677,26 @@ class MetabolicModel:
         return Rm_ind, self.vector['independent_lb'], self.vector['independent_ub'], self.vector['independent_flux']
 
     def check_independents(self, independents):
-        """
-        Checker method to test whether a given vector of independent fluxes is able to produce feasible status (flux) vector within lower and upper boundaries.
+        """Checker method to test whether a given vector of independent fluxes is able to produce feasible status (flux) vector within lower and upper boundaries.
 
-        Examples
+        Args:
+            independents (array): list of independent fluxes generated by self.get_independents
+
+        Returns:
         --------
-        >>> check, flux_vector, reaction_name = self.check_independents(independents)
+            * check (Boolean) True means that a given vector of independent fluxes is able to produce feasible status (flux) vector within lower and upper boundaries.
+
+            * flux_vector (array) List of metabolic flux, metabolite concentration data.
+
+            * reaction_name (array) List of ids
 
 
-        Parameters
-        ----------
-        independents: list of independent fluxes generated by self.get_independents
+        Examples:
+            >>> check, flux_vector, reaction_name = self.check_independents(independents)
 
-        Returns
-        --------
-        check, Boolean, True: A given vector of independent fluxes is able to produce feasible status (flux)  vector within lower and upper boundaries.
-        flux_vector, list: List of metabolic flux, metabolite concentration data.
-        reaction_name, list: List of ids
+        History:
 
-
-        History
-        --------
-        20.1.2021 Newly constructed.
+            20.1.2021 Newly constructed.
 
         """
         callbacklevel = self.configuration['callbacklevel']
@@ -4802,9 +4718,23 @@ class MetabolicModel:
 
 
     def posterior_distribution(self, state_dict, number_of_steps = 1000000):
-        #
-        # Set callbacklevel
-        #
+        """Generator of posterior distribution by the Metropolis-Hastings algorism
+
+        Args:
+            state_dict (dist): Dictionary of initial metabolic state
+
+            number_of_steps (int): Length of Markov-chain
+        Returns
+            array: 2d array. Markov-chain of metabolic state vector
+
+        Examples:
+            >>> record = model.posterior_distribution(perturbed_state, number_of_steps = numberofsteps)
+
+        History:
+
+            20.1.2021 Newly constructed.
+
+        """
         callbacklevel = self.configuration['callbacklevel']
 
         if 'ncpus' in self.configuration:
@@ -4821,24 +4751,24 @@ class MetabolicModel:
             return False
 
         def calcrsss(Rm_ind_original, rss_original, parameters, func):
-            """
-            Low level function for Metropolic Hasting method for joblib parallel execution.
+            """Low level function for Metropolic Hasting method for joblib parallel execution.
 
-            Parameters
-            ----------
-            Rm_ind_original: list. vector of independent flux of given initial state.
-            rss_original: RSS of given initial state.
-            parameters: dic of parameters.
-            func: functions used in this method.
+            Args:
+                Rm_ind_original (array): vector of independent flux of given initial state.
 
-            Returns
-            -------
-            f: RSS + Penalty score (When out side of the lower and upper boundaries)
+                rss_original (float): RSS of given initial state.
+
+                parameters (dict): dict of parameters.
+
+                func (dict): functions used in this method.
+
+            Returns:
+                float: RSS + Penalty score (When out side of the lower and upper boundaries)
 
 
-            See Also
-            --------
-            fit_r_mdv_scipy
+            See Also:]
+
+                fit_r_mdv_scipy
 
             """
             import mkl
@@ -5069,28 +4999,24 @@ class MetabolicModel:
 
 
     def generate_ci_template(self, targets = "normal"):
-        """
-        Generator of a blank dictionary to keep confidence interval search results.
+        """Generator of a blank dictionary to keep confidence interval search results.
+
         A dictionaty generated by the method is used in self.search_ci
 
-
-        Parameters
-        ----------
-        targets:
-        'normal': Free reversible and inreversible reactions
-        'independent': Independent reactions
-        'all': all reactions
-        'without_reversible_reactions': inreversible reactions
+        Args:
+            targets (str):
+                * 'normal' Free reversible and inreversible reactions
+                * 'independent' Independent reactions
+                * 'all' all reactions
+                * 'without_reversible_reactions' inreversible reactions
 
 
-        Examples
-        --------
-        >>> ci = model.generate_ci_templete(targets = [("reaction","r29_g6pdh"),("reaction","r27_pc"),("reaction","r28_mae")])
-        >>> ci = model.generate_ci_templete(targets = 'normal')
+        Examples:
+            >>> ci = model.generate_ci_templete(targets = [("reaction","r29_g6pdh"),("reaction","r27_pc"),("reaction","r28_mae")])
+            >>> ci = model.generate_ci_templete(targets = 'normal')
 
-        See Also
-        --------
-        search_ci.
+        See Also:
+            search_ci.
 
 
         """
@@ -5183,32 +5109,31 @@ class MetabolicModel:
 
 
     def search_ci(self, ci, flux, method = 'grid', alpha = 0.05, dist = 'F_dist', outputthres = 2.0):
-        """
-        Method to estimate confidence intervals using information in a 'ci' dictionary.
+        """Method to estimate confidence intervals using information in a 'ci' dictionary.
 
-        Parameters
-        ----------
-        ci: dictionary for storeing confidence interval results. ci is generated by self.generate_ci_templete()
-        flux: Distribution of best fitted flux
-        method:
-            'grid': Grid search method
-        alpha: (default 0.05) Confidence interval level. 0.05 means a 95% confidence interval level
-        dist:
-            'F-dist' (default): Using F-distribution
-            'chai-dist':Using Chai-square distribution
+        Argss:
+            ci (dict): dictionary for storeing confidence interval results. ci is generated by self.generate_ci_templete()
 
-        outputthres:
-            The grid search results larger than outputthres * threshold rss were removed from output
+            flux (dict): dict of metabolic state (best fitted)
 
-        Examples
-        --------
-        >>> ci = model.generate_ci_templete(targets = 'independent')
-        >>> ci = model.search_confidence_interval_parallel(ci, flux, method = 'grid')
+            method (str): 'grid' (Grid search method) is available
+
+            alpha (float): (default 0.05) Confidence interval level. 0.05 means a 95% confidence interval level
+
+            dist (str):
+                * 'F-dist' (default): Using F-distribution
+                * 'chai-dist':Using Chai-square distribution
+
+            outputthres (float): The grid search results larger than outputthres * threshold rss were removed from output
+
+        Returns:
+            dict: dictionary of confidence interval results.
+
+        Examples:
+            >>> ci = model.generate_ci_templete(targets = 'independent')
+            >>> ci = model.search_confidence_interval_parallel(ci, flux, method = 'grid')
 
 
-        Returns
-        --------
-        ci:dictionary of confidence interval results.
 
         """
 
@@ -6387,35 +6312,28 @@ class MetabolicModel:
 
 
     def load_states(self, filename, format = 'text'):
-        """
-        Load a text/csv file with 'reacton type' information to generate new states dict.
+        """Load a text/csv file with 'reacton type' information to generate new states dict.
 
-        Parameters
-        ----------
+        Args:
+            filename (str): filename of flux data with following format::
 
-        filename : filename of flux data with following format.
+                type	Id	type	flux_calue	flux_std	lb	ub
+                reaction	v1	fixed	100	1	0.001	100
+                reaction	v2	free	100	1	0.001	100
+                reaction	v3	free	50	1	0.001	100
+                metabolites	AcCoA	fixed	1	1	0.001	100
+                metabolites	OAC	fixed	1	1	0.001	100
+                metabolites	OACs	fixed	1	1	0.001	100
+                metabolites	OACx	fixed	1	1	0.001	100
+                reversible	FUM	free	1	1	0.001	100
 
-        type	Id	type	flux_calue	flux_std	lb	ub
-        reaction	v1	fixed	100	1	0.001	100
-        reaction	v2	free	100	1	0.001	100
-        reaction	v3	free	50	1	0.001	100
-        metabolites	AcCoA	fixed	1	1	0.001	100
-        metabolites	OAC	fixed	1	1	0.001	100
-        metabolites	OACs	fixed	1	1	0.001	100
-        metabolites	OACx	fixed	1	1	0.001	100
-        reversible	FUM	free	1	1	0.001	100
+            format: 'csv' CSV or 'text'tab-deliminated text.
 
-        format:
-            'csv' : CSV.
-            'text' : tab-deliminated text.
+        Reterns:
+            dict: Dictionary of states dict.
 
-        Reterns
-        ----------
-        Dict: Dictionary of states dict.
-
-        Examples
-        --------
-        >>> states = model.load_states("test.csv", format = 'csv')
+        Examples:
+            >>> states = model.load_states("test.csv", format = 'csv')
 
         See Also
         --------
@@ -6493,24 +6411,18 @@ class MetabolicModel:
 
 
     def save_states(self, dict, filename, format = 'text'):
-        """
-        Save state dict to a text/csv file with 'type' information.
+        """Save state dict to a text/csv file with 'type' information.
 
-        Parameters
-        ----------
-        filename : filename of MDV data with the format.
-        dict : a dictinary of flux
-        format:
-            'csv' : CSV.
-            'text' : tab-deliminated text.
+        Args:
+            filename (str): filename of MDV data with the format.
+            dict (dict) : dictinary of metabolic state (flux)
+            format: 'csv' CSV or 'text'tab-deliminated text.
 
-        Reterns
-        ----------
-        Boolean: True/False
+        Reterns:
+            * Boolean True/False
 
-        Examples
-        --------
-        >>> model.save_states(flux_dict, "test.csv", format = 'csv')
+        Examples:
+            >>> model.save_states(flux_dict, "test.csv", format = 'csv')
 
         See Also
         --------
@@ -6562,31 +6474,26 @@ class MetabolicModel:
 
 
     def load_mdv_data(self, filename, format = 'text',output = "normal"):
-        """
-        Load MDV data from the text file. This function generate new instance of mfapy.mdv class from a instance of mfapy.model.
+        """Load MDV data from the text file. This function generate new instance of mfapy.mdv class from a instance of mfapy.model.
 
-        Parameters
-        ----------
-        model : a instance of mfapy.model for templete
-        filename : filename of MDV data with following format.
-        Name	Spectrum	Select	MDV	Std
-        Ala57	m0	1	0.566990778	0.000774686
-        Ala57	m1	1	0.148623963	0.000774686
-        Ala57	m2	1	0.039467636	0.000774686
-        Ala57	m3	1	0.244917622	0.000774686
+        Args:
+            filename (str) : filename of MDV data with following format::
 
-        format : "text" (defalut) or "csv"
-        output : "normal" (defalut) or "debug"
-        Reterns
-        ----------
-        Boolean: True/False
+                Name	Spectrum	Select	MDV	Std
+                Ala57	m0	1	0.566990778	0.000774686
+                Ala57	m1	1	0.148623963	0.000774686
+                Ala57	m2	1	0.039467636	0.000774686
+                Ala57	m3	1	0.244917622	0.000774686
 
-        Examples
-        --------
-        >>> mdv = load_mdv_data('filename')
+            format (str) : "text" (defalut) or "csv"
+            output (str) : "normal" (defalut) or "debug"
+        Reterns:
+            * Boolean True/False
 
-        See Also
-        --------
+        Examples:
+            >>> mdv = load_mdv_data('filename')
+
+
 
         """
         #
