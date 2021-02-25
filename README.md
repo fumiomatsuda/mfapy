@@ -13,6 +13,10 @@ mfapy supports:
 7. Parallel performing non-linear optimization jobs using joblib package.
 8. Automated model construction from model description file
 
+Documentation
+----------------------------------------
+Please check 'mfapy-document' repository. https://fumiomatsuda.github.io/mfapy-document/
+
 License
 ----------------------------------------
 This software is released under the MIT License, see LICENSE.txt.
@@ -63,7 +67,7 @@ Sample python code in 'Explanation_1_13CMFA_toymodel.py' explains how to use mfa
 Detailed explanations are available from docstrings
 Example python codes are also available.
 
-Learn more <https://github.com/fumiomatsuda/mfapy>
+Learn more <https://fumiomatsuda.github.io/mfapy-document/>
 
 Version 054
 ----------------------------------------
