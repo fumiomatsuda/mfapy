@@ -25,7 +25,7 @@ Following functions are available::
     load_metabolic_model
 
 Example:
-    reactions, reversible, metabolites, target_fragments = mfapy.mfapyio.load_metabolic_model("Explanation_1_13CMFA_toymodel_model.txt", format = "text")
+    >>> reactions, reversible, metabolites, target_fragments = mfapy.mfapyio.load_metabolic_model("Explanation_1_13CMFA_toymodel_model.txt", format = "text")
 
 Todo:
     * Support other file formats
@@ -369,7 +369,7 @@ def load_metabolic_model_reversibles(filename, format = "text", mode = "normal")
     return(dic)
 
 def load_metabolic_model_fragments(filename, format = "text", mode = "normal"):
-    """Function to Load mass fragment information from a metabolic model file with following format.
+    """Function to load mass fragment information from a metabolic model file with following format.
 
     Examples::
 
@@ -383,9 +383,9 @@ def load_metabolic_model_fragments(filename, format = "text", mode = "normal"):
         format (str) : "text" (defalut, tab deliminated) or "csv"
 
         mode (str) : "normal" (defalut) or "debug" (to show loaded metabolic file data)
+
     Returns:
         dict : Dictionary of target_fragments
-
 
     Examples:
         >>> target_fragments = load_metabolic_model_fragments('filename.txt')
@@ -466,10 +466,9 @@ def load_metabolic_model_fragments(filename, format = "text", mode = "normal"):
     return(dic)
 
 def load_metabolic_model(filename, format = "text",mode = "normal"):
-    """Function to read metabolic model information from a text file
+    """Function to load metabolic model information from a text file
 
     CAUTION: Now this function has no error checking.
-
 
     Args:
         filename (str) : metabolic model file

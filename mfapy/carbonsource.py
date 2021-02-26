@@ -25,14 +25,16 @@ import numpy as numpy
 import itertools
 
 class CarbonSource:
-    """
-    Class for carbon source information.
+    """Class for carbon source information.
+
+    Instance of this class is generated in the MetabolicModel instance
+
     """
     def __init__(self, carbon_sources):
         """Constructer of CarbonSource instance from target_fragments information of the metabolic model
 
         Args:
-            carbon_sources (dict): dictionary of carbon sources information produced in model.carbon_sources.
+            carbon_sources (dict): dictionary of carbon sources information in model.carbon_sources.
 
         Returns:
             instance : CarbonSource instance
@@ -59,10 +61,10 @@ class CarbonSource:
         """Method to display contents of CarbonSource instance
 
         Args:
-            nothing.
+            Not required.
 
         Returns:
-            nothing.
+            Nothing.
 
         Examples:
 
@@ -93,13 +95,13 @@ class CarbonSource:
                     print(emu+"\t", self.mdv_carbon_sources[emu], "sum "+str(sum(self.mdv_carbon_sources[emu])))
 
     def generate_dict(self):
-        """Generator of a dictionary of MDVs of all EMUs
+        """Generator of a dictionary of MDVs of all EMUs of carbon sources
 
         Args:
-            nothing
+            Not required.
 
         Returns:
-            dict : Dictionary of MDVs of all EMUs
+            dict : Dictionary of MDVs of all EMUs of carbon sources
 
         Examples:
             >>> mdvs = cs.generate_dict()
@@ -124,8 +126,7 @@ class CarbonSource:
             correction (str): (yes/no) Correction of isotopomer distribution considering natural 13C occurence
 
         Returns:
-
-            Booleans.
+            Booleans: True/False
 
 
         Examples:
@@ -148,10 +149,11 @@ class CarbonSource:
         return True
 
     def set_carbonsources(self, filename, correction = 'no', format = 'text',output = "normal"):
-        """To set isotopomer data of multiple carbon sourses from text file.
+        """Setter of isotopomer data of multiple carbon sourses from text file.
 
         Args:
             filename (str): filename of MDV data with following format::
+
                 Name	Isotopomer	Ratio
                 Asp	#0000	0.5
                 Asp	#1111	0.5
@@ -164,7 +166,7 @@ class CarbonSource:
 
             output (str) : "normal" (defalut) or "debug"
 
-        Reterns:
+        Returns:
             Boolean: True/False
 
         Examples:
@@ -207,15 +209,19 @@ class CarbonSource:
         return True
 
     def set_each_isotopomer(self, compound, dict, correction = 'no'):
-        """Setter of IDV data by distribution of selected mass isotopomers
+        """Setter of IDV data of selected mass isotopomers
 
         Args:
             compound (str): Name of carbon source
-            dict (dict): Dictionary of mass isotopomer and its relative abundance {'#111': 0.5, '#001': 0.5}
+
+            dict (dict): Dictionary of mass isotopomer and its relative abundance::
+
+                {'#111': 0.5, '#001': 0.5}
+
             correction (str): (yes/no) Correction of isotopomer distribution considering natural 13C occurence
 
         Returns:
-            Bool
+            Boolean: True/False
 
         Examples:
             >>> cs.set_each_isotopomers('AcCoA', {'#11':0.5, '#10':0.25}, correction = 'yes')
@@ -269,6 +275,7 @@ class CarbonSource:
         """Setter of IDV data by distribution of selected mass isotopomers
 
         Following symbols are available::
+
             "[13C]CO2": "#1",
             "[12C]CO2": "#0",
             "[13C]THF": "#1",
@@ -290,7 +297,7 @@ class CarbonSource:
             correction (str): (yes/no) Correction of isotopomer distribution considering natural 13C occurence
 
         Returns:
-            Bool
+            Boolean: True/False
 
         Examples:
             >>> cs.set_labeled_compounds('Glc',{'[1_13C]glucose': 0.5, '[U_13C]glucose':0.5}, correction = 'yes')

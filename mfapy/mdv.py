@@ -86,24 +86,19 @@ class MdvData:
         self.observed_fragments = sorted(list(self.observed_fragments_set))
 
     def has_data(self, fragment, number):
-        """
-        Checker whether the MdvData instance has data of [number] th isotope of [fragment] mass spectra.
+        """Checker whether the MdvData instance has data of [number] th isotopomer in the MDV of [fragment].
 
-        Parameters
-        ----------
-        fragment: name of target_fragment
-        number: number of isotope
+        Args:
 
-        Reterns
-        ----------
-        Boolean: True\False
+            fragment (str): name of target_fragment
 
-        Examples
-        --------
-        >>> if mdv.has_data('Leu85', 2): brabra
+            number (int): [number] th isotopomer
 
-        See Also
-        --------
+        Returns:
+            Boolean: True\False
+
+        Examples:
+            >>> if mdv.has_data('Leu85', 2): brabra
 
         """
         if fragment in self.mdv:
@@ -112,27 +107,26 @@ class MdvData:
         return False
 
     def set_data(self, fragment, number, ratio, std, use):
-        """
-        Setter of single MDV data
+        """Setter of [number] th isotopomer in the MDV of [fragment].
 
-        Parameters
-        ----------
-        fragment: name of target_fragment
-        number: Number of isotope
-        ratio: Relative abundance of mass spectra data
-        std: Standard deviation of measured MDV data
-        use: Data to be used for MDV comparison. 'use' or 'no'
+        Args:
 
-        Reterns
-        ----------
-        Boolean: True\False
+            fragment (str): name of target_fragment
 
-        Examples
-        --------
-        >>> mdv.set_data('Leu85', 2, 0.763, 0.0054, 'use')
+            number (int): [number] th isotopomer
 
-        See Also
-        --------
+            ratio (float): Relative abundance of mass spectra data
+
+            std (float): Standard deviation of measured MDV data
+
+            use (str): Data to be used for MDV comparison. 'use' or 'no'
+
+        Returns:
+            Boolean: True\False
+
+        Examples:
+            >>> mdv.set_data('Leu85', 2, 0.763, 0.0054, 'use')
+
 
         """
         if self.has_data(fragment, number):
@@ -143,26 +137,24 @@ class MdvData:
         return False
 
     def get_data(self, fragment, number):
-        """
-        Getter of single MDV data
+        """Getter of [number] th isotopomer in the MDV of [fragment].
 
-        Parameters
-        ----------
-        fragment: name of target_fragment
-        number: Number of isotope
+        Args:
 
-        Reterns
-        ----------
-        ratio: Relative abundance of mass spectra data
-        std: Standard deviation of measured MDV data
-        use: Data to be used for MDV comparison. 'use' or 'no'
+            fragment (str): name of target_fragment
 
-        Examples
-        --------
-        >>> ratio, std, use = mdv.get_data('Leu85', 2)
+            number (int): [number] th isotopomer
 
-        See Also
-        --------
+        Returns:
+            ratio (float) Relative abundance of mass spectra data
+
+            std (float) Standard deviation of measured MDV data
+
+            use (str) Data to be used for MDV comparison. 'use' or 'no'
+
+        Examples:
+            >>> ratio, std, use = mdv.get_data('Leu85', 2)
+
 
         """
         if self.has_data(fragment, number):
@@ -170,24 +162,20 @@ class MdvData:
         return False, False, False
 
     def get_fragment_mdv(self, fragment):
-        """
-        Getter of MDV data of given fragment
-
-        Examples
-        --------
-        >>> mdv_pattern = mdv.get_fragment_mdv('Leu85')
-
-        Parameters
-        ----------
-        fragment: name of target_fragment
-
-        Reterns
-        ----------
-        mdv_pattern: Array of MDV
+        """Getter of  MDV data of [fragment].
 
 
-        See Also
-        --------
+        Args:
+
+            fragment (str): name of target_fragment
+
+        Returns:
+            mdv_pattern (array) Array of MDV of fragment
+
+
+        Examples:
+            >>> mdv_pattern = mdv.get_fragment_mdv('Leu85')
+
 
         """
         mdv_pattern = []
@@ -198,24 +186,18 @@ class MdvData:
         return mdv_pattern
 
     def correct_natural_isotope(self, mode = "normal"):
-        """
-        Correction of natural isotope effedt from fragments
-        Molecular formula information in "target fragment" of model file is used.
+        """Subtraction of natural isotope effect from fragments
 
-        Examples
-        --------
-        >>> mdv.correct_natural_isotope()
+        Molecular formula information of "target fragment" in the model definition file is used.
 
-        Parameters
-        ----------
-        mode: "normal"(defalut) and "correction" (force remove negatives and normalization)
+        Args:
+            mode (str): "normal"(defalut) and "correction" (forced removal of negatives value and sum(ratio) is set at 1.0)
 
-        Reterns
-        ----------
+        Returns:
+            Nothing
 
-
-        See Also
-        --------
+        Examples:
+            >>> mdv.correct_natural_isotope()
 
         """
 
@@ -240,23 +222,19 @@ class MdvData:
 
 
     def add_natural_isotope(self):
-        """
-        Addition of natural isotope effect to fragments
+        """Addition of natural isotope effect to fragments
+
         Molecular formula information in "target fragment" of model file is used.
 
-        Examples
-        --------
-        >>> mdv.add_natural_isotope()
+        Args:
+            Not required.
 
-        Parameters
-        ----------
-
-        Reterns
-        ----------
+        Returns:
+            Nothing.
 
 
-        See Also
-        --------
+        Example:
+            >>> mdv.add_natural_isotope()
         """
 
         for fragment in self.mdv:
@@ -270,19 +248,18 @@ class MdvData:
         return
 
     def set_observed_fragments(self, fragments):
-        """
-        Setter of observed fragment. When new MdvData instance is generated 'observed_fragment' == 'target_fragment'.
+        """Setter of observed fragment.
 
-        Parameters
-        ----------
-        fragments: List of fragment names calculated in calmdv fucntion
+        When new MdvData instance is generated 'observed_fragment' == 'target_fragment'.
 
-        Examples
-        --------
-        >>> mdv.set_observed_fragments(['Phe_85', 'Ala_57'])
+        Args:
+            fragments (Array): List of fragment names calculated in calmdv fucntion
 
-        See Also
-        --------
+        Returns:
+            Nothing.
+
+        Examples:
+            >>> mdv.set_observed_fragments(['Phe_85', 'Ala_57'])
 
         """
         # Empty set
@@ -310,38 +287,35 @@ class MdvData:
 
 
     def get_fragments_for_mdv_calculation(self):
-        """
-        Getter of fragment list whose MDVs are calculated in calmdv fucntion
+        """Getter of fragment list whose MDVs are calculated in calmdv fucntion
 
-        Reterns
-        ----------
-        fragments: List of fragment names to be used for MDV comparison
+        Args:
+            Not required.
+
+        Returns:
+            array: List of fragment names calculated in calmdv fucntion
 
 
-        Examples
-        --------
-        >>> list_of_fragment = mdv.get_fragments_for_mdv_calculation()
+        Examples:
+            >>> list_of_fragment = mdv.get_fragments_for_mdv_calculation()
 
-        See Also
-        --------
 
         """
         return list(self.fragments_for_mdv_calculation)
 
     def set_mdv_for_comparison(self, fragment, number):
-        """
-        Setter of single mass data to be used for MDV comparison
+        """Setter of mass data to be used for MDV comparison
 
-        Reterns
-        ----------
-        fragments and number: fragment names and its mass data  to be used for MDV comparison
+        Args:
+            fragment (str): name of target_fragment
 
-        Examples
-        --------
-        >>> mdv.set_mdv_for_comparison(fragment, number)
+            number (int): [number] th isotopomer
 
-        See Also
-        --------
+        Returns:
+            Nothing.
+
+        Examples:
+            >>> mdv.set_mdv_for_comparison(fragment, number)
 
         """
         if fragment in self.mdv:
@@ -351,19 +325,21 @@ class MdvData:
         return False
 
     def set_unused_mdv_for_comparison(self, fragment, number):
-        """
-        Setter of single mass data to be ignored for MDV comparison
+        """Setter of mass data to be ignored for MDV comparison
 
-        Reterns
-        ----------
-        fragments and number: fragment names and its mass data  to be ignored for MDV comparison
+        Args:
+            fragment (str): name of target_fragment
 
-        Examples
-        --------
-        >>> mdv.set_unused_mdv_for_comparison(fragment, number)
+            number (int): [number] th isotopomer
 
-        See Also
-        --------
+        Returns:
+            Nothing.
+
+
+        Examples:
+            >>> mdv.set_unused_mdv_for_comparison(fragment, number)
+
+
         """
         if fragment in self.mdv:
             if number in self.mdv[fragment]:
@@ -372,21 +348,24 @@ class MdvData:
         return False
 
     def set_std(self, value, method = 'absolute'):
-        """
-        Set standard deviation levels from mass sepctral intensity
+        """Setter of standard deviation level
 
-        Parameters
-        ----------
-        method: Method to calculate stdev levels:
-            'relative' (detault): Levels are set by stdev = [value] * signal intensity
-            'abusolute': Levels are set by stdev = [value]
+        Args:
+            value (float): level of standard deviation.
 
-        Examples
-        --------
-        >>> mdv.set_std(0.05, method = 'absolute')
+            method (str): Method to calculate stdev levels.
 
-        See Also
-        --------
+                * 'relative': Levels are set by stdev = [value] * signal intensity.
+
+                * 'absolute' (detault) : Levels are set by stdev = [value].
+
+        Returns:
+            Nothing.
+
+        Examples:
+            >>> mdv.set_std(0.05, method = 'absolute')
+
+
         """
         for fragment in self.mdv:
             for number in self.mdv[fragment]:
@@ -396,23 +375,17 @@ class MdvData:
                     self.mdv[fragment][number]['std'] = self.mdv[fragment][number]['ratio'] * value
 
     def check(self, output = "debug"):
-        """
-        Function to check missing values in the MDV data before MDV comparison
+        """Function to check missing values in the MDV data before MDV comparison
 
-        Parameters
-        ----------
-        output: Show details when "debug" mode
+        Args:
+            output (str): Show details when "debug" mode
 
-        Returns
-        --------
-        boolean: True/False
+        Returns:
+            boolean: True/False
 
-        Examples
-        --------
-        >>> mdv.check()
+        Examples:
+            >>> mdv.check()
 
-        See Also
-        --------
         """
         counter = 0;
         for fragment in self.mdv:
@@ -436,24 +409,18 @@ class MdvData:
         return False
 
     def set_mdvs_for_comparison(self, threshold_ratio, threshold_std = 1.0):
-        """
-        Setters of multiple data to be used for MDV comparison
+        """Setters of multiple data to be used for MDV comparison
 
-        Parameters
-        --------
-        threshold_ratios: Mass spectral signals with normalized intensities above threshold_ratios are used to be used for MDV comparison
-        threshold_std: Threshold for std data
+        Args:
+            threshold_ratios (float): MDV data whose ratio (0.0-1.0) is above threshold_ratios are used for MDV comparison
+            threshold_std (float): MDV data whose std is below threshold_std are used for MDV comparison
 
-        Returns
-        --------
-        boolean: True/False
+        Returns:
+            boolean: True/False
 
-        Examples
-        --------
-        >>> mdv.set_mdvs_for_comparison(0.05, 0.005)
+        Examples:
+            >>> mdv.set_mdvs_for_comparison(0.05, 0.005)
 
-        See Also
-        --------
         """
         for fragment in self.fragments_for_mdv_calculation:
             for number in self.mdv[fragment]:
@@ -464,29 +431,27 @@ class MdvData:
                         self.set_mdv_for_comparison(fragment, number)
 
     def add_gaussian_noise(self, stdev, iteration = 1, method = 'absolute', normalize = "on"):
-        """
-        Add gausian noise to MDV data
+        """Addition of gausian noise to MDV data
 
-        Parameters
-        --------
-        ratio: Intensity of noise;
-        iteration: Number of sampleing
-        method:
-            relative: intentsity = (randn() * stdev + 1) * original_intensity
-            absolute: intentsity = randn() * stdev) + original_intensity
-        normalize
-            on: sum of fragment intensity is set to 1.0
+        Args:
+            stdev (float): noise level (standard deviation of normal distribution)
 
-        Returns
-        --------
-        boolean: True/False
+            iteration (int): number of sampleing (experimental)
 
-        Examples
-        --------
-        >>> mdv.add_gaussian_noise(0.01)
+            method (str): method to add gausian noise
 
-        See Also
-        --------
+                * "relative"  intentsity = (randn() * stdev + 1) * original_intensity
+
+                * "absolute" (default) intentsity = randn() * stdev) + original_intensity
+
+            normalize (str): on (default)/off sum of ratio is set to 1.0
+
+        Returns:
+            boolean: True/False
+
+        Examples:
+            >>> mdv.add_gaussian_noise(0.01)
+
         """
 
         self.number_of_replicate = iteration
@@ -511,25 +476,29 @@ class MdvData:
                 self.mdv[fragment][number]['data'] = numpy.array(noise[number,:])
 
     def generate_observed_mdv(self):
-        """
-        Generator of MDV related inforamtion in list format.
-        This function is used in model.set_experiment()
+        """Generator of MDV related inforamtion in list format.
 
-        Returns
-        --------
-        id_array: List of ids
-        ratio_array: List of ratio data
-        std_array:List of std data
-        use_array: List of use data
-        observed_fragments: List of observed fragment
-        data:
+        This function is onely used in model.set_experiment()
 
-        Examples
-        --------
-        >>> id_array, ratio_array, std_array, use_array, observed_fragments, data = mdv.generate_observed_mdv()
+        Args:
+            Nor required.
 
-        See Also
-        --------
+        Returns:
+            * id_array (array) List of ids
+
+            * ratio_array (array) List of ratio data
+
+            * std_array (array) List of std data
+
+            * use_array (array) List of use data
+
+            * observed_fragments (array) List of observed fragments
+
+            * data (array) List of other information
+
+        Examples:
+            >>> id_array, ratio_array, std_array, use_array, observed_fragments, data = mdv.generate_observed_mdv()
+
         """
         id_array = []
         ratio_array = []
@@ -553,19 +522,17 @@ class MdvData:
         return id_array, numpy.array(ratio_array), numpy.array(std_array), use_array, self.observed_fragments, data
 
     def get_number_of_measurement(self):
-        """
-        Getter of number of measurement of the MDV data set.
+        """Getter of number of measurement of the MDV data set.
 
-        Returns
-        --------
-        number_of_measurement : Number of measurement
+        Args:
+            Nor required.
 
-        Examples
-        --------
-        >>> number_of_measurement = mdv.get_number_of_measurement()
+        Returns:
+            int: Number of measurement
 
-        See Also
-        --------
+        Examples:
+            >>> number_of_measurement = mdv.get_number_of_measurement()
+
         """
         used_fragments = set()
         counter = 0
@@ -583,19 +550,17 @@ class MdvData:
         return counter-len(used_fragments)
 
     def comparison_with_another_mdv(self, mdv):
-        """
-        Comparison of two MDV data
+        """Comparison of two MDV data
 
-        Parameters
-        --------
-        mdv: an instanse of MdvData class for comparison
+        Args:
+            mdv: instanse of another MdvData class for comparison
 
-        Examples
-        --------
-        >>> mdv.compare_mdv(mdv_fitted)
+        Returns:
+            Nothing
 
-        See Also
-        --------
+        Examples:
+            >>> mdv.compare_mdv(mdv_fitted)
+
         """
         for fragment in self.mdv:
             for number in self.mdv[fragment]:
@@ -603,34 +568,28 @@ class MdvData:
                 you = mdv.mdv[fragment][number]['ratio']
                 print("{0:8.8s} {1:1d} {2:6.5f} {3:6.5f} {4:-6.5f} {5:6.5f} {6:5.5s}".format(fragment, number, my ,you, my-you,self.mdv[fragment][number]['std'] ,self.mdv[fragment][number]['use']))
     def save(self, filename, format = "text"):
-        """
-        Save MDV data to the text/csv file
+        """Method to save MDV data in text/csv file
 
-        Parameters
-        ----------
-        mdv : a instance of mfapy.mdv for templete
-        filename : filename of MDV data with the format.
+        Args:
+            filename (str): filename of MDV data with the format::
 
-        Name	Spectrum	Select	MDV	Std
-        Ala57	m0	1	0.566990778	0.000774686
-        Ala57	m1	1	0.148623963	0.000774686
-        Ala57	m2	1	0.039467636	0.000774686
-        Ala57	m3	1	0.244917622	0.000774686
+                Name	Spectrum	Select	MDV	Std
+                Ala57	m0	1	0.566990778	0.000774686
+                Ala57	m1	1	0.148623963	0.000774686
+                Ala57	m2	1	0.039467636	0.000774686
+                Ala57	m3	1	0.244917622	0.000774686
 
-        format:
-            'csv' : CSV.
-            'text' : tab-deliminated text.
+            format (str): file format:
 
-        Reterns
-        ----------
-        Boolean: True/False
+                * 'csv' : CSV.
+                * 'text' (defalut) : tab-deliminated text.
 
-        Examples
-        --------
-        >>> self.save_data(mdv, 'filename')
+        Returns:
+            Boolean: True/False
 
-        See Also
-        --------
+        Examples:
+            >>> mdv.save('filename', format = "csv")
+
 
         """
         #
@@ -664,33 +623,34 @@ class MdvData:
         return True
 
     def load(self, filename, format = 'text',output = "normal"):
+        """Method to load MDV data from text/csv file
+
+        Args:
+            filename (str): filename of MDV data with the format::
+
+                Name	Spectrum	Select	MDV	Std
+                Ala57	m0	1	0.566990778	0.000774686
+                Ala57	m1	1	0.148623963	0.000774686
+                Ala57	m2	1	0.039467636	0.000774686
+                Ala57	m3	1	0.244917622	0.000774686
+
+            format (str): file format:
+
+                * 'csv' : CSV.
+                * 'text' (defalut) : tab-deliminated text.
+
+            output : "normal" (defalut) or "debug"
+
+
+        Returns:
+            Boolean: True/False
+
+        Examples:
+            >>> mdv.load('filename', format = 'text',output = "normal")
+
         """
-        Load MDV data from the text file.
 
-        Parameters
-        ----------
-        filename : filename of MDV data with following format.
-        Name	Spectrum	Select	MDV	Std
-        Ala57	m0	1	0.566990778	0.000774686
-        Ala57	m1	1	0.148623963	0.000774686
-        Ala57	m2	1	0.039467636	0.000774686
-        Ala57	m3	1	0.244917622	0.000774686
 
-        format : "text" (defalut) or "csv"
-        output : "normal" (defalut) or "debug"
-
-        Reterns
-        ----------
-        Boolean: True/False
-
-        Examples
-        --------
-        >>> mdv.load('filename', format = 'text',output = "normal")
-
-        See Also
-        --------
-
-        """
         #
         #
         observed_fragments_set = set()
@@ -766,24 +726,20 @@ class MdvTimeCourseData:
         self.mode = "timecourse"
 
     def has_data(self, time, fragment, number):
-        """
-        Checker whether the MdvData instance has data of [number] th isotope of [fragment] mass spectra.
+        """Checker whether the MdvData instance has data of [number] th isotopomer in the MDV of [fragment] at [time].
 
-        Parameters
-        ----------
-        fragment: name of target_fragment
-        number: number of isotope
+        Args:
+            time (float): time point
 
-        Reterns
-        ----------
-        Boolean: True\False
+            fragment (str): name of target_fragment
 
-        Examples
-        --------
-        >>> if mdv.has_data(0, 'Leu85', 2): brabra
+            number (int): [number] th isotopomer
 
-        See Also
-        --------
+        Returns:
+            Boolean: True\False
+
+        Examples:
+            >>> if mdv.has_data(0, 'Leu85', 2): brabra
 
         """
         if time in self.mdvtc.keys():
@@ -793,29 +749,26 @@ class MdvTimeCourseData:
         return False
 
     def set_data(self, time, fragment, number, ratio, std, use):
-        """
-        Setter of single MDV data
+        """Setter of [number] th isotopomer in the MDV of [fragment] at [time].
 
-        Parameters
-        ----------
-        time
-        fragment: name of target_fragment
-        number: Number of isotope
-        ratio: Relative abundance of mass spectra data
-        std: Standard deviation of measured MDV data
-        use: Data to be used for MDV comparison. 'use' or 'no'
+        Args:
+            time (float): time point
 
-        Reterns
-        ----------
-        Boolean: True\False
+            fragment (str): name of target_fragment
 
-        Examples
-        --------
-        >>> mdv.set_data(0, 'Leu85', 2, 0.763, 0.0054, 'use')
+            number (int): [number] th isotopomer
 
-        See Also
-        --------
+            ratio (float): Relative abundance of mass spectra data
 
+            std (float): Standard deviation of measured MDV data
+
+            use (str): Data to be used for MDV comparison. 'use' or 'no'
+
+        Returns:
+            Boolean: True\False
+
+        Examples:
+            >>> mdv.set_data(0, 'Leu85', 2, 0.763, 0.0054, 'use')
         """
         result = False
         if time in self.mdvtc.keys():
@@ -823,26 +776,25 @@ class MdvTimeCourseData:
         return result
 
     def get_data(self, time, fragment, number):
-        """
-        Getter of single MDV data
+        """Getter of [number] th isotopomer in the MDV of [fragment] at [time].
 
-        Parameters
-        ----------
-        fragment: name of target_fragment
-        number: Number of isotope
+        Args:
+            time (float): time point
 
-        Reterns
-        ----------
-        ratio: Relative abundance of mass spectra data
-        std: Standard deviation of measured MDV data
-        use: Data to be used for MDV comparison. 'use' or 'no'
+            fragment (str): name of target_fragment
 
-        Examples
-        --------
-        >>> ratio, std, use = mdv.get_data('Leu85', 2)
+            number (int): [number] th isotopomer
 
-        See Also
-        --------
+        Returns:
+            ratio (float) Relative abundance of mass spectra data
+
+            std (float) Standard deviation of measured MDV data
+
+            use (str) Data to be used for MDV comparison. 'use' or 'no'
+
+        Examples:
+            >>> ratio, std, use = mdv.get_data('Leu85', 2)
+
 
         """
         if time in self.mdvtc.keys():
@@ -904,52 +856,64 @@ class MdvTimeCourseData:
         return list(sorted(self.mdvtc.keys()))
 
     def set_observed_fragments(self, fragments):
-        """
-        Setter of observed fragment. When new MdvData instance is generated 'observed_fragment' == 'target_fragment'.
+        """Setter of observed fragment.
 
-        Parameters
-        ----------
-        fragments: List of fragment names to be used for MDV comparison
+        When new MdvData instance is generated 'observed_fragment' == 'target_fragment'.
 
-        Examples
-        --------
-        >>> mdv.set_observed_fragments(['Phe_85', 'Ala_57'])
+        Args:
+            fragments (Array): List of fragment names calculated in calmdv fucntion
 
-        See Also
-        --------
+        Returns:
+            Nothing.
+
+        Examples:
+            >>> mdv.set_observed_fragments(['Phe_85', 'Ala_57'])
 
         """
         for time in self.mdvtc.keys():
             self.mdvtc[time].set_observed_fragments(fragments)
 
     def add_time_point(self,time, mdv_instance):
+        """Addition of new time point
+
+        Args:
+            time (float): time point
+
+            mdv_instance (MdvData): MdvData instance
+
+        Returns:
+            nothing
+
+        Examples:
+            >>> mdv.add_time_point(3.0, mdv3)
+
+        """
+
         self.mdvtc[time] = mdv_instance
 
 
     def add_gaussian_noise(self, stdev, iteration, method = 'absolute', normalize = "on"):
-        """
-        Add gausian noise to MdvTimeCourseData
+        """Addition of gausian noise to MDV data
 
-        Parameters
-        --------
-        ratio: Intensity of noise;
-        iteration: Number of sampleing
-        method:
-            relative: intentsity = (randn() * stdev + 1) * original_intensity
-            absolute: intentsity = randn() * stdev) + original_intensity
-        normalize
-            on: sum of fragment intensity is set to 1.0
+        Args:
+            stdev (float): noise level (standard deviation of normal distribution)
 
-        Returns
-        --------
-        boolean: True/False
+            iteration (int): number of sampleing (experimental)
 
-        Examples
-        --------
-        >>> mdv.add_gaussian_noise(0.05, 5)
+            method (str): method to add gausian noise
 
-        See Also
-        --------
+                * "relative"  intentsity = (randn() * stdev + 1) * original_intensity
+
+                * "absolute" (default) intentsity = randn() * stdev) + original_intensity
+
+            normalize (str): on (default)/off sum of ratio is set to 1.0
+
+        Returns:
+            boolean: True/False
+
+        Examples:
+            >>> mdv.add_gaussian_noise(0.01)
+
         """
         for time in self.mdvtc.keys():
             self.mdvtc[time].add_gaussian_noise(stdev, iteration, method, normalize)
@@ -975,24 +939,18 @@ class MdvTimeCourseData:
             self.mdvtc[time].set_std(value, method)
 
     def set_mdvs_for_comparison(self, threshold_ratio, threshold_std = 1.0):
-        """
-        Setters of multiple data to be used for MDV comparison
+        """Setters of multiple data to be used for MDV comparison
 
-        Parameters
-        --------
-        threshold_ratios: Mass spectral signals with normalized intensities above threshold_ratios are used to be used for MDV comparison
-        threshold_std: Threshold for std data
+        Args:
+            threshold_ratios (float): MDV data whose ratio (0.0-1.0) is above threshold_ratios are used for MDV comparison
+            threshold_std (float): MDV data whose std is below threshold_std are used for MDV comparison
 
-        Returns
-        --------
-        boolean: True/False
+        Returns:
+            boolean: True/False
 
-        Examples
-        --------
-        >>> mdv.set_mdvs_for_comparison(0.05, 0.005)
+        Examples:
+            >>> mdv.set_mdvs_for_comparison(0.05, 0.005)
 
-        See Also
-        --------
         """
         for time in self.mdvtc.keys():
             self.mdvtc[time].set_mdvs_for_comparison(threshold_ratio, threshold_std)
@@ -1000,25 +958,29 @@ class MdvTimeCourseData:
 
 
     def generate_observed_mdv(self):
-        """
-        Generator of MDV related inforamtion in list format.
-        This function is used in model.set_experiment()
+        """Generator of MDV related inforamtion in list format.
 
-        Returns
-        --------
-        id_array: List of ids
-        ratio_array: List of ratio data
-        std_array:List of std data
-        use_array: List of use data
-        observed_fragments: List of observed fragment
-        data:
+        This function is onely used in model.set_experiment()
 
-        Examples
-        --------
-        >>> id_array, ratio_array, std_array, use_array, observed_fragments, data = mdv.generate_observed_mdv()
+        Args:
+            Nor required.
 
-        See Also
-        --------
+        Returns:
+            * id_array (array) Array of list of ids at each time point
+
+            * ratio_array (array) Array of list of ratio data at each time point
+
+            * std_array (array) Array of list of std data at each time point
+
+            * use_array (array) Array of list of use data at each time point
+
+            * observed_fragments (array) Array of list of observed fragments at each time point
+
+            * data (array) Array of list of other information at each time point
+
+        Examples:
+            >>> id_array, ratio_array, std_array, use_array, observed_fragments, data = mdv.generate_observed_mdv()
+
         """
         id_array = []
         ratio_array = []
@@ -1037,20 +999,19 @@ class MdvTimeCourseData:
         return id_array, numpy.array(ratio_array), numpy.array(std_array), use_array, target_emu_list, raw_data_array
 
     def get_number_of_measurement(self):
-        """
-        Getter of number of measurement of the MDV data set.
+        """Getter of number of measurement of the MDV data set.
 
-        Returns
-        --------
-        number_of_measurement : Number of measurement
+        Args:
+            Nor required.
 
-        Examples
-        --------
-        >>> number_of_measurement = mdv.get_number_of_measurement()
+        Returns:
+            int: Number of measurement
 
-        See Also
-        --------
-        # Revised 180527
+        Examples:
+            >>> number_of_measurement = mdv.get_number_of_measurement()
+
+        History
+            Revised at 27/5/2018
         """
         num_of_meas = 0
         for time in self.mdvtc.keys():
@@ -1059,36 +1020,33 @@ class MdvTimeCourseData:
         return num_of_meas
 
     def save(self, filename, format = "text"):
-        """
-        Save MDV data to the text/csv file
+        """Method to save MDV data in text/csv file
 
-        Parameters
-        ----------
-        mdv : a instance of mfapy.mdv for templete
-        filename : filename of MDV data with the format.
+        Files of each timepoint are generated with names filename+"timepoint".txt
 
-        Name	Spectrum	Select	MDV	Std
-        Ala57	m0	1	0.566990778	0.000774686
-        Ala57	m1	1	0.148623963	0.000774686
-        Ala57	m2	1	0.039467636	0.000774686
-        Ala57	m3	1	0.244917622	0.000774686
+        Args:
+            filename (str): filename of MDV data with the format::
 
-        format:
-            'csv' : CSV.
-            'text' : tab-deliminated text.
+                Name	Spectrum	Select	MDV	Std
+                Ala57	m0	1	0.566990778	0.000774686
+                Ala57	m1	1	0.148623963	0.000774686
+                Ala57	m2	1	0.039467636	0.000774686
+                Ala57	m3	1	0.244917622	0.000774686
 
-        Reterns
-        ----------
-        Boolean: True/False
+            format (str): file format:
 
-        Examples
-        --------
-        >>> self.save_data(mdv, 'filename')
+                * 'csv' : CSV.
+                * 'text' (defalut) : tab-deliminated text.
 
-        See Also
-        --------
+        Returns:
+            Boolean: True/False
+
+        Examples:
+            >>> mdv.save('filename', format = "csv")
+
 
         """
+        #
         for time in self.mdvtc.keys():
             if format == "csv":
                 save_filename = filename + str(int(time)) + ".csv"

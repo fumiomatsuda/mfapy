@@ -133,6 +133,11 @@ Version 059
 
 21/1/9 Explanation 1 files were newly added to explain mfapy functions.
 
+Version 060
+----------------------------------------
+21/2/26 Support Google docstring format.
+21/2/26 'mfapy-document' repository was created. https://fumiomatsuda.github.io/mfapy-document/
+
 
 If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>
 

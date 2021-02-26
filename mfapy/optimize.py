@@ -31,7 +31,7 @@ def initializing_Rm_fitting(numbers, vectors, matrixinv, template, initial_searc
 
         vectors (dict): "model.vector" including various vector related data of the model.
 
-        matrixinv (numpy 2d array): "model.matrixinv" is a inversed matrix for flux calculation.
+        matrixinv (numpy 2d array): "model.matrixinv" is a inversed matrix of stoichiometry matrix for flux calculation.
 
         template (dict): Dictionary of metabolic state. When template is available, metabolic state most similar to the template is generated. The function is used in the grid search.
 
@@ -41,22 +41,22 @@ def initializing_Rm_fitting(numbers, vectors, matrixinv, template, initial_searc
 
     Returns:
 
-        tmp_r (list) metabolic state data (tmp_r = numpy.dot(matrixinv, Rm_temp)
+        tmp_r (list) list of metabolic state data (tmp_r = numpy.dot(matrixinv, Rm_temp)
 
         Rm_temp (list) metabolic state vector
 
         Rm_ind (list) independent flux vector
 
-        state State of finishing condition "Failed"/"Determined"
+        state (str) State of finishing condition "Failed"/"Determined"
 
     Examples:
 
         >>> tmp_r, Rm_temp, Rm_ind, state = optimize.initializing_Rm_fitting(numbers, vectors, matrixinv, template ,initial_search_iteration_max)
 
 
-    See Also
-    --------
-    calc_protrude_scipy
+    See Also:
+
+        calc_protrude_scipy
 
     """
 
@@ -88,15 +88,15 @@ def initializing_Rm_fitting(numbers, vectors, matrixinv, template, initial_searc
         for j in range(3):
             message = "Initial state"
 
-            #ランダムな反応の最低値をランダムな値にする。
+            #Setting lower and upper boundaries
             lb_modified = list(lb)
             ub_modified = list(ub)
 
-            #適当に初期値を発生させる
+            #Generation of random initial independent vector
             for i in range(len(Rm_ind)):
                 Rm_ind[i] = (independent_ub[i] - independent_lb[i]) * numpy.random.rand() + independent_lb[i]
-            # Instantiate Optimization Problem
 
+            # Instantialization of Optimization Problem
             parameters = {}
             parameters['stoichiometric_num'] = numbers['independent_start']
             parameters['reaction_num']=numbers['independent_end']
@@ -155,12 +155,13 @@ def initializing_Rm_fitting(numbers, vectors, matrixinv, template, initial_searc
 
 
 def calc_protrude_scipy(independent_flux, *args):
-    """Objective function for initializing_Rm_fitting (SLSQP)
+    """Objective function used in initializing_Rm_fitting (SLSQP)
 
     This function calculates penalty score of metabolic state out side of the feasible space.
 
     Args:
         independent_flux (array): vector of independent flux
+
         *args (list): list of parameters.
 
     Returns:
@@ -217,13 +218,15 @@ def calc_protrude_scipy(independent_flux, *args):
     return f
 
 def calc_protrude_nlopt(independent_flux, grad, kwargs):
-    """Objective function for initializing_Rm_fitting (nlpot)
+    """Objective function used in initializing_Rm_fitting (nlpot)
 
     Calc penalty score of metabolic state out side of the feasible space.
 
     Args:
         independent_flux (array): vector of independent flux
+
         grad: not used
+
         *args (array): list of parameters.
 
     Returns:
@@ -279,13 +282,13 @@ def calc_protrude_nlopt(independent_flux, grad, kwargs):
     return f
 
 def calc_MDV_from_flux(tmp_r, target_fragments, mdv_carbon_sources, func, timepoint = [], y0temp = []):
-    """Low level function to calculate mdv vector and mdv hash from metabolic flux and carbon
+    """Low level function to calculate mdv vector and mdv hash from metabolic flux and carbon source MDV using calmdv.
 
-    source MDV using calmdv. This funcition is called from mfapy.metabolicmodel.show_results.
+    This funcition is called from mfapy.metabolicmodel.show_results.
 
 
     Args:
-        tmp_r (array): list of metabolix state
+        tmp_r (array): list of metabolic state data (tmp_r = numpy.dot(matrixinv, Rm_temp)
 
         target_fragments (array): list of targed mdvs for MDV calclation, model.target_fragments.keys()
 
@@ -293,13 +296,21 @@ def calc_MDV_from_flux(tmp_r, target_fragments, mdv_carbon_sources, func, timepo
 
         func (dict): Dict of functions for MDV calclation in model.func
 
-        timepoint  (array): For INST mode only. timepoints for MDV comparison in model.experiments[ex_id]['timepoint']
+        timepoint (array): For INST mode only. timepoints for MDV comparison in model.experiments[ex_id]['timepoint']
+            When the length of timepoint array >= 1, INST mode is used.
 
         y0temp (dict): Start IDV state for INST mode
 
     Returns:
-        float: Penalty score
+        13C-MFA mode:
+            * mdv (array) list of MDV data
 
+            * mdv_hash (dict) dict of MDV data
+
+        INST-MFA mode:
+            * mdv (array) array of mdv at each time point
+
+            * mdv_hash (array) array of mdv_hash at each time point
     Example:
         >>> mdv_exp, mdv_hash = optimize.calc_MDV_from_flux(tmp_r, target_fragments_temp, mdv_carbon_sources_temp, self.func)
 
