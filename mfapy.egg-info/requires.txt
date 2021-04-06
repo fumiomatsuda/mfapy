@@ -1,0 +1,4 @@
+matplotlib
+numpy
+joblib
+scipy

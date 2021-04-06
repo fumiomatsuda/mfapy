@@ -442,7 +442,7 @@ class Testmfapy(unittest.TestCase):
         # call scipy
         state, RSS_bestfit, flux_opt_slsqp = self.model.fitting_flux(method = 'SLSQP', flux = flux_initial1)
         actual = state
-        expected = "Optimization terminated successfully."
+        expected = "Optimization terminated successfully"
         self.assertEqual(expected, actual)
         # call nlopt
         state, RSS_bestfit, flux_opt_slsqp = self.model.fitting_flux(method = 'LN_PRAXIS', flux = flux_initial1)

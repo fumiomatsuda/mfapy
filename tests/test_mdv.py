@@ -53,8 +53,8 @@ class Testmfapy(unittest.TestCase):
         expected = "no"
         actual = self.mdv.mdv['AKGe'][5]["use"]
         self.assertEqual(expected, actual)
-    def test_set_mdv_for_ignore(self):
-        boolean = self.mdv.set_mdv_for_ignore('AKGe', 5)
+    def test_set_unused_mdv_for_comparison(self):
+        boolean = self.mdv.set_unused_mdv_for_comparison('AKGe', 5)
         expected = True
         actual = boolean
         self.assertEqual(expected, actual)
@@ -62,7 +62,7 @@ class Testmfapy(unittest.TestCase):
         actual = self.mdv.mdv['AKGe'][5]["use"]
         self.assertEqual(expected, actual)
     def test_set_mdv_for_comparison(self):
-        boolean = self.mdv.set_mdv_for_ignore('AKGe', 5)
+        boolean = self.mdv.set_unused_mdv_for_comparison('AKGe', 5)
         boolean = self.mdv.set_mdv_for_comparison('AKGe', 5)
         expected = True
         actual = boolean
@@ -129,11 +129,11 @@ class Testmfapy(unittest.TestCase):
         expected = 5
         actual = self.mdv.get_number_of_measurement()
         self.assertEqual(expected, actual)
-        self.mdv.set_mdv_for_ignore('AKGe', 5)
+        self.mdv.set_unused_mdv_for_comparison('AKGe', 5)
         expected = 5
         actual = self.mdv.get_number_of_measurement()
         self.assertEqual(expected, actual)
-        self.mdv.set_mdv_for_ignore('AKGe', 4)
+        self.mdv.set_unused_mdv_for_comparison('AKGe', 4)
         expected = 4
         actual = self.mdv.get_number_of_measurement()
         self.assertEqual(expected, actual)
