@@ -404,6 +404,7 @@ class CarbonSource:
         # For each carbon source
         #
         for compound in carbonsource:
+
             if compound not in self.cs:
                 continue
             #
@@ -430,23 +431,23 @@ class CarbonSource:
                     #
                     # ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
                     #['0', '0', '0', '0']
-                    bin = list('{0:010b}'.format(t))[10-size:10]# Max 10
-                    bin.reverse()
+                    bindata = list('{0:012b}'.format(t))[12-size:12]# Max 11
+                    bindata.reverse()
                     #
                     #['0', '0', '0', '0'] <= Label pattern = #0000
                     #
                     # Count nonlabled carbon (0)
                     #
-                    zero_count = float(sum([1 for x in bin if x == '0']))
+                    zero_count = float(sum([1 for x in bindata if x == '0']))
                     # zero_count = 4
-                    for i in range(0, len(bin)):
+                    for i in range(0, len(bindata)):
                         # scan ['0', '0', '0', '0']
                         #
                         # If there is one natural 13C among 12C
                         #
-                        isotope = bin[i]
+                        isotope = bindata[i]
                         if isotope == "0":
-                            bin_temp = list(bin) #copy
+                            bin_temp = list(bindata) #copy
                             bin_temp[i] = '1' # Change to 13C ['1', '0', '0', '0']
                             bin_temp.reverse()  # reverse ['0', '0', '0', '1']
                             number_temp = int("".join(bin_temp),2) # convert to number of natural isotope 3
@@ -501,11 +502,11 @@ class CarbonSource:
                     for i in c:
                         filter[int(i)-1] = 1
                     for t in range((2 ** int(size))):
-                        bin = list(format (t, '09b'))#for all isotopomers
-                        bin.reverse()
+                        bindata = list(format (t, '012b'))#for all isotopomers
+                        bindata.reverse()
                         #Cals number of 13C in EMU
                         #print(bin, filter)
-                        number = sum([int(bin[x]) for x in range(len(filter)) if filter[x] == 1])
+                        number = sum([int(bindata[x]) for x in range(len(filter)) if filter[x] == 1])
                         #Integraton。
                         MID[number] += IDV_array[t]
                     #Normalised to 1.0
