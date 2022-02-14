@@ -43,7 +43,7 @@ Install
 1. Install 64 bit version of Anaconda3
 2. Create virtual environment such as named "mfapy" and install required packages
 ~~~
-    > conda create -n mfapy python=3.6 numpy scipy matplotlib=2.1 joblib
+    > conda create -n mfapy python=3.9 numpy scipy matplotlib joblib
     > conda activate mfapy
     > conda install -c conda-forge nlopt
     > conda install -c anaconda mkl-service
