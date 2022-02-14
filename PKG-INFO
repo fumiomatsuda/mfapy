@@ -51,7 +51,7 @@ Description: mfapy: A Python toolbox for 13C-metabolic flux analysis
 
         Requirement
         ----------------------------------------
-        Python 3.6
+        Python 3.9
 
         mfapy requires the packages:
 
@@ -71,7 +71,7 @@ Description: mfapy: A Python toolbox for 13C-metabolic flux analysis
         1. Install 64 bit version of Anaconda3
         2. Create virtual environment such as named "mfapy" and install required packages
         ~~~
-            > conda create -n mfapy python=3.6 numpy scipy matplotlib=2.1 joblib
+            > conda create -n mfapy python=3.9 numpy scipy joblib
             > conda activate mfapy
             > conda install -c conda-forge nlopt
             > conda install -c anaconda mkl-service
