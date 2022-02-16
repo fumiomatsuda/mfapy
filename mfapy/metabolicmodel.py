@@ -92,6 +92,7 @@ class MetabolicModel:
 
         self.symmetry = {}
         self.carbon_source = {}
+        self.carbon_source_emu = {}
         #
         # MFA experimental sets
         #
@@ -1634,7 +1635,18 @@ class MetabolicModel:
                     previous_hit_emuset.update([product_emu])
                 # When no new product_emu is found
                 if previous_hit_emuset == hit_emuset:
+
                     break
+        #
+        # Check EMUs required for carbon source (Added ver 0.6.1)
+        #
+        for emutemp in hit_emuset:
+            metabolite_name, position = emutemp.split("_")
+            position_list = position.split(":")
+            if metabolite_name in self.carbon_source:
+                self.carbon_source_emu[emutemp] = {"metabolite_name": metabolite_name, "position_list":position_list}
+                #print(metabolite_name, position_list)
+
 
 
         #
@@ -2993,7 +3005,7 @@ class MetabolicModel:
         # Initial data is full 12C without natural 13C
         for compound in cs:
             cs[compound]['IDV'][0] = 1.0
-        return carbonsource.CarbonSource(cs)
+        return carbonsource.CarbonSource(cs, self.carbon_source_emu)
 
     def generate_mdv(self, flux, carbon_sources, timepoint = [], startidv = []):
         """Generator of a MdvData instance including MDV data generated from given flux and carbon sources.

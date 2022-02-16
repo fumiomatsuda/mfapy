@@ -140,7 +140,7 @@ Version 060
 
 Version 061
 ----------------------------------------
-22/2/14 Maximum EMU size is changed from 10 to 12.
+22/2/14 Limiation in the maximum EMU size is removed.
 
 
 If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>

@@ -30,7 +30,7 @@ class CarbonSource:
     Instance of this class is generated in the MetabolicModel instance
 
     """
-    def __init__(self, carbon_sources):
+    def __init__(self, carbon_sources, emu_dict):
         """Constructer of CarbonSource instance from target_fragments information of the metabolic model
 
         Args:
@@ -53,6 +53,9 @@ class CarbonSource:
             'IDV': carbon_sources[compound]['IDV'][:],
             'size': carbon_sources[compound]['size']
             }
+        self.emu_dict = {}
+        for compound, position_list in emu_dict.items():
+            self.emu_dict[compound] = position_list
         self.mdv_carbon_sources = {}
         #Set MDVs of EMUs of each carbon sources
         self.generate_carbonsource_MDV()
@@ -431,8 +434,15 @@ class CarbonSource:
                     #
                     # ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
                     #['0', '0', '0', '0']
-                    bindata = list('{0:012b}'.format(t))[12-size:12]# Max 11
+                    #bindata = list('{0:012b}'.format(t))[12-size:12]# Max 11
+                    #bindata.reverse()
+                    #
+                    # New in ver 0.6.1
+                    bindata = list('{:b}'.format(t))
                     bindata.reverse()
+                    diffsize = size-len(bindata)
+                    bindata.extend(['0'] * diffsize)
+
                     #
                     #['0', '0', '0', '0'] <= Label pattern = #0000
                     #
@@ -480,38 +490,45 @@ class CarbonSource:
                     IDV_array[t] = IDV_array[t] + self.cs[compound]["IDV"][t] * ((1.0- stable_isotope_ratio) ** zero_count)
             else:
                 IDV_array = list(self.cs[compound]["IDV"])
+            #
+            # EMU generation New in ver 0.6.1
+            #
+            for emu in self.emu_dict:
+                compound_emu = self.emu_dict[emu]["metabolite_name"]
+                if compound != compound_emu:
+                    continue
+                position_list = self.emu_dict[emu]["position_list"]
+                emu_size = len(position_list)
 
-            #
-            # EMU generation
-            #
-            for emu_size in range(1, size+1):
+                MID = [0] * (int(emu_size) + 1)#Mass isotopomer distribution
+                filtered = [0]  * int(size);# Carbons for EMU
                 #
-                # Generate all EMUs by itertools.combinations
+                # Name of EMUs.
                 #
-                for c in itertools.combinations(range(1,size+1),emu_size):
-                    MID = [0] * (int(emu_size) + 1)#Mass isotopomer distribution
-                    filter = [0]  * int(size);# Carbons for EMU
+                #numbers =  ":".join(map(str,c))
+                #emu = compound + "_" + numbers
+                #
+                # Set carbon positions
+                #
+                for i in position_list:
+                    filtered[int(i)-1] = 1
+                for t in range((2 ** int(size))):
+                    #bindata = list(format (t, '012b'))#for all isotopomers
+                    #bindata.reverse()
                     #
-                    # Name of EMUs.
                     #
-                    numbers =  ":".join(map(str,c))
-                    emu = compound + "_" + numbers
-                    #
-                    # Set carbon positions
-                    #
-                    for i in c:
-                        filter[int(i)-1] = 1
-                    for t in range((2 ** int(size))):
-                        bindata = list(format (t, '012b'))#for all isotopomers
-                        bindata.reverse()
-                        #Cals number of 13C in EMU
-                        #print(bin, filter)
-                        number = sum([int(bindata[x]) for x in range(len(filter)) if filter[x] == 1])
-                        #Integraton。
-                        MID[number] += IDV_array[t]
-                    #Normalised to 1.0
-                    sum_MID = sum(MID)
-                    self.mdv_carbon_sources[emu] = [x/sum_MID for x in MID]
+                    bindata = list('{:b}'.format(t))
+                    bindata.reverse()
+                    diffsize = size-len(bindata)
+                    bindata.extend(['0'] * diffsize)
+                    #Cals number of 13C in EMU
+                    #print(bin, filter)
+                    number = sum([int(bindata[x]) for x in range(len(filtered)) if filtered[x] == 1])
+                    #Integraton
+                    MID[number] += IDV_array[t]
+                #Normalised to 1.0
+                sum_MID = sum(MID)
+                self.mdv_carbon_sources[emu] = [x/sum_MID for x in MID]
         return(self.mdv_carbon_sources)
 
 def main():
