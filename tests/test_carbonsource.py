@@ -34,7 +34,10 @@ class Testmfapy(unittest.TestCase):
                           0.0,
                           0.0],
                   'size': 4}}
-        self.cs = mfapy.carbonsource.CarbonSource(carbon_sources)
+        carbon_source_emu = {'Asp_1:2:3:4': {'metabolite_name': 'Asp', 'position_list': ['1', '2', '3', '4']},'Asp_1:2:3': {'metabolite_name': 'Asp',\
+        'position_list': ['1', '2', '3']},'Asp_1:2': {'metabolite_name': 'Asp', 'position_list': ['1', '2']},'Asp_1': {'metabolite_name': 'Asp', 'position_list': ['1']},\
+        'AcCoA_1': {'metabolite_name': 'AcCoA', 'position_list': ['1']},'AcCoA_1:2': {'metabolite_name': 'AcCoA', 'position_list': ['1','2']}}
+        self.cs = mfapy.carbonsource.CarbonSource(carbon_sources, carbon_source_emu)
 
 
     def test_set_all_isotopomers(self):
