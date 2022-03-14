@@ -1,6 +1,5 @@
 carbonsource
 mdv
 metabolicmodel
-mfapy
 mfapyio
 optimize

@@ -23,7 +23,7 @@ This software is released under the MIT License, see LICENSE.txt.
 
 Requirement
 ----------------------------------------
-Python 3.6
+Python 3.9
 
 mfapy requires the packages:
 
@@ -141,6 +141,7 @@ Version 060
 Version 061
 ----------------------------------------
 22/2/14 Limiation in the maximum EMU size is removed.
+22/3/14 Problems in setup.py are corrected (Thanks for Prof. Suneng Fu @ ??).
 
 
 If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>

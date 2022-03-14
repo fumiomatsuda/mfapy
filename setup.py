@@ -21,10 +21,9 @@ with open('LICENSE') as f:
 setup(
     name='mfapy',
     version='0.6.1',
-    packages=find_packages(exclude=('tests', 'docs')),
     package_dir = {'mfapy': ""},
-    py_modules =  ["mfapy", "metabolicmodel", "carbonsource", "mfapyio", "mdv", "optimize"],
-    description = "Parallel and distributed programming for Python",
+    py_modules =  ["metabolicmodel", "carbonsource", "mfapyio", "mdv", "optimize"],
+    description = "mfapy: a python package for the 13C metabolic flux analysis",
     platforms = ["Windows", "Linux", "Unix"],
     long_description=readme,
     author='Fumio Matsuda',

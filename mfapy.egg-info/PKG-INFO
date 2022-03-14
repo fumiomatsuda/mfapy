@@ -1,7 +1,7 @@
 Metadata-Version: 1.0
 Name: mfapy
-Version: 0.6.0
-Summary: Parallel and distributed programming for Python
+Version: 0.6.1
+Summary: mfapy: a python package for the 13C metabolic flux analysis
 Home-page: https://github.com/fumiomatsuda/mfapy
 Author: Fumio Matsuda
 Author-email: fmatsuda@osaka-u.ac.jp
@@ -71,7 +71,7 @@ Description: mfapy: A Python toolbox for 13C-metabolic flux analysis
         1. Install 64 bit version of Anaconda3
         2. Create virtual environment such as named "mfapy" and install required packages
         ~~~
-            > conda create -n mfapy python=3.6 numpy scipy matplotlib=2.1 joblib
+            > conda create -n mfapy python=3.9 numpy scipy matplotlib joblib
             > conda activate mfapy
             > conda install -c conda-forge nlopt
             > conda install -c anaconda mkl-service
@@ -165,6 +165,10 @@ Description: mfapy: A Python toolbox for 13C-metabolic flux analysis
         ----------------------------------------
         21/2/26 Support Google docstring format.
         21/2/26 'mfapy-document' repository was created. https://fumiomatsuda.github.io/mfapy-document/
+        
+        Version 061
+        ----------------------------------------
+        22/2/14 Limiation in the maximum EMU size is removed.
         
         
         If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>
