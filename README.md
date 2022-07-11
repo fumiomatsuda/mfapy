@@ -136,12 +136,14 @@ Version 059
 Version 060
 ----------------------------------------
 21/2/26 Support Google docstring format.
+
 21/2/26 'mfapy-document' repository was created. https://fumiomatsuda.github.io/mfapy-document/
 
 Version 061
 ----------------------------------------
 22/2/14 Limiation in the maximum EMU size is removed.
-22/3/14 Problems in setup.py are corrected (Thanks for Prof. Suneng Fu @ ??).
+
+22/3/14 Problems in setup.py are corrected (Thanks for Prof. Suneng Fu).
 
 
 Version 062
