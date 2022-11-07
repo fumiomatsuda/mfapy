@@ -149,6 +149,7 @@ Version 061
 Version 062
 ----------------------------------------
 22/5/30 Test
+
 22/11/7 Bugs in MetabolicModel.show_results was fixed.
 
 If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>
