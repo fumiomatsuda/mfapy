@@ -4219,25 +4219,25 @@ class MetabolicModel:
             text = ""
             if rss == "on":
                 #print reaction header
-                text = text + "{0:15.15s}".format(reaction_header[0])
-                text = text + "{0:25.25s}".format(reaction_header[1])
-                text = text + "{0:10.10s}".format(reaction_header[2])
+                text = text + "{0:15.15s}".format(str(reaction_header[0]))
+                text = text + "{0:25.25s}".format(str(reaction_header[1]))
+                text = text + "{0:10.10s}".format(str(reaction_header[2]))
                 for i in range(len(input)):
                     text = text + "{0:>8.7s}".format(str(reaction_header[3+i]))
                 text = text + "\n"
                 for data in rssd:
-                    text = text + "{0:15.15s}".format(data[0])
-                    text = text + "{0:25.25s}".format(data[1])
-                    text = text + "{0:10.10s}".format(data[2])
+                    text = text + "{0:15.15s}".format(str(data[0]))
+                    text = text + "{0:25.25s}".format(str(data[1]))
+                    text = text + "{0:10.10s}".format(str(data[2]))
                     for i in range(len(input)):
                         text = text + "{0:>8.2f}".format(data[3+i])
                     text = text + "\n"
 
             if flux == "on":
                 #print flux data
-                text = text + "{0:15.15s}".format(reaction_header[0])
-                text = text + "{0:25.25s}".format(reaction_header[1])
-                text = text + "{0:10.10s}".format(reaction_header[2])
+                text = text + "{0:15.15s}".format(str(reaction_header[0]))
+                text = text + "{0:25.25s}".format(str(reaction_header[1]))
+                text = text + "{0:10.10s}".format(str(reaction_header[2]))
                 step = 2
                 for i in range(len(input)):
                     step = step + 1
@@ -4252,26 +4252,26 @@ class MetabolicModel:
 
                 text = text + "\n"
                 for data in reaction:
-                    text = text + "{0:15.15s}".format(data[0])
-                    text = text + "{0:25.25s}".format(data[1])
-                    text = text + "{0:10.10s}".format(data[2])
+                    text = text + "{0:15.15s}".format(str(data[0]))
+                    text = text + "{0:25.25s}".format(str(data[1]))
+                    text = text + "{0:10.10s}".format(str(data[2]))
                     step = 2
                     for i in range(len(input)):
                         step = step + 1
                         text = text + "{0:>8.1f}".format(data[step])
-                    text = text + " " + "{0:8.7s}".format(data[step + 1])
+                    text = text + " " + "{0:8.7s}".format(str(data[step + 1]))
                     text = text + "{0:6.1f}".format(data[step + 2])
                     text = text + "{0:6.1f}".format(data[step + 3])
                     text = text + "{0:6.1f}".format(float(data[step + 4]))
                     text = text + "{0:6.1f}".format(float(data[step + 5]))
-                    text = text + " " + "{0:25.25s}".format(data[step + 6])
+                    text = text + " " + "{0:25.25s}".format(str(data[step + 6]))
                     text = text + "\n"
 
             if pool_size == "on":
                 #print reaction header
-                text = text + "{0:15.15s}".format(metabolites_header[0])
-                text = text + "{0:25.5s}".format(metabolites_header[1])
-                text = text + "{0:10.10s}".format(metabolites_header[2])
+                text = text + "{0:15.15s}".format(str(metabolites_header[0]))
+                text = text + "{0:25.5s}".format(str(metabolites_header[1]))
+                text = text + "{0:10.10s}".format(str(metabolites_header[2]))
                 step = 2
                 for i in range(len(input)):
                     step = step + 1
@@ -4287,22 +4287,22 @@ class MetabolicModel:
                 text = text + " "+"{0:9.9s}".format(metabolites_header[step + 8])
                 text = text + "\n"
                 for data in metabolites:
-                    text = text + "{0:15.15s}".format(data[0])
+                    text = text + "{0:15.15s}".format(str(data[0]))
                     text = text + "{0:<25.0f}".format(data[1])
-                    text = text + "{0:10.10s}".format(data[2])
+                    text = text + "{0:10.10s}".format(str(data[2]))
                     step = 2
                     for i in range(len(input)):
                         step = step + 1
                         text = text + "{0:>8.3f}".format(data[step])
-                    text = text + " "+"{0:8.7s}".format(data[step + 1])
+                    text = text + " "+"{0:8.7s}".format(str(data[step + 1]))
                     text = text + "{0:6.1f}".format(data[step + 2])
                     text = text + "{0:6.1f}".format(data[step + 3])
 
                     text = text + " "+"{0:6.3f}".format(float(data[step + 4]))
                     text = text + " "+"{0:6.1f}".format(float(data[step + 5]))
-                    text = text + " "+"{0:9.9s}".format(data[step + 6])
-                    text = text + " "+"{0:9.9s}".format(data[step + 7])
-                    text = text + " "+"{0:9.9s}".format(data[step + 8])
+                    text = text + " "+"{0:9.9s}".format(str(data[step + 6]))
+                    text = text + " "+"{0:9.9s}".format(str(data[step + 7]))
+                    text = text + " "+"{0:9.9s}".format(str(data[step + 8]))
 
                     text = text + "\n"
 
@@ -4317,8 +4317,8 @@ class MetabolicModel:
                 text = text + "{0:>6.6s}".format(mdv_header[-1])
                 text = text + "\n"
                 for data in mdvd:
-                    text = text + "{0:15.15s}".format(data[0])
-                    text = text + "{0:25.15s}".format(data[1])
+                    text = text + "{0:15.15s}".format(str(data[0]))
+                    text = text + "{0:25.15s}".format(str(data[1]))
                     text = text + "{0:<10.2f}".format(data[2])
                     for i in range(len(input)):
                         text = text + "{0:8.4f}".format(data[3+i])
@@ -4337,8 +4337,8 @@ class MetabolicModel:
                 text = text + "{0:>6.6s}".format(mdv_header[-1])
                 text = text + "\n"
                 for data in rssdata:
-                    text = text + "{0:15.15s}".format(data[0])
-                    text = text + "{0:25.15s}".format(data[1])
+                    text = text + "{0:15.15s}".format(str(data[0]))
+                    text = text + "{0:25.15s}".format(str(data[1]))
                     text = text + "{0:<10.2s}".format(str(data[2]))
                     for i in range(len(input)):
                         text = text + "{0:8.2f}".format(data[3+i])
