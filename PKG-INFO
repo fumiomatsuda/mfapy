@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: mfapy
-Version: 0.6.0
+Version: 0.6.2
 Summary: Python package for 13C Metabolic flux analysis
 Home-page: https://github.com/fumiomatsuda/mfapy
 Author: Fumio Matsuda

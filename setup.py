@@ -20,7 +20,7 @@ with open('LICENSE') as f:
 
 setup(
     name='mfapy',
-    version='0.6.1',
+    version='0.6.2',
     package_dir = {'mfapy': ""},
     py_modules =  ["metabolicmodel", "carbonsource", "mfapyio", "mdv", "optimize"],
     description = "mfapy: a python package for the 13C metabolic flux analysis",
