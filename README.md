@@ -31,6 +31,8 @@ NumPy and SciPy (van der Walt, Colbert & Varoquaux, 2011)
 
 nlopt https://nlopt.readthedocs.io/en/latest/
 
+Please try ver 2.7.0 if there is any problems (Thanks to #uliebal)
+
 joblib
 
 mkl-service
