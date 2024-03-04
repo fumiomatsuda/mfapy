@@ -147,18 +147,23 @@ Version 059
 Version 060
 ----------------------------------------
 21/2/26 Support Google docstring format.
+
 21/2/26 'mfapy-document' repository was created. https://fumiomatsuda.github.io/mfapy-document/
 
 Version 061
 ----------------------------------------
 22/2/14 Limiation in the maximum EMU size was removed.
+
 22/11/7 Bugs in MetabolicModel.show_results was fixed.
 
 Version 061
 ----------------------------------------
 24/3/4  DocString contents were updated.
+
 24/3/4  "Tutorial 1_13C-MFAEcoli.py" was created to expain how to use mfapy for 13C-MFA.
+
 24/3/4  "Tutorial 2_INST-MFAtoymodel.py" was created to expain how to use mfapy for INST-MFA.
+
 24/3/4  "Tutorial_3_mfapy_functions.py" was created to expain many mfapy functions.
 
 
