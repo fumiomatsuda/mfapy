@@ -2,6 +2,7 @@ mfapy: A Python toolbox for 13C-metabolic flux analysis
 ================================================
 
 mfapy is a Python toolbox for 13C-metabolic flux analysis developed by Matsuda and Shimizu lab group in Osaka university, Japan.
+
 mfapy supports:
 
 1. The elementary metabolite unit (EMU) framework developed by Antoniewicz et al 2007.
@@ -64,7 +65,9 @@ Test
 How to use
 ----------------------------------------
 ./sample/Tutorial 1_13C-MFAEcoli.py explains how to use mfapy for 13C-MFA.
+
 ./sample/Tutorial 2_INST-MFAtoymodel.py explains how to use mfapy for INST-MFA.
+
 ./sample/Tutorial 3_mfapy_functions.py is a advanced exlanation on many mfapy function.
 
 
