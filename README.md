@@ -23,15 +23,13 @@ This software is released under the MIT License, see LICENSE.txt.
 
 Requirement
 ----------------------------------------
-Python 3.9
+Python 3.6
 
 mfapy requires the packages:
 
 NumPy and SciPy (van der Walt, Colbert & Varoquaux, 2011)
 
 nlopt https://nlopt.readthedocs.io/en/latest/
-
-Please try ver 2.7.0 if there is any problems (Thanks to #uliebal)
 
 joblib
 
@@ -65,11 +63,19 @@ Test
 
 How to use
 ----------------------------------------
-Sample python code in 'Explanation_1_13CMFA_toymodel.py' explains how to use mfapy.
+./sample/Tutorial 1_13C-MFAEcoli.py explains how to use mfapy for 13C-MFA.
+./sample/Tutorial 2_INST-MFAtoymodel.py explains how to use mfapy for INST-MFA.
+./sample/Tutorial 3_mfapy_functions.py is a advanced exlanation on many mfapy function.
+
+
 Detailed explanations are available from docstrings
-Example python codes are also available.
+
+In the ./sample folder, example python codes are also available.
+
 
 Learn more <https://fumiomatsuda.github.io/mfapy-document/>
+
+
 
 Version 054
 ----------------------------------------
@@ -138,21 +144,20 @@ Version 059
 Version 060
 ----------------------------------------
 21/2/26 Support Google docstring format.
-
 21/2/26 'mfapy-document' repository was created. https://fumiomatsuda.github.io/mfapy-document/
 
 Version 061
 ----------------------------------------
-22/2/14 Limiation in the maximum EMU size is removed.
-
-22/3/14 Problems in setup.py are corrected (Thanks for Prof. Suneng Fu).
-
-
-Version 062
-----------------------------------------
-22/5/30 Test
-
+22/2/14 Limiation in the maximum EMU size was removed.
 22/11/7 Bugs in MetabolicModel.show_results was fixed.
+
+Version 061
+----------------------------------------
+24/3/4  DocString contents were updated.
+24/3/4  "Tutorial 1_13C-MFAEcoli.py" was created to expain how to use mfapy for 13C-MFA.
+24/3/4  "Tutorial 2_INST-MFAtoymodel.py" was created to expain how to use mfapy for INST-MFA.
+24/3/4  "Tutorial_3_mfapy_functions.py" was created to expain many mfapy functions.
+
 
 If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>
 

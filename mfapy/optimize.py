@@ -10,14 +10,14 @@
 # Copyright:   (c) Fumio_Matsuda 2018
 # Licence:     MIT license
 #-------------------------------------------------------------------------------
-"""optimize.py:low level optimizer functions used in mfapy.
+"""optimize.py: Low-level optimizer functions used in mfapy.
 
-These functions were separated from model instance for the parallel execution.
+These functions were separated from the model instance for parallel execution.
 
 Todo:
-    * Cleaning-up and support other optimizers
-
+    * Cleaning up and support other optimizers
 """
+
 import numpy as numpy
 import scipy as scipy
 import nlopt as nlopt

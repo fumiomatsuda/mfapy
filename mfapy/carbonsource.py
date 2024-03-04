@@ -215,19 +215,18 @@ class CarbonSource:
         """Setter of IDV data of selected mass isotopomers
 
         Args:
-            compound (str): Name of carbon source
+            compound (str): An ID of the carbon source metabolite. The ID must be defined in the model definition file.
 
-            dict (dict): Dictionary of mass isotopomer and its relative abundance::
-
-                {'#111': 0.5, '#001': 0.5}
-
-            correction (str): (yes/no) Correction of isotopomer distribution considering natural 13C occurence
+            dict (dict): A dictionary of isotopomers and their ratios. For example, for SubsGlc with six carbons, the keys '#000000', '#100000', and '#111111' represent non-labeled glucose, [1-13C]glucose, and [U-13C]glucose, respectively. The values (e.g., 0.02, 0.7, and 0.28) denote their relative abundances. Ex. {'#000000': 0.02, '#100000': 0.7, '#111111': 0.28 }
+		
+            correction (str): (yes/no) If 'yes', the composition of the isotopomer is automatically adjusted considering the occurrence of natural 13C.
 
         Returns:
             Boolean: True/False
 
         Examples:
-            >>> cs.set_each_isotopomers('AcCoA', {'#11':0.5, '#10':0.25}, correction = 'yes')
+            >>> cs.set_each_isotopomer('SubsGlc',{'#000000': 0.02, '#100000': 0.7, '#111111': 0.28 }, correction = 'yes')
+
 
 
 

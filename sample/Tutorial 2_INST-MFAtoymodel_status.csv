@@ -1,0 +1,32 @@
+State,Id,type,value,stdev,lb,ub,
+reaction,v1,fixed,75,1,0,300,SubsGlc --> G6P
+reaction,v2,free,75,1,0,300,G6P --> {2}PEP
+reaction,v3,free,90,1,0,300,PEP --> Pyr
+reaction,v4,free,60,1,0,300,PEP + CO2in --> Oxa
+reaction,v5,free,0,1,0,300,Oxa --> PEP + CO2in
+reaction,v6,free,10,1,0,300,Mal --> Pyr + CO2in
+reaction,v7,free,100,1,0,300,Pyr --> AcCOA + CO2in
+reaction,v8,free,100,1,0,300,AcCoA + OAC --> Cit
+reaction,v9,free,100,1,0,300,Cit --> AKG + CO2in
+reaction,v10,free,50,1,0,300,AKG --> Glu
+reaction,v11,free,50,1,0,300,AKG --> Suc + CO2in
+reaction,v12,free,50,1,0,300,Suc --> Fum
+reaction,v13,free,125,1,0,300,Fum --> OAC
+reaction,v14,free,75,1,0,300,OAC --> Fum
+reaction,v15,fitting,50,5,0,300,Glu --> Gluex
+reaction,v16,free,200,1,0,300,CO2in --> CO2ex
+reversible,FUM,free,50,1,0,300,
+metabolite,SubsGlc,fixed,100,1,0,300,
+metabolite,G6P,fixed,100,1,0,300,
+metabolite,PEP,fixed,100,1,0,300,
+metabolite,CO2in,fixed,100,1,0,300,
+metabolite,CO2ex,fixed,100,1,0,300,
+metabolite,Pyr,fixed,100,1,0,300,
+metabolite,AcCoA,fixed,100,1,0,300,
+metabolite,OAC,fixed,100,1,0,300,
+metabolite,Cit,fixed,100,1,0,300,
+metabolite,AKG,fixed,10,1,0,300,
+metabolite,Suc,fixed,100,1,0,300,
+metabolite,Fum,fixed,100,1,0,300,
+metabolite,Glu,fixed,100,1,0,300,
+metabolite,Gluex,fixed,100,1,0,300,

@@ -1,0 +1,133 @@
+#-------------------------------------------------------------------------------
+# Name:        Explanation_2_INSTMFA_toymodel_model.txt
+#              Model definition file for Explanation_2_INSTMFA_toymodel.py of mfapy
+#
+# Author:      Fumio_Matsuda
+#
+# Created:     15/02/2024
+# Copyright:   (c) Fumio_Matsuda 2024
+# Licence:     MIT license
+#-------------------------------------------------------------------------------
+#
+#  Any texts after "#" are ignored as comment
+#  Required information for INST-MFA is identical with that of 13C-MFA
+#
+# Definition of metabolic reactions
+# 1. id, text
+#	Please use alphabet (+ number) as ids. Do not use space and special characters to avoid unexpected errors.
+# 2. Stoichiometry for the construicton of stoichiometry matrix, text
+#	All id of metabolites must be defined in //Metabolites
+#	Only "+" and "-->" are accpectable separators.
+#	Here, expression of reaction using coefficient such as  "Fumx --> {2}OA" is allowed.
+#	"nd" means this reaction is an "pseudo" reaction and ignored in the flux calculation of substrate by stoichiometry matrix.
+# 3. Stoichiometry for the construicton of atom mapping, text
+#	Only "+" and "-->" are accpectable separators.
+#	Here, expression of reaction without using coefficient is needed such as  "Fumx --> OA+OA".
+#	"nd" means this reaction is an excretion reaction and ignored in the MDV calculation
+# 4. Atom mapping, text
+#	Only "+" and "-->" are accpectable separators. Please use A-Z to express carbon atom.
+#	"nd" means this reaction is an excretion reaction and ignored in the MDV calculation
+# 5. Links to external ids (Optional)
+#	Links to external ids can be described here
+# 6. Lower boundary of metabolic flux level, float (Optional)
+#	Value must be more than zero
+# 7. Upper boundary of metabolic flux level, float (Optional)
+#	Value must be more than zero
+//Reactions
+v1	SubsGlc --> G6P	SubsGlc --> G6P	ABCDEF --> ABCDEF	(kegg:R02848)	0	1000
+v2	G6P --> {2}PEP	G6P --> PEP + PEP	ABCDEF --> CBA + DEF	(kegg:R01068r)	0	1000
+v3	PEP --> Pyr	PEP --> Pyr	ABC --> ABC	(kegg:R01196)	0	1000
+v4	PEP + CO2in --> OAC	PEP + CO2in --> OAC	ABC + D --> ABCD	(kegg:Lacex)	0	1000
+v5	OAC --> PEP + CO2in	OAC --> PEP + CO2in	ABCD --> ABC + D	(kegg:SubsGln)	0	1000
+v6	OAC --> Pyr + CO2in	OAC --> Pyr + CO2in	ABCD --> ABC + D	(kegg:R00253)	0	1000
+v7	Pyr --> AcCoA + CO2in	Pyr --> AcCoA + CO2in	ABC --> BC + A	(kegg:R00709f)	0	1000
+v8	AcCoA + OAC --> Cit	AcCoA + OAC --> Cit	AB + CDEF --> FEDBAC	(kegg:R00351)	0.0	300
+v9	Cit --> AKG + CO2ex	Cit --> AKG + CO2ex	ABCDEF --> ABCDE + F	(kegg:R00709)	0.0	300
+v10	AKG --> Glu	AKG --> Glu	ABCDE --> ABCDE 	(kegg:R00243)	0.0	300
+v11	AKG --> Suc + CO2ex	AKG --> Suc + CO2ex	ABCDE --> BCDE + A	(kegg:R01197)	0.0	300
+v12	Suc --> Fum	Suc --> Fum	ABCD --> ABCD	(kegg:R02164)	0.0	300
+v13	Fum --> OAC	Fum --> OAC	ABCD --> ABCD	(kegg:R01082)	0.0	300
+v14	OAC --> Fum	OAC --> Fum	ABCD --> ABCD	(kegg:R01082)	0.0	300
+v15	Glu --> Gluex	nd	nd 	(kegg:R00243)	0.0	300
+v16	CO2in --> CO2ex	nd	nd	(kegg:Glu)	0	1000
+#
+# Definition of metabolites
+# 1. id, text
+#	Please use alphabet and numbers. Do not use space, "_", and other special characters to avoid unexpected errors.
+#	Initial character must be alphabet. The id "6PG" was not allowed. Please convert to "m6PG" or other names
+# 2. Carbon number, int
+#   Max number of carbon in "carbonsource" metabolites are 8.
+# 3. symmetry, text
+#	Set "symmetry" metabolites such as fumarete and succinate
+# 4. corbon source, text
+#	Set "carbonsource" metabolites
+# 5. excretion, text
+#	Set "excreted" metabolites
+# 6. Links to external ids  (Optional)
+#	Links to external ids can be described here
+# 7. Lower boundary of metabolite pool size, float  (Optional)
+#	Value must be more than zero
+#	Required for INST-MFA mode
+# 8. Upper boundary of metabolite pool size, float (Optional)
+#	Value must be more than zero
+#	Required for INST-MFA mode
+#
+//Metabolites
+SubsGlc	6	no	carbonsource	no	(dummy)	0	300
+G6P	6	no	no	no	(kegg:C00092)	0	300
+PEP	3	no	no	no	(kegg:C00074)	0	300
+CO2in	1	no	no	no	(dummy)	0	300
+CO2ex	1	no	no	excreted	(kegg:C00011)	0.0	300
+Pyr	3	no	no	no	(kegg:C00022)	0	300
+AcCoA	2	no	no	no	(kegg:C00024)	0.0	300
+OAC	4	no	no	no	(kegg:C00036)	0.0	300
+Cit	6	no	no	no	(kegg:C00158)	0.0	300
+AKG	5	no	no	no	(kegg:C00026)	0.0	300
+Suc	4	symmetry	no	no	(kegg:C00042)	0.0	300
+Fum	4	symmetry	no	no	(kegg:C00122)	0.0	300
+Glu	5	no	no	no	(kegg:C00025)	0.0	300
+Gluex	5	no	no	excreted	(kegg:C00025)	0.0	300
+#
+# Definition of reversible reactions
+# Reversible reaction is used for
+#	(i) output of metabolic flux distribution data
+#	(ii) constrain metabolic flux
+# 	(iii) investigate confidence intervals
+# 	(iii) Composition of two or more reactions such as for the calculation of total ATP producton is supported.
+# 1. Id, text
+#	Please use alphabet and numbers. Please do not use space and special characters to avoid unexpected errors.
+# 2. Dorward reaction, text
+#	Reacton id
+#	Composition of reacton ids such as "v9+e1" is also supported.
+#	Only "+" is accpectable separator.
+# 3. Reverse reaction, text
+#	Reacton id
+#	Set "nothing" if there is no data
+# 4. Links to external ids (Optional)
+#	Links to external ids can be described here
+# 5. Lower boundary of metabolic flux level, float (Optional)
+#	Value must be more than zero
+# 6. Upper boundary of metabolic flux level, float (Optional)
+#	Value must be more than zero
+#
+//Reversible_reactions
+FUM	v13	v14	(kegg:R01082)	-300	300
+#
+# Definition of Target fragments
+# Target fragments are metabolite out side of the metabolic model whose MDV are generarted by the calmdv function.
+# 1. id, text
+#	Please use alphabet and numbers. Please do not use space, "_" and other special characters to avoid unexpected errors.
+# 2. type, text
+#	"gcms" is supported. 
+# 3. Carbon composition, text
+#	"Glu_12345" indicated that the target compound has five carbons derived from 1-5th carbons of metabolite id "Glu".
+#	In the "gcms"mode, "OAC_12+OAC_12" indicated that the target compound has for carbons derived from 1-2th carbons of metabolite id "OAC".
+# 4. Usage, text
+#	"use" means this target fragment is used in the analysis.
+# 5. Formula, text
+#	Experimental, Chemical formula of target compound
+//Target_fragments
+AKGe	gcms	AKG_1:2:3:4:5	use	C5H10N2O3
+OACe	gcms	OAC_1:2:3:4	use	C5H10N2O3
+PEPe	gcms	PEP_1:2:3	use	C5H10N2O3
+//End
