@@ -69,8 +69,14 @@ Uninstall Anaconda
     > python -m pip install numpy scipy matplotlib nlopt joblib
 ~~~
 
-2. Install mfapy
-Unzip and set as current folder
+3. Install mfapy
+----------------------------------------
+1.Download mfapy package from GitHub.
+
+2.Unzip the downloaded file and set as current folder
+
+3.Install mfapy
+
 ~~~
     > python -m pip install .
 ~~~
