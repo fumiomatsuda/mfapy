@@ -24,7 +24,7 @@ This software is released under the MIT License, see LICENSE.txt.
 
 Requirement
 ----------------------------------------
-Python 3.6
+Python 3.10 or later
 
 mfapy requires the packages:
 
@@ -34,32 +34,55 @@ nlopt https://nlopt.readthedocs.io/en/latest/
 
 joblib
 
-mkl-service
+mkl-service (for Anaconda)
 
-mfapy was developed and tested using the PyScripter IDE, and was tested in 64 bit version of Anaconda3 distribution in Windows 10.
+mfapy was developed and tested in 64 bit version of Miniconda and official python + pip distribution in Windows 11.
 
 
-Install
+
+Uninstall Anaconda
 ----------------------------------------
-1. Install 64 bit version of Anaconda3
-2. Create virtual environment such as named "mfapy" and install required packages
+1. Clean up Anaconda files by anaconda-clean module
 ~~~
-    > conda create -n mfapy python=3.9 numpy scipy matplotlib joblib
+    >conda install anaconda-clean
+    >anaconda-clean
+~~~
+2-1. If you want to use Miniconda
+
+Install for Miniconda
+----------------------------------------
+1. Install 64 bit version of Miniconda
+2. Please use "Anaconda prompt" as a terminal
+3. Create virtual environment such as named "mfapy" and install required packages
+~~~
+    > conda create -n mfapy 
     > conda activate mfapy
-    > conda install -c conda-forge nlopt
-    > conda install -c anaconda mkl-service
+    > conda install -c conda-forge numpy scipy joblib nlopt mkl-service
+~~~
+2-2. If you want to use Official Python environment
+
+Install for Miniconda
+----------------------------------------
+1. Install 64 bit version of Python
+2. Please start terminal
+3. Please move to your project folder.
+4. Create virtual environment such as named "mfapy" and install required packages
+~~~
+    > python -m venv mfapy
+    > mfapy\Scripts\activate
+    > python -m pip install numpy scipy matplotlib nlopt joblib
 ~~~
 
 2. Install mfapy
 Unzip and set as current folder
 ~~~
-    > python setup.py install
+    > python -m pip install .
 ~~~
 
 Test
 ----------------------------------------
 ~~~
-    > python setup.py test
+    > python -m unittest
 ~~~
 
 How to use
@@ -152,19 +175,24 @@ Version 060
 
 Version 061
 ----------------------------------------
-22/2/14 Limiation in the maximum EMU size was removed.
+22/2/14 Limitation in the maximum EMU size was removed.
 
 22/11/7 Bugs in MetabolicModel.show_results was fixed.
 
-Version 061
+Version 062
 ----------------------------------------
 24/3/4  DocString contents were updated.
 
-24/3/4  "Tutorial 1_13C-MFAEcoli.py" was created to expain how to use mfapy for 13C-MFA.
+24/3/4  "Tutorial 1_13C-MFAEcoli.py" was created to explain how to use mfapy for 13C-MFA.
 
-24/3/4  "Tutorial 2_INST-MFAtoymodel.py" was created to expain how to use mfapy for INST-MFA.
+24/3/4  "Tutorial 2_INST-MFAtoymodel.py" was created to explain how to use mfapy for INST-MFA.
 
-24/3/4  "Tutorial_3_mfapy_functions.py" was created to expain many mfapy functions.
+24/3/4  "Tutorial_3_mfapy_functions.py" was created to explain many mfapy functions.
+
+
+Version 063
+----------------------------------------
+24/9/6  Target environments are changed from Anaconda to Miniconda+conda-forge and Official python+pip.
 
 
 If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>

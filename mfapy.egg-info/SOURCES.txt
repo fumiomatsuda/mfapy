@@ -61,6 +61,26 @@ sample/Explanation_1_13CMFA_toymodel_mdv1.txt
 sample/Explanation_1_13CMFA_toymodel_model.txt
 sample/Explanation_1_13CMFA_toymodel_output.csv
 sample/Explanation_1_13CMFA_toymodel_status.csv
+sample/Tutorial 1_13C-MFAEcoli.py
+sample/Tutorial 1_13C-MFAEcoli_mdv.txt
+sample/Tutorial 1_13C-MFAEcoli_model.txt
+sample/Tutorial 1_13C-MFAEcoli_status.csv
+sample/Tutorial 2_INST-MFAtoymodel.py
+sample/Tutorial 2_INST-MFAtoymodel_mdvtimecourse0.txt
+sample/Tutorial 2_INST-MFAtoymodel_mdvtimecourse10.txt
+sample/Tutorial 2_INST-MFAtoymodel_mdvtimecourse15.txt
+sample/Tutorial 2_INST-MFAtoymodel_mdvtimecourse30.txt
+sample/Tutorial 2_INST-MFAtoymodel_mdvtimecourse5.txt
+sample/Tutorial 2_INST-MFAtoymodel_mdvtimecourse50.txt
+sample/Tutorial 2_INST-MFAtoymodel_model.txt
+sample/Tutorial 2_INST-MFAtoymodel_output.csv
+sample/Tutorial 2_INST-MFAtoymodel_status.csv
+sample/Tutorial_3_mfapy_functions.py
+sample/Tutorial_3_mfapy_functions_carbonsource2.txt
+sample/Tutorial_3_mfapy_functions_mdv.txt
+sample/Tutorial_3_mfapy_functions_mdv1.txt
+sample/Tutorial_3_mfapy_functions_model.txt
+sample/Tutorial_3_mfapy_functions_status.csv
 tests/__init__.py
 tests/test_carbonsource.py
 tests/test_mdv.py
@@ -68,3 +88,5 @@ tests/test_metabolicmodel.py
 tests/test_metabolicmodel_state.csv
 tests/test_mfapyio.py
 tests/test_mfapyio_model.txt
+tests/tests/test_metabolicmodel_state.csv
+tests/tests/test_mfapyio_model.txt

@@ -1060,10 +1060,39 @@ class MdvTimeCourseData:
 
 
 def binomial(n,k):
+
+    """Method to calc binomial coefficients.
+
+        This function calculates nCk.
+
+    Args:
+        n (int): n
+        k (int): k
+
+
+    Returns:
+        a (int): math.factorial(n)/(math.factorial(k)*math.factorial(n-k))
+
+
+
+    """
+
     a=math.factorial(n)/(math.factorial(k)*math.factorial(n-k))
     return a
 
 def INV_correcting(formula):
+    """Method to create a matrix to deduct natural isotope effect of given formula.
+
+    Args:
+        formula (str): chemical formula
+            * Now this function supports "C", "H", "N", "O", "P", "S", "Si".
+
+    Returns:
+        Numpy matrix
+
+
+    """
+
     atomdic = count_atom_number(formula)
     num_C = atomdic["C"]
     num_H = atomdic["H"]
@@ -1206,6 +1235,18 @@ def INV_correcting(formula):
     return tmp_INV
 
 def transition_matrix(formula):
+    """Method to create a matrix to add natural isotope effect of given formula.
+
+    Args:
+        formula (str): chemical formula
+            * Now this function supports "C", "H", "N", "O", "P", "S", "Si".
+
+    Returns:
+        Numpy matrix
+
+
+    """
+
     atomdic = count_atom_number(formula)
     num_C = atomdic["C"]
     num_H = atomdic["H"]
@@ -1337,6 +1378,23 @@ def transition_matrix(formula):
     return tmp_r
 
 def count_atom_number(formula):
+    """Method to extract atom numbers from given moleculr formula
+
+    Args:
+        formula (str): chemical formula
+            * Now this function supports "C", "H", "N", "O", "P", "S", "Si".
+
+    Returns:
+        Dict
+
+    Examples:
+        >>> print(mdv.count_atom_number("C6H12O6"))
+        >>> {"C": 6, "H": 12, "O": 6}
+
+
+    """
+
+
     import re
     atoms = {}
     for atom in ["C", "H", "N", "O", "P", "S", "Si"]:

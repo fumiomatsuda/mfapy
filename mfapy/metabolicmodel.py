@@ -3290,59 +3290,6 @@ class MetabolicModel:
         if self.configuration['callbacklevel'] >= 3:
             print("Generation of initial state(s) was started by",method,"method.")
 
-        if method == "parallelpp":
-            #for i in range(iterations):
-            #    tmp_r, Rm_temp, Rm_ind, state = optimize.initializing_Rm_fitting(numbers, vectors, matrixinv, template ,initial_search_iteration_max)
-            #    if state == "Determined":
-            #        flux_temp_r = self.generate_state_dict(tmp_r)
-            #        fluxes.append(flux_temp_r)
-            #        rsses.append(self.calc_rss(flux_temp_r))
-            #Set ncpus
-            if 'ncpus' in self.configuration:
-                ncpus = self.configuration['ncpus']
-            else:
-                ncpus = 1
-
-            #Set callbacklevel
-            if 'ppservers' in self.configuration:
-                ppservers = self.configuration['ppservers']
-            else:
-                ppservers = ("",)
-            #
-            # tuple of all parallel python servers to connect with
-            #
-            try:
-                import pp
-                job_server = pp.Server(ncpus = ncpus, ppservers=ppservers)
-            except:
-                print("This function requires Parallel Python!")
-                return False
-
-            if (self.configuration['callbacklevel'] >= 2):
-                print("Number of active nodes:", job_server.get_active_nodes())
-
-            jobs = []
-
-
-            for i in range(iterations):
-                parameters = (numbers, vectors, matrixinv, template ,initial_search_iteration_max)
-                jobs.append([i, job_server.submit(optimize.initializing_Rm_fitting, parameters,
-                 (optimize.calc_protrude_scipy,),
-                 ("numpy","scipy.optimize","mkl"))])
-
-
-            for j, job in jobs:
-                results = job()
-                if results == None:
-                    continue
-                tmp_r, Rm_temp, Rm_ind, state = results
-                if state == "Determined":
-                    flux_temp_r = self.generate_state_dict(tmp_r)
-                    fluxes.append(flux_temp_r)
-                    rsses.append(self.calc_rss(flux_temp_r))
-            if (self.configuration['callbacklevel'] >= 6):
-                job_server.print_stats()
-            job_server.destroy()
         #
         # joblib
         #

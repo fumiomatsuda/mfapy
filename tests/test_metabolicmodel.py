@@ -279,8 +279,8 @@ class Testmfapy(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
-    def test_set_constrain(self):
-        self.model.set_constrain('reaction', 'v1', "fixed", 100.0,1)
+    def test_set_constraint(self):
+        self.model.set_constraint('reaction', 'v1', "fixed", 100.0,1)
         expected = 'fixed'
         actual = self.model.reactions["v1"]["type"]
         self.assertEqual(expected, actual)
@@ -298,7 +298,7 @@ class Testmfapy(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_update(self):
-        self.model.set_constrain('reaction', 'v1', "fixed", 100.0,1)
+        self.model.set_constraint('reaction', 'v1', "fixed", 100.0,1)
         expected = True
         actual = self.model.update()
         self.assertEqual(expected, actual)
@@ -341,7 +341,7 @@ class Testmfapy(unittest.TestCase):
     def test_matrix_inv(self):
         state_dic = self.model.load_states(self.state_filename, format = 'csv')
         self.model.set_constraints_from_state_dict(state_dic)
-        self.model.set_constrain('reaction', 'v9', "fitting", 0.0,1)
+        self.model.set_constraint('reaction', 'v9', "fitting", 0.0,1)
         self.model.update()
         tmp_r= [state_dic[group][id]["value"] for (group, id) in self.model.vector["ids"]]
         ind_r = [state_dic[group][id]["value"] for (group, id) in self.model.vector["independent_flux"]]
@@ -358,7 +358,7 @@ class Testmfapy(unittest.TestCase):
     def test_calmdv(self):
         state_dic = self.model.load_states(self.state_filename, format = 'csv')
         self.model.set_constraints_from_state_dict(state_dic)
-        self.model.set_constrain('reaction', 'v9', "fitting", 0.0,1)
+        self.model.set_constraint('reaction', 'v9', "fitting", 0.0,1)
         self.model.update()
 
         cs = self.model.generate_carbon_source_templete()
@@ -383,7 +383,7 @@ class Testmfapy(unittest.TestCase):
     def test_set_experiment(self):
         state_dic = self.model.load_states(self.state_filename, format = 'csv')
         self.model.set_constraints_from_state_dict(state_dic)
-        self.model.set_constrain('reaction', 'v9', "fitting", 0.0,1)
+        self.model.set_constraint('reaction', 'v9', "fitting", 0.0,1)
         self.model.update()
 
         cs = self.model.generate_carbon_source_templete()
@@ -412,9 +412,9 @@ class Testmfapy(unittest.TestCase):
     def test_generate_initial_states(self):
         state_dic = self.model.load_states(self.state_filename, format = 'csv')
         self.model.set_constraints_from_state_dict(state_dic)
-        self.model.set_constrain('reaction', 'v9', "fitting", 0.0,1)
-        self.model.set_constrain('reaction','v8','free')
-        self.model.set_constrain('reversible','FUM','free')
+        self.model.set_constraint('reaction', 'v9', "fitting", 0.0,1)
+        self.model.set_constraint('reaction','v8','free')
+        self.model.set_constraint('reversible','FUM','free')
         self.model.update()
         cs = self.model.generate_carbon_source_templete()
         flux_opt, state = self.model.generate_state()
@@ -429,9 +429,9 @@ class Testmfapy(unittest.TestCase):
     def test_fitting_flux(self):
         state_dic = self.model.load_states(self.state_filename, format = 'csv')
         self.model.set_constraints_from_state_dict(state_dic)
-        self.model.set_constrain('reaction', 'v9', "fitting", 0.0,1)
-        self.model.set_constrain('reaction','v8','free')
-        self.model.set_constrain('reversible','FUM','free')
+        self.model.set_constraint('reaction', 'v9', "fitting", 0.0,1)
+        self.model.set_constraint('reaction','v8','free')
+        self.model.set_constraint('reversible','FUM','free')
         self.model.update()
         cs = self.model.generate_carbon_source_templete()
         flux_opt, state = self.model.generate_state()
@@ -453,9 +453,9 @@ class Testmfapy(unittest.TestCase):
     def test_fitting_flux_parallel(self):
         state_dic = self.model.load_states(self.state_filename, format = 'csv')
         self.model.set_constraints_from_state_dict(state_dic)
-        self.model.set_constrain('reaction', 'v9', "fitting", 0.0,1)
-        self.model.set_constrain('reaction','v8','free')
-        self.model.set_constrain('reversible','FUM','free')
+        self.model.set_constraint('reaction', 'v9', "fitting", 0.0,1)
+        self.model.set_constraint('reaction','v8','free')
+        self.model.set_constraint('reversible','FUM','free')
         self.model.update()
         cs = self.model.generate_carbon_source_templete()
         flux_opt, state = self.model.generate_state()

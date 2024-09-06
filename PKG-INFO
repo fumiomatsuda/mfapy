@@ -1,4 +1,4 @@
-Metadata-Version: 1.0
+Metadata-Versi3on: 1.0
 Name: mfapy
 Version: 0.6.2
 Summary: Python package for 13C Metabolic flux analysis
@@ -51,7 +51,7 @@ Description: mfapy: A Python toolbox for 13C-metabolic flux analysis
 
         Requirement
         ----------------------------------------
-        Python 3.9
+        Python 3.10 or later
 
         mfapy requires the packages:
 
@@ -61,39 +61,70 @@ Description: mfapy: A Python toolbox for 13C-metabolic flux analysis
 
         joblib
 
-        mkl-service
+        mkl-service (for Anaconda)
 
-        mfapy was developed and tested using the PyScripter IDE, and was tested in 64 bit version of Anaconda3 distribution in Windows 10.
+        mfapy was developed and tested in 64 bit version of Miniconda and official python + pip distribution in Windows 11.
 
 
-        Install
+
+        Uninstall Anaconda
         ----------------------------------------
-        1. Install 64 bit version of Anaconda3
-        2. Create virtual environment such as named "mfapy" and install required packages
+        1. Clean up Anaconda files by anaconda-clean module
         ~~~
-            > conda create -n mfapy python=3.9 numpy scipy joblib
+            >conda install anaconda-clean
+            >anaconda-clean
+        ~~~
+        2-1. If you want to use Miniconda
+
+        Install for Miniconda
+        ----------------------------------------
+        1. Install 64 bit version of Miniconda
+        2. Please use "Anaconda prompt" as a terminal
+        3. Create virtual environment such as named "mfapy" and install required packages
+        ~~~
+            > conda create -n mfapy 
             > conda activate mfapy
-            > conda install -c conda-forge nlopt
-            > conda install -c anaconda mkl-service
+            > conda install -c conda-forge numpy scipy joblib nlopt mkl-service
+        ~~~
+        2-2. If you want to use Official Python environment
+
+        Install for Miniconda
+        ----------------------------------------
+        1. Install 64 bit version of Python
+        2. Please start terminal
+        3. Please move to your project folder.
+	4. Create virtual environment such as named "mfapy" and install required packages
+        ~~~
+            > python -m venv mfapy
+            > mfapy\Scripts\activate
+            > python -m pip install numpy scipy matplotlib nlopt joblib
         ~~~
 
         2. Install mfapy
         Unzip and set as current folder
         ~~~
-            > python setup.py install
+            > python -m pip install .
         ~~~
 
         Test
         ----------------------------------------
         ~~~
-            > python setup.py test
+            > python -m unittest
         ~~~
 
         How to use
-        ----------------------------------------
-        Sample python code in 'Explanation_1_13CMFA_toymodel.py' explains how to use mfapy.
-        Detailed explanations are available from docstrings
-        Example python codes are also available.
+	----------------------------------------
+	./sample/Tutorial 1_13C-MFAEcoli.py explains how to use mfapy for 13C-MFA.
+
+	./sample/Tutorial 2_INST-MFAtoymodel.py explains how to use mfapy for INST-MFA.
+
+	./sample/Tutorial 3_mfapy_functions.py is a advanced exlanation on many mfapy function.
+
+
+	Detailed explanations are available from docstrings
+
+	In the ./sample folder, example python codes are also available.
+
 
         Learn more <https://fumiomatsuda.github.io/mfapy-document/>
 

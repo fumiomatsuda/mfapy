@@ -70,8 +70,9 @@ def initializing_Rm_fitting(numbers, vectors, matrixinv, template, initial_searc
         import mkl
         mkl.set_num_threads(1)
     except:
-        if callbacklevel > 1:
-            print("mkl-service is not installed this python!")
+        pass
+        #if callbacklevel > 1:
+        #    print("mkl-service is not installed this python!")
     # zero independent flux
     Rm_ind = list(numpy.zeros(independent_number))
     #boundaries
@@ -398,8 +399,9 @@ def fit_r_mdv_scipy(configure, experiments, numbers, vectors, matrixinv, func, f
         import mkl
         mkl.set_num_threads(1)
     except:
-        if callbacklevel > 1:
-            print("mkl-service is not installed this python!")
+        pass
+        #if callbacklevel > 1:
+        #    print("mkl-service is not installed this python!")
     #
     # Initial state
     #
@@ -577,8 +579,9 @@ def fit_r_mdv_nlopt(configure, experiments, numbers, vectors, matrixinv, func, f
         import mkl
         mkl.set_num_threads(1)
     except:
-        if callbacklevel > 1:
-            print("mkl-service is not installed this python!")
+        pass
+        #if callbacklevel > 1:
+        #    print("mkl-service is not installed this python!")
     #
     # Initial state
     #

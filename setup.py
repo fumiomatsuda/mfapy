@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Learn more: https://github.com/fumiomatsuda/mfapy
 #
+
 from setuptools import setup, find_packages
 import sys
 import os, os.path
@@ -20,7 +21,7 @@ with open('LICENSE') as f:
 
 setup(
     name='mfapy',
-    version='0.6.2',
+    version='0.6.3',
     package_dir = {'mfapy': ""},
     py_modules =  ["metabolicmodel", "carbonsource", "mfapyio", "mdv", "optimize"],
     description = "mfapy: a python package for the 13C metabolic flux analysis",
@@ -34,4 +35,3 @@ setup(
 
     test_suite='tests'
 )
-
