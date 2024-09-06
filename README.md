@@ -47,7 +47,7 @@ Uninstall Anaconda
     >conda install anaconda-clean
     >anaconda-clean
 ~~~
-2-1. If you want to use Miniconda
+If you want to use Miniconda
 ----------------------------------------
 1. Install 64 bit version of Miniconda
 2. Please use "Anaconda prompt" as a terminal
@@ -57,7 +57,7 @@ Uninstall Anaconda
     > conda activate mfapy
     > conda install -c conda-forge numpy scipy joblib nlopt mkl-service
 ~~~
-2-2. If you want to use Official Python environment
+If you want to use Official Python environment
 ----------------------------------------
 1. Install 64 bit version of Python
 2. Please start terminal
@@ -68,7 +68,7 @@ Uninstall Anaconda
     > mfapy\Scripts\activate
     > python -m pip install numpy scipy matplotlib nlopt joblib
 ~~~
-3. Install mfapy
+Install mfapy
 ----------------------------------------
 1. Download mfapy package from GitHub.
 2. Unzip the downloaded file and set as current folder
