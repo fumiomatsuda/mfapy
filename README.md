@@ -48,8 +48,6 @@ Uninstall Anaconda
     >anaconda-clean
 ~~~
 2-1. If you want to use Miniconda
-
-Install for Miniconda
 ----------------------------------------
 1. Install 64 bit version of Miniconda
 2. Please use "Anaconda prompt" as a terminal
@@ -60,8 +58,6 @@ Install for Miniconda
     > conda install -c conda-forge numpy scipy joblib nlopt mkl-service
 ~~~
 2-2. If you want to use Official Python environment
-
-Install for Miniconda
 ----------------------------------------
 1. Install 64 bit version of Python
 2. Please start terminal
