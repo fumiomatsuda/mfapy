@@ -194,5 +194,10 @@ Version 063
 24/9/6  Target environments are changed from Anaconda to Miniconda+conda-forge and Official python+pip.
 
 
+Version 064
+----------------------------------------
+25/7/7  The method to calculate MDV of fragments from several intermediates was improved.
+
+
 If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/fumiomatsuda/mfapy>
 

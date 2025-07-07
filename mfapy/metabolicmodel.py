@@ -1955,20 +1955,12 @@ class MetabolicModel:
                     size = size_of_EMU(emu);
                     row = ["X_"+str(size)+"["+ str(emu_intermediate[int(size)][emu] * (size + 1) + x) + "]"for x in range(size + 1)]
                     string += "\temu_list['" + target_fragment +"'] = [" + ','.join(row) + "]\n"
-                    if self.configuration['add_naturalisotope_in_calmdv'] == "yes":
-                        if not self.target_fragments[target_fragment]["formula"] == "":
-                            string += "\tmdvtemp = [" + ','.join(row) + "]\n"
-                            string += "\tmdvcorrected = mdvtemp[:]\n"
-                            for i in range(len(row)):
-                                textdatatemp = []
-                                for j in range(len(row)):
-                                    textdatatemp.append(str(self.target_fragments[target_fragment]['natural_isotope_addition'][i,j]) + "* mdvtemp["+str(j)+"]" )
-                                string += "\tmdvcorrected[" + str(i) +"] =" + '+'.join(textdatatemp) + "\n"
 
-                            string += "\temu_list['" + target_fragment +"'] = mdvcorrected\n"
 
-                # multiple EMUs
-                else:
+                # 2 EMUs
+                # Modified 4th July, 2027
+                #
+                elif len(emus) == 2:
                     # number of emu
                     numberofemus = len(emus)
                     # list of carbon numbers
@@ -1989,19 +1981,90 @@ class MetabolicModel:
                                 list_of_emuset.append(temp_one_emu)
                         row.append("+".join(list_of_emuset))
                     string += "\temu_list['" + target_fragment +"'] = [" + ','.join(row) + "]\n"
-                    if self.configuration['add_naturalisotope_in_calmdv'] == "yes":
-                        if not self.target_fragments[target_fragment]["formula"] == "":
-                            string += "\tmdvtemp = [" + ','.join(row) + "]\n"
-                            string += "\tmdvcorrected = mdvtemp[:]\n"
-                            for i in range(len(row)):
-                                textdatatemp = []
-                                for j in range(len(row)):
-                                    textdatatemp.append(str(self.target_fragments[target_fragment]['natural_isotope_addition'][i,j]) + "* mdvtemp["+str(j)+"]" )
-                                string += "\tmdvcorrected[" + str(i) +"] =" + '+'.join(textdatatemp) + "\n"
+                # more than 3 EMUs
+                # Modified 4th July, 2027
+                #
+                else:
+                    # number of emu
+                    emus_12 = emus[0:2]
+                    numberofemus = len(emus_12)
+                    # list of carbon numbers
+                    sizeofemus = [size_of_EMU(x) for x in emus_12]
+                    # list of compounds in emu
+                    compoundofemus = [compound_of_EMU(x) for x in emus_12]
+                    # sum of carbon numbers in emus
+                    sumofemus = sum(sizeofemus)
+                    # All conbination of EMUs
+                    emu_list = generate_iterative_list(sizeofemus)
+                    row = []
+                    string += "\trow = []\n"
+                    for i in range(sumofemus + 1):
+                        list_of_emuset = []
+                        for emuset in emu_list:
+                            if (sum(emuset) == i):
+                                #print emuset
+                                temp_one_emu = "*".join(["X_"+str(sizeofemus[j])+"["+ str(emu_intermediate[int(sizeofemus[j])][emus_12[j]] * (sizeofemus[j] + 1) + emuset[j]) + "]" for j in range(len(emuset))])
+                                list_of_emuset.append(temp_one_emu)
+                        row.append("+".join(list_of_emuset))
+                        string += "\trow.append("+ "+".join(list_of_emuset) +")\n"
+                    #string += "\tX_temp = [" + ','.join(row) + "]\n"
+                    string += "\tX_temp = row\n"
+                    string += "\tX_temp_sum = sum(X_temp)\n"
+                    string += "\tX_temp = [x/X_temp_sum for x in X_temp]\n"
 
-                            string += "\temu_list['" + target_fragment +"'] = mdvcorrected\n"
+                    size_of_X_temp = sumofemus - 1
 
-                string += "\temu_list['X_list'] = X_list\n"
+                    for emu_temp in emus[2:]:
+                        numberofemus = 2
+                        sizeofemus = [size_of_X_temp, size_of_EMU(emu_temp)]
+                        sumofemus = sum(sizeofemus)
+
+                        # All conbination of EMUs
+                        emu_list = generate_iterative_list(sizeofemus)
+                        row = []
+                        string += "\trow = []\n"
+
+                        for i in range(sumofemus + 1):
+                            list_of_emuset = []
+                            for emuset in emu_list:
+                                if (sum(emuset) == i):
+                                    temp_1st_emu = "X_temp["+ str(emuset[0]) +"]"
+                                    #print(emu_intermediate)
+                                    #print(emus, sizeofemus[1], emu_temp,)
+                                    temp_2nd_emu = "X_"+str(sizeofemus[1])+"["+ str(emu_intermediate[int(sizeofemus[1])][emu_temp] * (sizeofemus[1] + 1) + emuset[1]) + "]"
+                                    temp_one_emu = "*".join([temp_1st_emu, temp_2nd_emu])
+                                    #print emuset
+                                    #temp_one_emu = "*".join(["X_"+str(sizeofemus[j])+"["+ str(emu_intermediate[int(sizeofemus[j])][mus_12[j]] * (sizeofemus[j] + 1) + emuset[j]) + "]" for j in range(len(emuset))])
+                                    list_of_emuset.append(temp_one_emu)
+                            row.append("+".join(list_of_emuset))
+                            string += "\trow.append("+ "+".join(list_of_emuset) +")\n"
+                        #string += "\tX_temp = [" + ','.join(row) + "]\n"
+                        string += "\tX_temp = row\n"
+                        string += "\tX_temp_sum = sum(X_temp)\n"
+                        string += "\tX_temp = [x/X_temp_sum for x in X_temp]\n"
+                        size_of_X_temp = sumofemus - 1
+
+                    string += "\temu_list['" + target_fragment +"'] = X_temp\n"
+
+
+
+
+
+
+                if self.configuration['add_naturalisotope_in_calmdv'] == "yes":
+                    if not self.target_fragments[target_fragment]["formula"] == "":
+                        string += "\tmdvtemp = [" + ','.join(row) + "]\n"
+                        string += "\tmdvcorrected = mdvtemp[:]\n"
+                        for i in range(len(row)):
+                            textdatatemp = []
+                            for j in range(len(row)):
+                                textdatatemp.append(str(self.target_fragments[target_fragment]['natural_isotope_addition'][i,j]) + "* mdvtemp["+str(j)+"]" )
+                            string += "\tmdvcorrected[" + str(i) +"] =" + '+'.join(textdatatemp) + "\n"
+
+                        string += "\temu_list['" + target_fragment +"'] = mdvcorrected\n"
+
+
+        string += "\temu_list['X_list'] = X_list\n"
         #generate mdv
         string +=  "\tmdv = []\n"
         string +=  "\tfor emu in target_emu_list:\n"
@@ -2610,22 +2673,10 @@ class MetabolicModel:
                     row = ["y[i]["+ str(emu_intermediates_to_p[emu] + x) + "]"for x in range(size + 1)]
 
                     string += "\t\temu_list['" + target_fragment +"'].append([" + ','.join(row) + "])\n"
-                    if self.configuration['add_naturalisotope_in_calmdv'] == "yes":
-                        if not self.target_fragments[target_fragment]["formula"] == "":
-                            string += "\t\tmdvtemp = [" + ','.join(row) + "]\n"
-                            string += "\t\tmdvcorrected = mdvtemp[:]\n"
-                            for i in range(len(row)):
-                                textdatatemp = []
-                                for j in range(len(row)):
-                                    textdatatemp.append(str(self.target_fragments[target_fragment]['natural_isotope_addition'][i,j]) + "* mdvtemp["+str(j)+"]" )
-                                string += "\t\tmdvcorrected[" + str(i) +"] =" + '+'.join(textdatatemp) + "\n"
-
-                            string += "\t\temu_list['" + target_fragment +"'][-1] = mdvcorrected[:]\n"
-
 
 
                 # multiple EMU
-                else:
+                elif (len(emus) <= 4):
                     numberofemus = len(emus)
                     sizeofemus = [size_of_EMU(x) for x in emus]
                     compoundofemus = [compound_of_EMU(x) for x in emus]
@@ -2637,7 +2688,7 @@ class MetabolicModel:
                         for emuset in emu_list:
                             if (sum(emuset) == i):
                                 #print emuset
-                                temp_one_emu = "*".join(["X_"+str(sizeofemus[j])+"["+ str(emu_intermediate[int(sizeofemus[j])][emus[j]] * (sizeofemus[j] + 1) + emuset[j]) + "]" for j in range(len(emuset))])
+                                #temp_one_emu = "*".join(["X_"+str(sizeofemus[j])+"["+ str(emu_intermediate[int(sizeofemus[j])][emus[j]] * (sizeofemus[j] + 1) + emuset[j]) + "]" for j in range(len(emuset))])
 
                                 temp_one_emu = "*".join(["y[i]["+ str(emu_intermediates_to_p[emus[j]] + emuset[j]) + "]" for j in range(len(emuset))])
                                 #string += "\t\tB_" + precursor + product+"[" + str(equation_count )+ "] = y[i]["+ str(emu_intermediates_to_p[precursor] + i) + "]\n"
@@ -2645,17 +2696,17 @@ class MetabolicModel:
                                 list_of_emuset.append(temp_one_emu)
                         row.append("+".join(list_of_emuset))
                     string += "\t\temu_list['" + target_fragment +"'].append([" + ','.join(row) + "])\n"
-                    if self.configuration['add_naturalisotope_in_calmdv'] == "yes":
-                        if not self.target_fragments[target_fragment]["formula"] == "":
-                            string += "\t\tmdvtemp = [" + ','.join(row) + "]\n"
-                            string += "\t\tmdvcorrected = mdvtemp[:]\n"
-                            for i in range(len(row)):
-                                textdatatemp = []
-                                for j in range(len(row)):
-                                    textdatatemp.append(str(self.target_fragments[target_fragment]['natural_isotope_addition'][i,j]) + "* mdvtemp["+str(j)+"]" )
-                                string += "\t\tmdvcorrected[" + str(i) +"] =" + '+'.join(textdatatemp) + "\n"
+                if self.configuration['add_naturalisotope_in_calmdv'] == "yes":
+                    if not self.target_fragments[target_fragment]["formula"] == "":
+                        string += "\t\tmdvtemp = [" + ','.join(row) + "]\n"
+                        string += "\t\tmdvcorrected = mdvtemp[:]\n"
+                        for i in range(len(row)):
+                            textdatatemp = []
+                            for j in range(len(row)):
+                                textdatatemp.append(str(self.target_fragments[target_fragment]['natural_isotope_addition'][i,j]) + "* mdvtemp["+str(j)+"]" )
+                            string += "\t\tmdvcorrected[" + str(i) +"] =" + '+'.join(textdatatemp) + "\n"
 
-                            string += "\t\temu_list['" + target_fragment +"'][-1] = mdvcorrected[:]\n"
+                        string += "\t\temu_list['" + target_fragment +"'][-1] = mdvcorrected[:]\n"
 
 
         string += "\tmdv = []\n"
